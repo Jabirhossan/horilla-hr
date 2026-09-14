@@ -273,13 +273,15 @@ def payroll_calculation(employee, start_date, end_date, month_summary=None):
         + total_post_tax_deduction
         + total_tax_deductions
         + federal_tax
-        + loss_of_pay  # 1022
+        + loss_of_pay_amount  # 1022
     )
 
     net_pay = gross_pay - total_deductions
     # loss_of_pay        -> actual lop amount
-    # loss_of_pay_amount -> actual lop if deduct from basic-
-    #                       pay from contract is enabled
+    # loss_of_pay_amount -> actual lop amount, but only when it wasn't
+    #                       already subtracted from basic_pay above (i.e.
+    #                       zero when deduct_leave_from_basic_pay is
+    #                       enabled, since basic_pay already reflects it)
     net_pay = compute_net_pay(
         net_pay=net_pay,
         gross_pay=gross_pay,

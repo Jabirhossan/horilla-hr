@@ -6,7 +6,9 @@ import operator
 from typing import Any
 
 from django.apps import apps
+from django.contrib import messages
 from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -44,7 +46,8 @@ class AllowanceDeductionTabView(HorillaTabView):
 
     def dispatch(self, request, *args, **kwargs):
         if not Employee.objects.filter(id=kwargs.get("pk")).exists():
-            return HttpResponse()
+            messages.error(request, "Employee not found.")
+            return redirect("employee-view")
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -134,7 +137,8 @@ class AllowanceTabList(AllowanceListView):
     @method_decorator(login_required, name="dispatch")
     def dispatch(self, request, *args, **kwargs):
         if not Employee.objects.filter(id=kwargs.get("pk")).exists():
-            return HttpResponse()
+            messages.error(request, "Employee not found.")
+            return redirect("employee-view")
         return super(AllowanceListView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs: Any):
@@ -230,7 +234,8 @@ class DeductionTab(DeductionListView):
     @method_decorator(login_required, name="dispatch")
     def dispatch(self, request, *args, **kwargs):
         if not Employee.objects.filter(id=kwargs.get("pk")).exists():
-            return HttpResponse()
+            messages.error(request, "Employee not found.")
+            return redirect("employee-view")
         return super(DeductionListView, self).dispatch(request, *args, **kwargs)
 
     def __init__(self, **kwargs: Any) -> None:

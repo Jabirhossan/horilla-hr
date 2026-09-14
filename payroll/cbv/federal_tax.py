@@ -8,6 +8,7 @@ from typing import Any
 from django import forms
 from django.contrib import messages
 from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
@@ -95,6 +96,7 @@ class FilingStatusDetailView(HorillaDetailedView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 @method_decorator(permission_required("payroll.add_taxbracket"), name="dispatch")
 class TaxBracketCreateForm(HorillaFormView):
     """
@@ -111,7 +113,8 @@ class TaxBracketCreateForm(HorillaFormView):
             filing_status_id
             and not FilingStatus.objects.filter(id=filing_status_id).exists()
         ):
-            return HttpResponse()
+            messages.error(self.request, "Filing status not found.")
+            return redirect("filing-status-list")
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -180,7 +183,7 @@ class TaxBracketNavView(HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required(hx_request_required), name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 @method_decorator(permission_required("payroll.view_taxbracket"), name="dispatch")
 class FilingStatusPipeline(Pipeline):
     """
@@ -257,6 +260,7 @@ class FilingStatusPipeline(Pipeline):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 @method_decorator(permission_required("payroll.view_taxbracket"), name="dispatch")
 class TaxBracketListView(HorillaListView):
     """

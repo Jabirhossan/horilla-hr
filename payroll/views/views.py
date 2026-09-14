@@ -223,7 +223,9 @@ def bulk_contract_status_update(request):
     ids = eval_validate(ids) if ids else []
     all_contracts = Contract.objects.all()
     contracts = all_contracts.filter(id__in=ids)
-
+    if not contracts.exists():
+        messages.info(request, _("No contracts selected."))
+        return redirect("contract-filter")
     for contract in contracts:
         save = True
         if status in ["active", "draft"]:
