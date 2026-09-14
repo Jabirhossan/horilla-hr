@@ -21,6 +21,7 @@ from django.views import View
 
 from base.context_processors import intial_notice_period
 from base.methods import eval_validate
+from horilla.http.response import HorillaRedirect
 from horilla.methods import get_horilla_model_class
 from horilla_views.cbv_methods import (
     hx_request_required,
@@ -588,9 +589,15 @@ class OffboardingPipelineContentShell(TemplateView):
 
     template_name = "cbv/exit_process/offboarding_pipeline_shell.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        if not Offboarding.objects.filter(pk=kwargs.get("pk")).exists():
+            messages.error(request, _("No Offboarding found matching the query."))
+            return HorillaRedirect(request)
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        offboarding = get_object_or_404(Offboarding, pk=self.kwargs.get("pk"))
+        offboarding = Offboarding.objects.filter(pk=self.kwargs.get("pk")).first()
         view_type = self.request.GET.get("view", "list")
         content_url = reverse(
             "get-offboarding-stage", kwargs={"offboarding_id": offboarding.pk}
