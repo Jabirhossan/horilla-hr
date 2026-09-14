@@ -506,7 +506,7 @@ def project_import(request):
 
 @login_required
 # @permission_required("project.view_project")
-# @require_http_methods(["POST"])
+@require_http_methods(["POST"])
 def project_bulk_export(request):
     """
     This method is used to export bulk of Project instances
