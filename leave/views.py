@@ -746,8 +746,9 @@ def create_leave_report(request):
             "new_hire": False,
         }
 
-        if employee.employee_work_info:
-            hire_date = employee.employee_work_info.date_joining
+        work_info = getattr(employee, "employee_work_info", None)
+        if work_info:
+            hire_date = work_info.date_joining
             if hire_date and (date.today() - hire_date) <= timedelta(days=365):
                 emp_data["new_hire"] = True
 
@@ -3206,7 +3207,7 @@ def department_leave_chart(request):
             leave_dates.append(leave_date.strftime("%Y-%m-%d"))
 
         for dep in departments:
-            if dep == leave.employee_id.employee_work_info.department_id:
+            if dep == leave.employee_id.get_department():
                 department_counts[dep.department] += leave.requested_days
 
     for department, count in department_counts.items():
@@ -4758,19 +4759,19 @@ def view_clashes(request, leave_request_id):
         clashed_due_to_department = LeaveRequest.objects.none()
         clashed_due_to_job_position = LeaveRequest.objects.none()
     else:
+        record_department = record.employee_id.get_department()
+        record_job_position = record.employee_id.get_job_position()
+        record_company = record.employee_id.get_company()
+
         overlapping_requests = (
             LeaveRequest.objects.filter(
                 (
-                    Q(
-                        employee_id__employee_work_info__department_id=record.employee_id.employee_work_info.department_id
-                    )
+                    Q(employee_id__employee_work_info__department_id=record_department)
                     | Q(
-                        employee_id__employee_work_info__job_position_id=record.employee_id.employee_work_info.job_position_id
+                        employee_id__employee_work_info__job_position_id=record_job_position
                     )
                 )
-                & Q(
-                    employee_id__employee_work_info__company_id=record.employee_id.employee_work_info.company_id
-                ),
+                & Q(employee_id__employee_work_info__company_id=record_company),
                 start_date__lte=record.end_date,
                 end_date__gte=record.start_date,
             )
@@ -4779,11 +4780,11 @@ def view_clashes(request, leave_request_id):
         )
 
         clashed_due_to_department = overlapping_requests.filter(
-            employee_id__employee_work_info__department_id=record.employee_id.employee_work_info.department_id
+            employee_id__employee_work_info__department_id=record_department
         )
 
         clashed_due_to_job_position = overlapping_requests.filter(
-            employee_id__employee_work_info__job_position_id=record.employee_id.employee_work_info.job_position_id
+            employee_id__employee_work_info__job_position_id=record_job_position
         )
 
     leave_request_filter = LeaveRequestFilter(request.GET, overlapping_requests).qs
@@ -5350,7 +5351,9 @@ if apps.is_installed("attendance"):
         GET : It returns to the default compensatory leave request view template.
 
         """
-        comp_leave_req = CompensatoryLeaveRequest.objects.get(id=comp_id)
+        comp_leave_req = CompensatoryLeaveRequest.objects.filter(id=comp_id).first()
+        if not comp_leave_req:
+            return HttpResponse()
         if comp_leave_req.status == "requested" or comp_leave_req.status == "approved":
             form = CompensatoryLeaveRequestRejectForm()
             if request.method == "POST":
@@ -5398,10 +5401,15 @@ if apps.is_installed("attendance"):
         return compensatory leave request single view
         """
         requests_ids_json = request.GET.get("instances_ids")
+        previous_id = next_id = None
         if requests_ids_json:
             requests_ids = json.loads(requests_ids_json)
             previous_id, next_id = closest_numbers(requests_ids, comp_leave_id)
-        comp_leave_req = CompensatoryLeaveRequest.objects.get(id=comp_leave_id)
+        comp_leave_req = CompensatoryLeaveRequest.objects.filter(
+            id=comp_leave_id
+        ).first()
+        if not comp_leave_req:
+            return HttpResponse()
         context = {
             "comp_leave_req": comp_leave_req,
             "my_request": eval_validate(request.GET.get("my_request")),
