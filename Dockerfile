@@ -5,7 +5,16 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 # Install build dependencies
+#
+# `upgrade` before `install`: the base image is pulled by tag, not digest, so
+# a build can land on a python:3.12-slim layer that predates a Debian security
+# patch. `perl-base` is not something we ask for -- it is pulled in as an
+# essential package -- so it would otherwise sit at whatever version shipped
+# with that day's base image until something else bumped it. This is what
+# Docker CI's Trivy gate (--ignore-unfixed, CRITICAL) caught: a fixed
+# perl-base existed in Debian's repos and was not in the image.
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         build-essential \
         libpq-dev \
@@ -54,7 +63,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PATH="/opt/venv/bin:$PATH"
 
 # Install only runtime dependencies
+#
+# `upgrade` first -- see the builder stage's comment. This is the stage
+# Trivy actually scans, so it is the one the CI gate needs.
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         libpq5 \
         libjpeg62-turbo \
