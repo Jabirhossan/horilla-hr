@@ -13,6 +13,7 @@ from django.utils.translation import gettext_lazy as _
 from asset.filters import AssetBatchNoFilter
 from asset.forms import AssetBatchForm
 from asset.models import AssetLot
+from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
@@ -99,6 +100,13 @@ class AssetBatchCreateFormView(HorillaFormView):
     form_class = AssetBatchForm
     model = AssetLot
     new_display_title = _("Create Batch Number")
+
+    def dispatch(self, request, *args, **kwargs):
+        pk = kwargs.get("pk")
+        if pk and not AssetLot.objects.filter(id=pk).exists():
+            messages.error(request, _("Batch number not found."))
+            return HorillaRedirect(request)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

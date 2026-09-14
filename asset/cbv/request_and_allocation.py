@@ -716,6 +716,13 @@ class AssetAllocationFormView(HorillaFormView):
     template_name = "cbv/request_and_allocation/forms/allo_form.html"
     new_display_title = _("Asset Allocation")
 
+    def dispatch(self, request, *args, **kwargs):
+        pk = kwargs.get("pk")
+        if pk and not AssetAssignment.objects.filter(id=pk).exists():
+            messages.error(request, _("Asset allocation not found."))
+            return HorillaRedirect(request)
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
