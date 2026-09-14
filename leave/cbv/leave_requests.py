@@ -630,6 +630,7 @@ class LeaveRequestFormView(HorillaFormView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 class LeaveClashListView(LeaveRequestsListView):
     """
     list view of leave clash col

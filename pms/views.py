@@ -705,7 +705,7 @@ def objective_list_search(request):
 
 
 @login_required
-# @hx_request_required
+@hx_request_required
 def objective_dashboard_view(request):
     """
     This view is used to to search objective,  returns searched and filtered objects.
