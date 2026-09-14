@@ -328,7 +328,7 @@ jobs:
 
       - name: Update horilla/horilla-hr description
         if: steps.v.outputs.dry_run != 'true' && steps.v.outputs.prerelease != 'true'
-        uses: peter-evans/dockerhub-description@v4
+        uses: peter-evans/dockerhub-description@v5
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_DESCRIPTION_TOKEN }}
@@ -341,7 +341,7 @@ jobs:
       # Leaving it stale is what produced the 1.4/runserver instructions above.
       - name: Update horilla/horilla description (deprecated mirror)
         if: steps.v.outputs.dry_run != 'true' && steps.v.outputs.prerelease != 'true'
-        uses: peter-evans/dockerhub-description@v4
+        uses: peter-evans/dockerhub-description@v5
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_DESCRIPTION_TOKEN }}
