@@ -6,13 +6,17 @@ from typing import Any
 
 from django.http import HttpResponse
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from base.methods import is_reportingmanager
 from employee.models import Employee
+from horilla.decorators import hx_request_required, login_required
 from leave.cbv.my_leave_request import MainParentListView, MyLeaveRequestListView
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 class IndividualLeaveTab(MainParentListView):
     """
     class for rendering leave tab in employee profile

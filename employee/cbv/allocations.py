@@ -503,6 +503,7 @@ if app_installed("leave"):
     LeaveType.leave_type_toggle_allocation = leave_type_toggle_allocation
 
     @method_decorator(login_required, name="dispatch")
+    @method_decorator(hx_request_required, name="dispatch")
     @method_decorator(
         all_manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
     )

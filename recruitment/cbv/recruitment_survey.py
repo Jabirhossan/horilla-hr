@@ -13,6 +13,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from attendance.cbv.tab_shell import AttendanceTabContentShell
+from horilla.decorators import hx_request_required
 from horilla.http.response import HorillaRedirect
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
@@ -66,6 +67,7 @@ class QuestionFormView(HorillaFormView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 @method_decorator(
     permission_required("recruitment.add_recruitmentsurvey"), name="dispatch"
 )

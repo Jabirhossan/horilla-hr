@@ -2789,6 +2789,7 @@ def skill_zone_update(request, sz_id):
 
 
 @login_required
+@hx_request_required
 @manager_can_enter(perm="recruitment.delete_skillzone")
 def skill_zone_delete(request, sz_id):
     """
@@ -3001,6 +3002,8 @@ def skill_zone_cand_edit(request, sz_cand_id):
     return render(request, template, {"form": form, "sz_cand_id": sz_cand_id})
 
 
+@login_required
+@hx_request_required
 @manager_can_enter(perm="recruitment.view_skillzonecandidate")
 def skill_zone_cand_filter(request):
     """

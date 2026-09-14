@@ -10,6 +10,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from base.cbv.mail_log_tab import MailLogTabList
+from horilla.decorators import hx_request_required
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import HorillaListView
 from recruitment.cbv_decorators import all_manager_can_enter
@@ -17,6 +18,7 @@ from recruitment.models import Candidate
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 @method_decorator(
     all_manager_can_enter(perm="recruitment.view_candidate"), name="dispatch"
 )

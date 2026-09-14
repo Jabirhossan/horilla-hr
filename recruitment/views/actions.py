@@ -539,6 +539,7 @@ def get_template_hint(request, obj_id=None):
 
 
 @login_required
+@hx_request_required
 def get_mail_preview(request):
     """
     Returns the mail template preview as HTML.

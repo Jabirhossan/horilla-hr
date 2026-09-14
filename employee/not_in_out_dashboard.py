@@ -206,7 +206,8 @@ def get_mail_preview(request):
     """
     body = request.POST.get("body")
     if not body:
-        return HttpResponse("No body provided", status=400)
+        messages.error(request, _("No body provided for mail preview."))
+        return HorillaRedirect(request)
 
     # Strip dangerous template constructs first.
     body = sanitize_mail_template_body(body)

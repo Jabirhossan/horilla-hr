@@ -3964,6 +3964,7 @@ def organisation_chart(request):
 
 
 @login_required
+@hx_request_required
 @permission_required("payroll.add_encashmentgeneralsettings")
 def encashment_condition_create(request):
     """

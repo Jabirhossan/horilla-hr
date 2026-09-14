@@ -13,6 +13,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from base.models import IntegrationApps
+from horilla.decorators import hx_request_required
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
@@ -361,6 +362,7 @@ class RecruitmentForm(HorillaFormView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 class AddCandidateFormView(HorillaFormView):
     """
     form view for add candidate

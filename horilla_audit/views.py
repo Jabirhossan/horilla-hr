@@ -106,7 +106,8 @@ def edit_audit_model_fields(request, pk):
     try:
         config = AuditModelConfig.objects.get(pk=pk)
     except AuditModelConfig.DoesNotExist:
-        return HttpResponseBadRequest("Audit configuration not found.")
+        messages.error(request, _("Audit configuration not found."))
+        return redirect("audit-history-view")
 
     if request.method == "POST":
         form = AuditModelFieldsForm(
