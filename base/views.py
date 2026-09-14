@@ -5835,6 +5835,7 @@ def shift_request_bulk_delete(request):
 
 
 @login_required
+@hx_request_required
 def notifications(request):
     """
     This method will render notification items
@@ -5866,6 +5867,7 @@ def clear_notification(request):
 
 
 @login_required
+@hx_request_required
 def delete_all_notifications(request):
     try:
         request.user.notifications.read().delete()
@@ -5941,6 +5943,7 @@ def mark_as_read_notification_json(request):
 
 
 @login_required
+@hx_request_required
 def read_notifications(request):
     """
     This method is to mark as read the notification
@@ -5960,6 +5963,7 @@ def read_notifications(request):
 
 
 @login_required
+@hx_request_required
 def all_notifications(request):
     """
     This method to render all notifications to template
@@ -5972,6 +5976,7 @@ def all_notifications(request):
 
 
 @login_required
+@hx_request_required
 def notification_sound(request):
     employee = request.user.employee_get
     sound, created = NotificationSound.objects.get_or_create(employee=employee)

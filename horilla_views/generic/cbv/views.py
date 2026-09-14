@@ -2159,8 +2159,11 @@ class HorillaFormView(FormView):
         self, request: HttpRequest, *args: str, pk=None, **kwargs: Any
     ) -> HttpResponse:
         _pk = pk
-        form = self.get_form()
-        if pk and not form.instance:
+        # form.instance is never falsy here -- Django's ModelForm always
+        # creates a blank instance when given instance=None -- so the actual
+        # "does this pk exist" check has to happen against the resolved
+        # queryset instance instead, before the form ever wraps it.
+        if pk and not self.get_queryset():
             messages.error(request, _("Matching query does not exists."))
             return HorillaRedirect(request)
         response = super().get(request, *args, **kwargs)
@@ -2170,7 +2173,9 @@ class HorillaFormView(FormView):
         self, request: HttpRequest, *args: str, pk=None, **kwargs: Any
     ) -> HttpResponse:
         _pk = pk
-        self.get_form()
+        if pk and not self.get_queryset():
+            messages.error(request, _("Matching query does not exists."))
+            return HorillaRedirect(request)
         response = super().post(request, *args, **kwargs)
         return response
 

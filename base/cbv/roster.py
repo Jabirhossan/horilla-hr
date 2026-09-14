@@ -27,6 +27,7 @@ from base.filters import RosterFilter
 from base.forms import RosterCellUpdateForm
 from base.models import CompanyLeaves, EmployeeShift, Holidays, Roster, RosterPublishLog
 from employee.models import Employee
+from horilla.decorators import hx_request_required
 from horilla_views.cbv_methods import login_required, paginator_qry
 from horilla_views.generic.cbv.views import HorillaCardView, HorillaNavView
 
@@ -219,6 +220,7 @@ class RosterGridView(HorillaCardView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 class RosterCellUpdateView(View):
     template_name = "base/roster/roster_cell_form.html"
 
@@ -305,6 +307,7 @@ class RosterCellUpdateView(View):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 class RosterPublishFormView(View):
     template_name = "base/roster/publish_form.html"
 
@@ -529,6 +532,7 @@ class MyRosterView(View):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
 class RosterImportFormView(View):
     template_name = "base/roster/roster_import_form.html"
 
