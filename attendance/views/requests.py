@@ -707,6 +707,9 @@ def bulk_approve_attendance_request(request):
     """
     ids = json.loads(request.POST.get("ids", "[]"))
     filtered_ids = []
+    if not ids and len(ids) <= 0:
+        messages.error(request, _("No attendance request selected"))
+        return redirect(reverse("request-attendance-view"))
     for attendance_id in ids:
         attendance = Attendance.objects.get(id=attendance_id)
         if attendance.employee_id != request.user.employee_get:
@@ -831,6 +834,9 @@ def bulk_reject_attendance_request(request):
     This method is used to delete bulk attendance request
     """
     ids = json.loads(request.POST.get("ids", "[]"))
+    if not ids and len(ids) <= 0:
+        messages.error(request, _("No attendance request selected"))
+        return redirect(reverse("request-attendance-view"))
     for attendance_id in ids:
         try:
             attendance = Attendance.objects.get(id=attendance_id)

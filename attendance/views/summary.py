@@ -15,8 +15,10 @@ from itertools import chain
 
 import pandas as pd
 from django.conf import settings
+from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from xlsxwriter.utility import xl_range
 
@@ -2186,7 +2188,7 @@ def attendance_monthly_summary_bulk_override(request):
     from attendance.models import AttendanceConflictResolution
 
     if request.method != "POST":
-        return HttpResponse(status=405)
+        return render(request, "405.html", status=405)
 
     emp_ids = request.POST.getlist("employee_ids")
     from_date = _parse_date(request.POST.get("from_date"), None)
@@ -2254,7 +2256,7 @@ def attendance_monthly_summary_undo_bulk(request):
     from attendance.models import AttendanceConflictResolution
 
     if request.method != "POST":
-        return HttpResponse(status=405)
+        return render(request, "405.html", status=405)
 
     pks = request.POST.getlist("pks")
     if not pks:
@@ -2297,10 +2299,12 @@ def attendance_monthly_summary_daily_hours_edit(request):
     try:
         emp = Employee.objects.get(pk=emp_id)
     except Employee.DoesNotExist:
-        return HttpResponse("—")
+        messages.error(request, "Employee not found.")
+        return redirect(reverse("view-my-attendance"))
 
     if date is None:
-        return HttpResponse("—")
+        messages.error(request, "Invalid date.")
+        return redirect(reverse("view-my-attendance"))
 
     is_panel = bool(request.POST.get("panel") or request.GET.get("panel"))
     _tmpl = (
