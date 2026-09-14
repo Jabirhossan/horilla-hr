@@ -1645,7 +1645,10 @@ def attendance_add_to_batch(request):
     batches = BatchAttendance.objects.all()
     ids = request.GET.getlist("ids")
     if request.method == "POST":
-        ids = request.GET["ids"]
+        ids = request.GET.get("ids")
+        if not ids:
+            messages.error(request, _("Something went wrong."))
+            return HorillaRedirect(request)
         # Remove brackets and quotes, then split and convert to integers
         int_ids = [int(x.strip().strip("'")) for x in ids.strip("[]").split(",")]
         batch_id = request.POST.get("batch_attendance_id")

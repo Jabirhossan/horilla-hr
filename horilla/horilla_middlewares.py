@@ -15,6 +15,7 @@ from django.shortcuts import render
 from django.utils.datastructures import MultiValueDictKeyError
 
 from horilla.config import logger
+from horilla.http.response import HorillaRedirect
 
 _request_var = ContextVar("request", default=None)
 current_company_id = ContextVar("current_company_id", default=None)
@@ -125,16 +126,14 @@ class MissingParameterMiddleware:
 
             logger.error(message)
 
-            if not settings.DEBUG:
-                messages.error(request, message)
-                return render(request, "went_wrong.html", status=400)
+            return HorillaRedirect(request, message=message)
 
         elif isinstance(exception, ObjectDoesNotExist):
             logger.error(f"{exception.__class__.__name__}: {exception}")
 
-            if not settings.DEBUG:
-                messages.error(request, "The requested item could not be found.")
-                return render(request, "went_wrong.html", status=404)
+            return HorillaRedirect(
+                request, message="The requested item could not be found."
+            )
 
         return None
 
