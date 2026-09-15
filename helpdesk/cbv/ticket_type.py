@@ -11,6 +11,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from employee.models import Employee
 from helpdesk.cbv.tags import DynamicTagsCreateFormView
@@ -285,11 +286,7 @@ class TicketsCreateFormView(HorillaFormView):
                 notify.send(
                     self.request.user.employee_get,
                     recipient=assignees,
-                    verb="You have been assigned to a new Ticket",
-                    verb_ar="لقد تم تعيينك لتذكرة جديدة",
-                    verb_de="Ihnen wurde ein neues Ticket zugewiesen",
-                    verb_es="Se te ha asignado un nuevo ticket",
-                    verb_fr="Un nouveau ticket vous a été attribué",
+                    verb=gettext_noop("You have been assigned to a new Ticket"),
                     icon="infinite",
                     redirect=reverse(
                         "ticket-detail",

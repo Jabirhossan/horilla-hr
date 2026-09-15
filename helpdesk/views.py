@@ -15,6 +15,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
+from django.utils.translation import gettext_noop
 from django.views.decorators.http import require_http_methods
 
 from base.forms import TagsForm
@@ -319,9 +320,8 @@ def faq_search(request):
     GET : return faq filter form template
     POST : return faq view
     """
-    # This endpoint returns only the list/filter fragment; a genuine
-    # top-level browser navigation/reload should land on the real FAQ page
-    # instead of showing the raw, unstyled fragment.
+    # A genuine top-level navigation/reload should land on the real FAQ page,
+    # not this list/filter fragment.
     if request.headers.get("Sec-Fetch-Mode") == "navigate":
         redirect_url = reverse("faq-category-view")
         query_string = request.GET.urlencode()
@@ -529,11 +529,7 @@ def ticket_create(request):
             notify.send(
                 request.user.employee_get,
                 recipient=assignees,
-                verb="You have been assigned to a new Ticket",
-                verb_ar="لقد تم تعيينك لتذكرة جديدة",
-                verb_de="Ihnen wurde ein neues Ticket zugewiesen",
-                verb_es="Se te ha asignado un nuevo ticket",
-                verb_fr="Un nouveau ticket vous a été attribué",
+                verb=gettext_noop("You have been assigned to a new Ticket"),
                 icon="infinite",
                 redirect=reverse("ticket-detail", kwargs={"ticket_id": ticket.id}),
             )
@@ -650,11 +646,8 @@ def ticket_status_change(request, ticket_id):
     notify.send(
         request.user.employee_get,
         recipient=assignees,
-        verb=f"The status of the ticket has been changed to {ticket.status}.",
-        verb_ar="تم تغيير حالة التذكرة.",
-        verb_de="Der Status des Tickets wurde geändert.",
-        verb_es="El estado del ticket ha sido cambiado.",
-        verb_fr="Le statut du ticket a été modifié.",
+        verb=gettext_noop("The status of the ticket has been changed to %(status)s."),
+        verb_params={"status": str(ticket.status)},
         icon="infinite",
         redirect=reverse("ticket-detail", kwargs={"ticket_id": ticket.id}),
     )
@@ -725,11 +718,10 @@ def change_ticket_status(request, ticket_id):
             notify.send(
                 request.user.employee_get,
                 recipient=assignees,
-                verb=f"The status of the ticket has been changed to {ticket.status}.",
-                verb_ar="تم تغيير حالة التذكرة.",
-                verb_de="Der Status des Tickets wurde geändert.",
-                verb_es="El estado del ticket ha sido cambiado.",
-                verb_fr="Le statut du ticket a été modifié.",
+                verb=gettext_noop(
+                    "The status of the ticket has been changed to %(status)s."
+                ),
+                verb_params={"status": str(ticket.status)},
                 icon="infinite",
                 redirect=reverse("ticket-detail", kwargs={"ticket_id": ticket.id}),
             )
@@ -784,11 +776,7 @@ def ticket_delete(request, ticket_id):
             notify.send(
                 request.user.employee_get,
                 recipient=assignees,
-                verb=f"The ticket has been deleted.",
-                verb_ar="تم حذف التذكرة.",
-                verb_de="Das Ticket wurde gelöscht",
-                verb_es="El billete ha sido eliminado.",
-                verb_fr="Le ticket a été supprimé.",
+                verb=gettext_noop("The ticket has been deleted."),
                 icon="infinite",
                 redirect=reverse("ticket-view"),
             )
@@ -1201,9 +1189,7 @@ def remove_tag(request):
         message = _("success")
         type = "success"
     except (Ticket.DoesNotExist, Tags.DoesNotExist):
-        # An unknown ticket or tag id. Narrowed from a bare except, which
-        # also reported a genuine failure in tags.remove() as "Failed" with
-        # nothing logged.
+        # Narrowed from a bare except, which silently swallowed genuine tags.remove() failures too.
         logger.warning("tag removal failed: ticket_id=%r tag_id=%r", ticket_id, tag_id)
         message = messages.error(request, _("Failed"))
         type = "failed"
@@ -1512,20 +1498,17 @@ def approve_claim_request(request, req_id):
                 notify.send(
                     request.user.employee_get,
                     recipient=employee.employee_user_id,
-                    verb=f"You have been assigned to a new Ticket-{ticket}.",
-                    verb_ar=f"لقد تم تعيينك لتذكرة جديدة {ticket}.",
-                    verb_de=f"Ihnen wurde ein neues Ticket {ticket} zugewiesen.",
-                    verb_es=f"Se te ha asignado un nuevo ticket {ticket}.",
-                    verb_fr=f"Un nouveau ticket {ticket} vous a été attribué.",
+                    verb=gettext_noop(
+                        "You have been assigned to a new Ticket-%(ticket)s."
+                    ),
+                    verb_params={"ticket": str(ticket)},
                     icon="infinite",
                     redirect=reverse("ticket-detail", kwargs={"ticket_id": ticket.id}),
                 )
             except Exception as e:
                 logger.error(e)
-            # created_by is null=True with on_delete=SET_NULL, so it is None
-            # for tickets not created through a request (fixtures, imports,
-            # the shell) and for any ticket whose creator has since been
-            # deleted. Notify the raiser alone in that case.
+            # created_by can be None (SET_NULL) for tickets not created through a request,
+            # or whose creator was since deleted; notify the raiser alone in that case.
             raiser = ticket.created_by.employee_get if ticket.created_by else None
             if raiser is not None and raiser != ticket.employee_id:
                 for emp in [raiser, ticket.employee_id]:
@@ -1533,11 +1516,13 @@ def approve_claim_request(request, req_id):
                         notify.send(
                             request.user.employee_get,
                             recipient=emp.employee_user_id,
-                            verb=f"{employee} assigned to your ticket - {ticket}.",
-                            verb_ar=f"تم تعيين {employee} إلى تذكرتك - {ticket}.",
-                            verb_de=f"{employee} wurde Ihrem Ticket {ticket} zugewiesen.",
-                            verb_es=f"{employee} ha sido asignado a tu ticket - {ticket}.",
-                            verb_fr=f"{employee} a été assigné à votre ticket - {ticket}.",
+                            verb=gettext_noop(
+                                "%(employee)s assigned to your ticket - %(ticket)s."
+                            ),
+                            verb_params={
+                                "employee": str(employee),
+                                "ticket": str(ticket),
+                            },
                             icon="infinite",
                             redirect=reverse(
                                 "ticket-detail", kwargs={"ticket_id": ticket.id}
@@ -1549,11 +1534,10 @@ def approve_claim_request(request, req_id):
                 notify.send(
                     request.user.employee_get,
                     recipient=ticket.employee_id.employee_user_id,
-                    verb=f"{employee} assigned to your ticket - {ticket}.",
-                    verb_ar=f"تم تعيين {employee} إلى تذكرتك - {ticket}.",
-                    verb_de=f"{employee} wurde Ihrem Ticket {ticket} zugewiesen.",
-                    verb_es=f"{employee} ha sido asignado a tu ticket - {ticket}.",
-                    verb_fr=f"{employee} a été assigné à votre ticket - {ticket}.",
+                    verb=gettext_noop(
+                        "%(employee)s assigned to your ticket - %(ticket)s."
+                    ),
+                    verb_params={"employee": str(employee), "ticket": str(ticket)},
                     icon="infinite",
                     redirect=reverse("ticket-detail", kwargs={"ticket_id": ticket.id}),
                 )
@@ -1570,11 +1554,10 @@ def approve_claim_request(request, req_id):
             notify.send(
                 request.user.employee_get,
                 recipient=employee.employee_user_id,
-                verb=f"Your claim request is rejected for Ticket-{ticket}",
-                verb_ar=f"تم رفض طلبك للمطالبة بالتذكرة {ticket}.",
-                verb_de=f"Ihre Anspruchsanfrage für Ticket-{ticket} wurde abgelehnt.",
-                verb_es=f"Tu solicitud de reclamación ha sido rechazada para el ticket {ticket}.",
-                verb_fr=f"Votre demande de réclamation pour le ticket {ticket} a été rejetée.",
+                verb=gettext_noop(
+                    "Your claim request is rejected for Ticket-%(ticket)s"
+                ),
+                verb_params={"ticket": str(ticket)},
                 icon="infinite",
             )
     ticket.save()
@@ -1686,11 +1669,7 @@ def tickets_bulk_delete(request):
             notify.send(
                 request.user.employee_get,
                 recipient=assignees,
-                verb=f"The ticket has been deleted.",
-                verb_ar="تم حذف التذكرة.",
-                verb_de="Das Ticket wurde gelöscht",
-                verb_es="El billete ha sido eliminado.",
-                verb_fr="Le ticket a été supprimé.",
+                verb=gettext_noop("The ticket has been deleted."),
                 icon="infinite",
                 redirect=reverse("ticket-view"),
             )
@@ -1763,10 +1742,8 @@ def delete_department_manager(request, dep_id):
         )
 
     count = DepartmentManager.objects.count()
-    # Soft delete: this record is also read directly (bypassing the
-    # is_active-filtering manager) by the base Department settings page to
-    # display the assigned manager, so removing it here should only hide it
-    # from Helpdesk's own list, not clear the manager shown there.
+    # Soft delete: the base Department settings page reads this record directly
+    # (bypassing is_active filtering), so this should only hide it from Helpdesk's own list.
     department_manager.is_active = False
     department_manager.save()
     messages.success(request, _("The department manager has been deleted successfully"))
