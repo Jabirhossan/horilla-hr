@@ -6,6 +6,7 @@ from django.db.models import Count
 from django.http import Http404, QueryDict
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
@@ -84,11 +85,7 @@ class EmployeeLeaveRequestGetCreateAPIView(APIView):
                 notify.send(
                     request.user.employee_get,
                     recipient=leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                    verb="You have a new leave request to validate.",
-                    verb_ar="لديك طلب إجازة جديد يجب التحقق منه.",
-                    verb_de="Sie haben eine neue Urlaubsanfrage zur Validierung.",
-                    verb_es="Tiene una nueva solicitud de permiso que debe validar.",
-                    verb_fr="Vous avez une nouvelle demande de congé à valider.",
+                    verb=gettext_noop("You have a new leave request to validate."),
                     icon="people-circle",
                     redirect=f"/leave/request-view?id={leave_request.id}",
                     api_redirect=f"/api/leave/request/{leave_request.id}/",
@@ -279,11 +276,10 @@ class LeaveAllocationRequestGetCreateAPIView(APIView):
                 notify.send(
                     request.user.employee_get,
                     recipient=allocation_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                    verb=f"New leave allocation request created for {allocation_request.employee_id}.",
-                    verb_ar=f"تم إنشاء طلب تخصيص إجازة جديد لـ {allocation_request.employee_id}.",
-                    verb_de=f"Neue Anfrage zur Urlaubszuweisung erstellt für {allocation_request.employee_id}.",
-                    verb_es=f"Nueva solicitud de asignación de permisos creada para {allocation_request.employee_id}.",
-                    verb_fr=f"Nouvelle demande d'allocation de congé créée pour {allocation_request.employee_id}.",
+                    verb=gettext_noop(
+                        "New leave allocation request created for %(employee)s."
+                    ),
+                    verb_params={"employee": str(allocation_request.employee_id)},
                     icon="people-cicle",
                     redirect=f"/leave/leave-allocation-request-view?id={allocation_request.id}",
                     api_redirect=f"/api/leave/allocation-request/{allocation_request.id}/",
@@ -407,11 +403,7 @@ class AssignLeaveGetCreateAPIView(APIView):
                             notify.send(
                                 request.user.employee_get,
                                 recipient=employee_id.employee_user_id,
-                                verb="New leave type is assigned to you",
-                                verb_ar="تم تعيين نوع إجازة جديد لك",
-                                verb_de="Dir wurde ein neuer Urlaubstyp zugewiesen",
-                                verb_es="Se te ha asignado un nuevo tipo de permiso",
-                                verb_fr="Un nouveau type de congé vous a été attribué",
+                                verb=gettext_noop("New leave type is assigned to you"),
                                 icon="people-circle",
                                 redirect="/leave/user-request-view",
                                 api_redirect="/api/leave/user-request/",
@@ -514,11 +506,8 @@ class LeaveRequestGetCreateAPIView(APIView):
                 notify.send(
                     request.user.employee_get,
                     recipient=leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                    verb=f"New leave request created for {leave_request.employee_id}.",
-                    verb_ar=f"تم إنشاء طلب إجازة جديد لـ {leave_request.employee_id}.",
-                    verb_de=f"Neuer Urlaubsantrag erstellt für {leave_request.employee_id}.",
-                    verb_es=f"Nueva solicitud de permiso creada para {leave_request.employee_id}.",
-                    verb_fr=f"Nouvelle demande de congé créée pour {leave_request.employee_id}.",
+                    verb=gettext_noop("New leave request created for %(employee)s."),
+                    verb_params={"employee": str(leave_request.employee_id)},
                     icon="people-circle",
                     redirect=f"/leave/request-view?id={leave_request.id}",
                     api_redirect=f"/api/leave/request/{leave_request.id}/",
@@ -568,11 +557,8 @@ class LeaveRequestGetUpdateDeleteAPIView(APIView):
                     notify.send(
                         request.user.employee_get,
                         recipient=leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                        verb=f"Leave request updated for {leave_request.employee_id}.",
-                        verb_ar=f"تم تحديث طلب الإجازة لـ {leave_request.employee_id}.",
-                        verb_de=f"Urlaubsantrag aktualisiert für {leave_request.employee_id}.",
-                        verb_es=f"Solicitud de permiso actualizada para {leave_request.employee_id}.",
-                        verb_fr=f"Demande de congé mise à jour pour {leave_request.employee_id}.",
+                        verb=gettext_noop("Leave request updated for %(employee)s."),
+                        verb_params={"employee": str(leave_request.employee_id)},
                         icon="people-circle",
                         redirect=f"/leave/request-view?id={leave_request.id}",
                         api_redirect=f"/api/leave/request/{leave_request.id}/",
@@ -805,11 +791,7 @@ class LeaveRequestApproveAPIView(APIView):
                 notify.send(
                     request.user.employee_get,
                     recipient=leave_request.employee_id.employee_user_id,
-                    verb="Your Leave request has been approved",
-                    verb_ar="تمت الموافقة على طلب الإجازة الخاص بك",
-                    verb_de="Ihr Urlaubsantrag wurde genehmigt",
-                    verb_es="Se ha aprobado su solicitud de permiso",
-                    verb_fr="Votre demande de congé a été approuvée",
+                    verb=gettext_noop("Your Leave request has been approved"),
                     icon="people-circle",
                     redirect=f"/leave/user-request-view?id={leave_request.id}",
                     api_redirect=f"/api/leave/user-request/{leave_request.id}",
@@ -854,11 +836,7 @@ class LeaveRequestRejectAPIView(APIView):
                 notify.send(
                     request.user.employee_get,
                     recipient=leave_request.employee_id.employee_user_id,
-                    verb="Your Leave request has been rejected",
-                    verb_ar="تم رفض طلب الإجازة الخاص بك",
-                    verb_de="Ihr Urlaubsantrag wurde abgelehnt",
-                    verb_es="Tu solicitud de permiso ha sido rechazada",
-                    verb_fr="Votre demande de congé a été rejetée",
+                    verb=gettext_noop("Your Leave request has been rejected"),
                     icon="people-circle",
                     redirect=f"/leave/user-request-view?id={leave_request.id}",
                     api_redirect=f"/api/leave/user-request/{leave_request.id}/",
