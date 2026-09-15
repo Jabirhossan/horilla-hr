@@ -321,6 +321,17 @@ class RotatingWorkTypeFormView(HorillaFormView):
     new_display_title = _("Rotating Work Type Assign")
     dynamic_create_fields = [("rotating_work_type_id", DynamicRotatingWorkTypeCreate)]
 
+    def dispatch(self, request, *args, **kwargs):
+        # This endpoint returns only the modal form fragment, loaded from an
+        # employee's individual profile "Work Type" tab via ?emp_id=. There's
+        # no generic standalone page for it to send a genuine top-level
+        # navigation to, so show nothing instead of the raw, unstyled
+        # fragment (whose "search and pick" modal isn't hidden without
+        # site CSS).
+        if request.headers.get("Sec-Fetch-Mode") == "navigate":
+            return HttpResponse()
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.GET.get("emp_id"):
