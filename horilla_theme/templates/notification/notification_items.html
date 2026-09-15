@@ -3,47 +3,13 @@
     <ul class="list-checked text-sm h-60 overflow-hidden overflow-y-auto">
         {% for notification in notifications %}
             <li>
-                {% if LANGUAGE_CODE == 'ar' %}
-                    <a
-                        href="{{notification.data.redirect}}#"
-                        class="hover:underline"
-                        onclick="markNotificationAndRedirect(this)"
-                        id="notificationItem{{notification.id}}"
-                        data-id="{{notification.id}}"
-                    >{{ notification.data.verb_ar }}</a>
-                {% elif LANGUAGE_CODE == 'de' %}
-                    <a
-                        href="{{notification.data.redirect}}#"
-                        class="hover:underline"
-                        onclick="markNotificationAndRedirect(this)"
-                        id="notificationItem{{notification.id}}"
-                        data-id="{{notification.id}}"
-                    >{{ notification.data.verb_de }}</a>
-                {% elif LANGUAGE_CODE == 'fr' %}
-                    <a
-                        href="{{notification.data.redirect}}#"
-                        class="hover:underline"
-                        onclick="markNotificationAndRedirect(this)"
-                        id="notificationItem{{notification.id}}"
-                        data-id="{{notification.id}}"
-                    >{{ notification.data.verb_fr }}</a>
-                {% elif LANGUAGE_CODE == 'es' %}
-                    <a
-                        href="{{notification.data.redirect}}#"
-                        class="hover:underline"
-                        onclick="markNotificationAndRedirect(this)"
-                        id="notificationItem{{notification.id}}"
-                        data-id="{{notification.id}}"
-                    >{{ notification.data.verb_es }}</a>
-                {% else %}
-                    <a
-                        href="{{notification.data.redirect}}#"
-                        class="hover:underline"
-                        onclick="markNotificationAndRedirect(this)"
-                        id="notificationItem{{notification.id}}"
-                        data-id="{{notification.id}}"
-                    >{{ notification.verb }}</a>
-                {% endif %}
+                <a
+                    href="{{notification.data.redirect}}#"
+                    class="hover:underline"
+                    onclick="markNotificationAndRedirect(this)"
+                    id="notificationItem{{notification.id}}"
+                    data-id="{{notification.id}}"
+                >{{ notification.get_translated_verb }}</a>
                 <br>
                 <p class="text-xs text-[#777777] mt-1">
                     {{ notification.timesince }} ago by

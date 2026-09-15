@@ -1,16 +1,9 @@
-from django.db import models
 from swapper import swappable_setting
 
 from .base.models import AbstractNotification
 
 
 class Notification(AbstractNotification):
-    verb_en = models.CharField(max_length=255, default="", null=True)
-    verb_ar = models.CharField(max_length=255, default="", null=True)
-    verb_de = models.CharField(max_length=255, default="", null=True)
-    verb_es = models.CharField(max_length=255, default="", null=True)
-    verb_fr = models.CharField(max_length=255, default="", null=True)
-
     class Meta(AbstractNotification.Meta):
         abstract = False
         swappable = swappable_setting("notifications", "Notification")
@@ -29,3 +22,10 @@ class Notification(AbstractNotification):
         from django.contrib.humanize.templatetags.humanize import naturaltime
 
         return naturaltime(self.timestamp)
+
+    def get_translated_verb(self):
+        from django.utils.translation import gettext
+
+        params = (self.data or {}).get("verb_params") or {}
+        text = gettext(self.verb)
+        return text % params if params else text

@@ -18,27 +18,9 @@
                         style="width: 10px; height: 10px; border-radius: 100%; background-color: {{ theme_obj.primary_600|default:'hsl(8deg, 77%, 56%)' }}; display: inline-block; right: 5px"
                     ></span>
                 {% endif %}
-                {% if LANGUAGE_CODE == 'ar' %}
-                    <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">
-                        {{ notification.data.verb_ar }}
-                    </p>
-                {% elif LANGUAGE_CODE == 'de' %}
-                    <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">
-                        {{ notification.data.verb_de }}
-                    </p>
-                {% elif LANGUAGE_CODE == 'fr' %}
-                    <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">
-                        {{ notification.data.verb_fr }}
-                    </p>
-                {% elif LANGUAGE_CODE == 'es' %}
-                    <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">
-                        {{ notification.data.verb_es }}
-                    </p>
-                {% else %}
-                    <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">
-                        {{ notification.verb }}
-                    </p>
-                {% endif %}
+                <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">
+                    {{ notification.get_translated_verb }}
+                </p>
             </h5>
             <p class="text-xs text-[#777777] mt-1 flex">
                 {{ notification.timesince }} {% trans "ago by " %}
