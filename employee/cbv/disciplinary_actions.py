@@ -12,6 +12,7 @@ from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from base.methods import filtersubordinates
 from employee.filters import DisciplinaryActionFilter
@@ -193,11 +194,7 @@ class DisciplinaryActionsFormView(HorillaFormView):
                         notify.send(
                             self.request.user.employee_get,
                             recipient=employees,
-                            verb="Disciplinary action is taken on you.",
-                            verb_ar="تم اتخاذ إجراء disziplinarisch ضدك.",
-                            verb_de="Disziplinarische Maßnahmen wurden gegen Sie ergriffen.",
-                            verb_es="Se ha tomado acción disciplinaria en tu contra.",
-                            verb_fr="Des mesures disciplinaires ont été prises à votre encontre.",
+                            verb=gettext_noop("Disciplinary action is taken on you."),
                             redirect="/employee/disciplinary-actions/",
                             icon="chatbox-ellipses",
                         )

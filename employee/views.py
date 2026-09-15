@@ -40,6 +40,7 @@ from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from django.views.decorators.http import require_http_methods
 
 from accessibility.decorators import enter_if_accessible
@@ -669,11 +670,8 @@ def document_request_create(request):
             notify.send(
                 request.user.employee_get,
                 recipient=employees,
-                verb=f"{request.user.employee_get} requested a document.",
-                verb_ar=f"طلب {request.user.employee_get} مستنداً.",
-                verb_de=f"{request.user.employee_get} hat ein Dokument angefordert.",
-                verb_es=f"{request.user.employee_get} solicitó un documento.",
-                verb_fr=f"{request.user.employee_get} a demandé un document.",
+                verb=gettext_noop("%(employee_get)s requested a document."),
+                verb_params={"employee_get": str(request.user.employee_get)},
                 redirect=reverse("employee-profile"),
                 icon="chatbox-ellipses",
             )
@@ -940,11 +938,8 @@ def file_upload(request, id):
                 notify.send(
                     request.user.employee_get,
                     recipient=request.user.employee_get.get_reporting_manager().employee_user_id,
-                    verb=f"{request.user.employee_get} uploaded a document",
-                    verb_ar=f"قام {request.user.employee_get} بتحميل مستند",
-                    verb_de=f"{request.user.employee_get} hat ein Dokument hochgeladen",
-                    verb_es=f"{request.user.employee_get} subió un documento",
-                    verb_fr=f"{request.user.employee_get} a téléchargé un document",
+                    verb=gettext_noop("%(employee_get)s uploaded a document"),
+                    verb_params={"employee_get": str(request.user.employee_get)},
                     redirect=reverse(
                         "employee-view-individual",
                         kwargs={"obj_id": request.user.employee_get.id},
@@ -1744,11 +1739,7 @@ def employee_view_update(request, obj_id, **kwargs):
                     notify.send(
                         request.user.employee_get,
                         recipient=instance.employee_id.employee_user_id,
-                        verb="Your work details has been updated.",
-                        verb_ar="تم تحديث تفاصيل عملك.",
-                        verb_de="Ihre Arbeitsdetails wurden aktualisiert.",
-                        verb_es="Se han actualizado los detalles de su trabajo.",
-                        verb_fr="Vos informations professionnelles ont été mises à jour.",
+                        verb=gettext_noop("Your work details have been updated."),
                         redirect=reverse("employee-profile"),
                         icon="briefcase",
                     )
