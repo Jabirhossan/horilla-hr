@@ -14,6 +14,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from django.views.decorators.http import require_http_methods
 
 from base.methods import filtersubordinates, get_key_instances, has_export_access
@@ -276,11 +277,13 @@ def change_project_status(request, project_id):
                         notify.send(
                             request.user.employee_get,
                             recipient=employee.employee_user_id,
-                            verb=f"The status of the project '{project}' has been changed to {project.get_status_display()}.",
-                            verb_ar=f"تم تغيير حالة المشروع '{project}' إلى {project.get_status_display()}.",
-                            verb_de=f"Der Status des Projekts '{project}' wurde auf {project.get_status_display()} geändert.",
-                            verb_es=f"El estado del proyecto '{project}' ha sido cambiado a {project.get_status_display()}.",
-                            verb_fr=f"Le statut du projet '{project}' a été changé en {project.get_status_display()}.",
+                            verb=gettext_noop(
+                                "The status of the project '%(project)s' has been changed to %(get_status_display)s."
+                            ),
+                            verb_params={
+                                "project": str(project),
+                                "get_status_display": str(project.get_status_display()),
+                            },
                             redirect=reverse(
                                 "task-view",
                                 kwargs={"project_id": project.id},
