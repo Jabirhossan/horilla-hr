@@ -14,6 +14,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from django.views.decorators.http import require_http_methods
 
 from base.forms import MailTemplateForm
@@ -395,11 +396,10 @@ def remove_stage_manager(request, mid, sid):
     notify.send(
         request.user.employee_get,
         recipient=manager.employee_user_id,
-        verb=f"You are removed from stage managers from stage {stage_obj}",
-        verb_ar=f"تمت إزالتك من مديري المرحلة من المرحلة {stage_obj}",
-        verb_de=f"Sie wurden als Bühnenmanager von der Stufe {stage_obj} entfernt",
-        verb_es=f"Has sido eliminado/a de los gerentes de etapa de la etapa {stage_obj}",
-        verb_fr=f"Vous avez été supprimé(e) en tant que responsable de l'étape {stage_obj}",
+        verb=gettext_noop(
+            "You are removed from stage managers from stage %(stage_obj)s"
+        ),
+        verb_params={"stage_obj": str(stage_obj)},
         icon="person-remove",
         redirect="",
     )
@@ -448,12 +448,10 @@ def remove_recruitment_manager(request, mid, rid):
     notify.send(
         request.user.employee_get,
         recipient=manager.employee_user_id,
-        verb=f"You are removed from recruitment manager from {recruitment_obj}",
-        verb_ar=f"تمت إزالتك من وظيفة مدير التوظيف في {recruitment_obj}",
-        verb_de=f"Sie wurden als Personalvermittler von {recruitment_obj} entfernt",
-        verb_es=f"Has sido eliminado/a como gerente de contratación de {recruitment_obj}",
-        verb_fr=f"Vous avez été supprimé(e) en tant que responsable\
-                du recrutement de {recruitment_obj}",
+        verb=gettext_noop(
+            "You are removed from recruitment manager from %(recruitment_obj)s"
+        ),
+        verb_params={"recruitment_obj": str(recruitment_obj)},
         icon="person-remove",
         redirect="",
     )

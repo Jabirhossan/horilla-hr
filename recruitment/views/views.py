@@ -40,6 +40,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from django.views.decorators.http import require_http_methods
 from rapidfuzz import fuzz
 
@@ -282,11 +283,7 @@ def recruitment(request):
                 notify.send(
                     request.user.employee_get,
                     recipient=users,
-                    verb="You are chosen as one of recruitment manager",
-                    verb_ar="تم اختيارك كأحد مديري التوظيف",
-                    verb_de="Sie wurden als einer der Personalvermittler ausgewählt",
-                    verb_es="Has sido elegido/a como uno de los gerentes de contratación",
-                    verb_fr="Vous êtes choisi(e) comme l'un des responsables du recrutement",
+                    verb=gettext_noop("You are chosen as one of recruitment manager"),
                     icon="people-circle",
                     redirect=reverse("cbv-pipeline"),
                 )
@@ -391,14 +388,10 @@ def recruitment_update(request, rec_id):
                 notify.send(
                     request.user.employee_get,
                     recipient=users,
-                    verb=f"{recruitment_obj} is updated, You are chosen as one of the managers",
-                    verb_ar=f"{recruitment_obj} تم تحديثه، تم اختيارك كأحد المديرين",
-                    verb_de=f"{recruitment_obj} wurde aktualisiert. Sie wurden als\
-                            einer der Manager ausgewählt",
-                    verb_es=f"{recruitment_obj} ha sido actualizado/a. Has sido elegido\
-                            a como uno de los gerentes",
-                    verb_fr=f"{recruitment_obj} a été mis(e) à jour. Vous êtes choisi(e) comme\
-                            l'un des responsables",
+                    verb=gettext_noop(
+                        "%(recruitment_obj)s is updated. You are chosen as one of the managers."
+                    ),
+                    verb_params={"recruitment_obj": str(recruitment_obj)},
                     icon="people-circle",
                     redirect=reverse("cbv-pipeline"),
                 )
@@ -817,16 +810,13 @@ def stage_update_pipeline(request, stage_id):
                 notify.send(
                     request.user.employee_get,
                     recipient=users,
-                    verb=f"{stage_obj.stage} stage in recruitment {stage_obj.recruitment_id}\
-                            is updated, You are chosen as one of the managers",
-                    verb_ar=f"تم تحديث مرحلة {stage_obj.stage} في التوظيف {stage_obj.recruitment_id}\
-                            ، تم اختيارك كأحد المديرين",
-                    verb_de=f"Die Stufe {stage_obj.stage} in der Rekrutierung {stage_obj.recruitment_id}\
-                            wurde aktualisiert. Sie wurden als einer der Manager ausgewählt",
-                    verb_es=f"Se ha actualizado la etapa {stage_obj.stage} en la contratación\
-                          {stage_obj.recruitment_id}.Has sido elegido/a como uno de los gerentes",
-                    verb_fr=f"L'étape {stage_obj.stage} dans le recrutement {stage_obj.recruitment_id}\
-                          a été mise à jour.Vous avez été choisi(e) comme l'un des responsables",
+                    verb=gettext_noop(
+                        "%(stage)s stage in recruitment %(recruitment_id)s is updated. You are chosen as one of the managers."
+                    ),
+                    verb_params={
+                        "stage": str(stage_obj.stage),
+                        "recruitment_id": str(stage_obj.recruitment_id),
+                    },
                     icon="people-circle",
                     redirect=reverse("cbv-pipeline"),
                 )
@@ -858,14 +848,10 @@ def recruitment_update_pipeline(request, rec_id):
                 notify.send(
                     request.user.employee_get,
                     recipient=users,
-                    verb=f"{recruitment_obj} is updated, You are chosen as one of the managers",
-                    verb_ar=f"تم تحديث {recruitment_obj}، تم اختيارك كأحد المديرين",
-                    verb_de=f"{recruitment_obj} wurde aktualisiert.\
-                          Sie wurden als einer der Manager ausgewählt",
-                    verb_es=f"{recruitment_obj} ha sido actualizado/a. Has sido elegido\
-                            a como uno de los gerentes",
-                    verb_fr=f"{recruitment_obj} a été mis(e) à jour. Vous avez été\
-                            choisi(e) comme l'un des responsables",
+                    verb=gettext_noop(
+                        "%(recruitment_obj)s is updated. You are chosen as one of the managers."
+                    ),
+                    verb_params={"recruitment_obj": str(recruitment_obj)},
                     icon="people-circle",
                     redirect=reverse("cbv-pipeline"),
                 )
@@ -957,11 +943,8 @@ def candidate_stage_update(request, cand_id):
             notify.send(
                 request.user.employee_get,
                 recipient=users,
-                verb=f"New candidate arrived on stage {stage_obj.stage}",
-                verb_ar=f"وصل مرشح جديد إلى المرحلة {stage_obj.stage}",
-                verb_de=f"Neuer Kandidat ist auf der Stufe {stage_obj.stage} angekommen",
-                verb_es=f"Nuevo candidato llegó a la etapa {stage_obj.stage}",
-                verb_fr=f"Nouveau candidat arrivé à l'étape {stage_obj.stage}",
+                verb=gettext_noop("New candidate arrived on stage %(stage)s"),
+                verb_params={"stage": str(stage_obj.stage)},
                 icon="person-add",
                 redirect=reverse("cbv-pipeline"),
             )
@@ -1270,16 +1253,13 @@ def stage(request):
                 notify.send(
                     request.user.employee_get,
                     recipient=users,
-                    verb=f"Stage {stage_obj} is updated on recruitment {stage_obj.recruitment_id},\
-                          You are chosen as one of the managers",
-                    verb_ar=f"تم تحديث المرحلة {stage_obj} في التوظيف\
-                          {stage_obj.recruitment_id}، تم اختيارك كأحد المديرين",
-                    verb_de=f"Stufe {stage_obj} wurde in der Rekrutierung {stage_obj.recruitment_id}\
-                          aktualisiert. Sie wurden als einer der Manager ausgewählt",
-                    verb_es=f"La etapa {stage_obj} ha sido actualizada en la contratación\
-                          {stage_obj.recruitment_id}. Has sido elegido/a como uno de los gerentes",
-                    verb_fr=f"L'étape {stage_obj} a été mise à jour dans le recrutement\
-                          {stage_obj.recruitment_id}. Vous avez été choisi(e) comme l'un des responsables",
+                    verb=gettext_noop(
+                        "Stage %(stage_obj)s is updated on recruitment %(recruitment_id)s. You are chosen as one of the managers."
+                    ),
+                    verb_params={
+                        "stage_obj": str(stage_obj),
+                        "recruitment_id": str(stage_obj.recruitment_id),
+                    },
                     icon="people-circle",
                     redirect=reverse("cbv-pipeline"),
                 )
@@ -2331,11 +2311,14 @@ def interview_schedule(request, cand_id):
             notify.send(
                 request.user.employee_get,
                 recipient=users,
-                verb=f"You are scheduled as an interviewer for an interview with {cand_id.name} on {interview_date} at {interview_time}.",
-                verb_ar=f"أنت مجدول كمقابلة مع {cand_id.name} يوم {interview_date} في توقيت {interview_time}.",
-                verb_de=f"Sie sind als Interviewer für ein Interview mit {cand_id.name} am {interview_date} um {interview_time} eingeplant.",
-                verb_es=f"Estás programado como entrevistador para una entrevista con {cand_id.name} el {interview_date} a las {interview_time}.",
-                verb_fr=f"Vous êtes programmé en tant qu'intervieweur pour un entretien avec {cand_id.name} le {interview_date} à {interview_time}.",
+                verb=gettext_noop(
+                    "You are scheduled as an interviewer for an interview with %(name)s on %(interview_date)s at %(interview_time)s."
+                ),
+                verb_params={
+                    "name": str(cand_id.name),
+                    "interview_date": str(interview_date),
+                    "interview_time": str(interview_time),
+                },
                 icon="people-circle",
                 redirect=reverse("interview-view"),
             )
@@ -2370,11 +2353,14 @@ def create_interview_schedule(request):
             notify.send(
                 request.user.employee_get,
                 recipient=users,
-                verb=f"You are scheduled as an interviewer for an interview with {cand_id.name} on {interview_date} at {interview_time}.",
-                verb_ar=f"أنت مجدول كمقابلة مع {cand_id.name} يوم {interview_date} في توقيت {interview_time}.",
-                verb_de=f"Sie sind als Interviewer für ein Interview mit {cand_id.name} am {interview_date} um {interview_time} eingeplant.",
-                verb_es=f"Estás programado como entrevistador para una entrevista con {cand_id.name} el {interview_date} a las {interview_time}.",
-                verb_fr=f"Vous êtes programmé en tant qu'intervieweur pour un entretien avec {cand_id.name} le {interview_date} à {interview_time}.",
+                verb=gettext_noop(
+                    "You are scheduled as an interviewer for an interview with %(name)s on %(interview_date)s at %(interview_time)s."
+                ),
+                verb_params={
+                    "name": str(cand_id.name),
+                    "interview_date": str(interview_date),
+                    "interview_time": str(interview_time),
+                },
                 icon="people-circle",
                 redirect=reverse("interview-view"),
             )
@@ -2439,11 +2425,14 @@ def interview_edit(request, interview_id):
             notify.send(
                 request.user.employee_get,
                 recipient=users,
-                verb=f"You are scheduled as an interviewer for an interview with {cand_id.name} on {interview_date} at {interview_time}.",
-                verb_ar=f"أنت مجدول كمقابلة مع {cand_id.name} يوم {interview_date} في توقيت {interview_time}.",
-                verb_de=f"Sie sind als Interviewer für ein Interview mit {cand_id.name} am {interview_date} um {interview_time} eingeplant.",
-                verb_es=f"Estás programado como entrevistador para una entrevista con {cand_id.name} el {interview_date} a las {interview_time}.",
-                verb_fr=f"Vous êtes programmé en tant qu'intervieweur pour un entretien avec {cand_id.name} le {interview_date} à {interview_time}.",
+                verb=gettext_noop(
+                    "You are scheduled as an interviewer for an interview with %(name)s on %(interview_date)s at %(interview_time)s."
+                ),
+                verb_params={
+                    "name": str(cand_id.name),
+                    "interview_date": str(interview_date),
+                    "interview_time": str(interview_time),
+                },
                 icon="people-circle",
                 redirect=reverse("interview-view"),
             )
@@ -4500,11 +4489,10 @@ def candidate_add_notes(request, cand_id):
                     candidate,
                     label=label,
                     recipient=users,
-                    verb=f"{label} has added a note on the candidate {candidate}",
-                    verb_ar=f"أضاف {label} ملاحظة حول المرشح {candidate}",
-                    verb_de=f"{label} hat dem {candidate} eine Notiz hinzugefügt.",
-                    verb_es=f"{label} agregó una nota al {candidate}.",
-                    verb_fr=f"{label} a ajouté une note à {candidate}.",
+                    verb=gettext_noop(
+                        "%(label)s has added a note on the candidate %(candidate)s"
+                    ),
+                    verb_params={"label": str(label), "candidate": str(candidate)},
                     icon="people-circle",
                     redirect=reverse(
                         "candidate-view-individual", kwargs={"cand_id": cand_id}

@@ -13,6 +13,7 @@ from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from employee.models import Employee
 from horilla_views.cbv_methods import login_required, permission_required
@@ -268,16 +269,13 @@ class StageFormView(HorillaFormView):
                     notify.send(
                         self.request.user.employee_get,
                         recipient=users,
-                        verb=f"Stage {stage_obj} is updated on recruitment {stage_obj.recruitment_id},\
-                            You are chosen as one of the managers",
-                        verb_ar=f"تم تحديث المرحلة {stage_obj} في التوظيف\
-                            {stage_obj.recruitment_id}، تم اختيارك كأحد المديرين",
-                        verb_de=f"Stufe {stage_obj} wurde in der Rekrutierung {stage_obj.recruitment_id}\
-                            aktualisiert. Sie wurden als einer der Manager ausgewählt",
-                        verb_es=f"La etapa {stage_obj} ha sido actualizada en la contratación\
-                            {stage_obj.recruitment_id}. Has sido elegido/a como uno de los gerentes",
-                        verb_fr=f"L'étape {stage_obj} a été mise à jour dans le recrutement\
-                            {stage_obj.recruitment_id}. Vous avez été choisi(e) comme l'un des responsables",
+                        verb=gettext_noop(
+                            "Stage %(stage_obj)s is updated on recruitment %(recruitment_id)s. You are chosen as one of the managers."
+                        ),
+                        verb_params={
+                            "stage_obj": str(stage_obj),
+                            "recruitment_id": str(stage_obj.recruitment_id),
+                        },
                         icon="people-circle",
                         redirect=reverse("cbv-pipeline"),
                     )
