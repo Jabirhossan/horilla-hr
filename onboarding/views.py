@@ -33,6 +33,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from django.views.decorators.http import require_http_methods, require_POST
 
 from base.backends import ConfiguredEmailBackend
@@ -131,11 +132,7 @@ def stage_save(form, recruitment, request, rec_id):
     notify.send(
         request.user.employee_get,
         recipient=users,
-        verb="You are chosen as onboarding stage manager",
-        verb_ar="لقد تم اختيارك كمدير مرحلة التدريب.",
-        verb_de="Sie wurden als Onboarding-Stage-Manager ausgewählt.",
-        verb_es="Ha sido seleccionado/a como responsable de etapa de incorporación.",
-        verb_fr="Vous avez été choisi(e) en tant que responsable de l'étape d'intégration.",
+        verb=gettext_noop("You are chosen as onboarding stage manager"),
         icon="people-circle",
         redirect=reverse("onboarding-view"),
     )
@@ -177,11 +174,7 @@ def stage_update(request, stage_id, recruitment_id):
             notify.send(
                 request.user.employee_get,
                 recipient=users,
-                verb="You are chosen as onboarding stage manager",
-                verb_ar="لقد تم اختيارك كمدير مرحلة التدريب.",
-                verb_de="Sie wurden als Onboarding-Stage-Manager ausgewählt.",
-                verb_es="Ha sido seleccionado/a como responsable de etapa de incorporación.",
-                verb_fr="Vous avez été choisi(e) en tant que responsable de l'étape d'intégration.",
+                verb=gettext_noop("You are chosen as onboarding stage manager"),
                 icon="people-circle",
                 redirect=reverse("onboarding-view"),
             )
@@ -322,11 +315,7 @@ def task_creation(request):
             notify.send(
                 request.user.employee_get,
                 recipient=users,
-                verb="You are chosen as an onboarding task manager",
-                verb_ar="لقد تم اختيارك كمدير مهام التدريب.",
-                verb_de="Sie wurden als Onboarding-Aufgabenmanager ausgewählt.",
-                verb_es="Ha sido seleccionado/a como responsable de tareas de incorporación.",
-                verb_fr="Vous avez été choisi(e) en tant que responsable des tâches d'intégration.",
+                verb=gettext_noop("You are chosen as an onboarding task manager"),
                 icon="people-circle",
                 redirect=reverse("onboarding-view"),
             )
@@ -374,11 +363,7 @@ def task_update(
             notify.send(
                 request.user.employee_get,
                 recipient=users,
-                verb="You are chosen as an onboarding task manager",
-                verb_ar="لقد تم اختيارك كمدير مهام التدريب.",
-                verb_de="Sie wurden als Onboarding-Aufgabenmanager ausgewählt.",
-                verb_es="Ha sido seleccionado/a como responsable de tareas de incorporación.",
-                verb_fr="Vous avez été choisi(e) en tant que responsable des tâches d'intégration.",
+                verb=gettext_noop("You are chosen as an onboarding task manager"),
                 icon="people-circle",
                 redirect=reverse("onboarding-view"),
             )
@@ -1478,12 +1463,14 @@ def candidate_task_update(request, taskId):
     notify.send(
         request.user.employee_get,
         recipient=users,
-        verb=f"The task {candidate_task.onboarding_task_id} of\
-            {candidate_task.candidate_id} was updated to {candidate_task.status}.",
-        verb_ar=f"تم تحديث المهمة {candidate_task.onboarding_task_id} للمرشح {candidate_task.candidate_id} إلى {candidate_task.status}.",
-        verb_de=f"Die Aufgabe {candidate_task.onboarding_task_id} des Kandidaten {candidate_task.candidate_id} wurde auf {candidate_task.status} aktualisiert.",
-        verb_es=f"La tarea {candidate_task.onboarding_task_id} del candidato {candidate_task.candidate_id} se ha actualizado a {candidate_task.status}.",
-        verb_fr=f"La tâche {candidate_task.onboarding_task_id} du candidat {candidate_task.candidate_id} a été mise à jour à {candidate_task.status}.",
+        verb=gettext_noop(
+            "The task %(onboarding_task_id)s of %(candidate_id)s was updated to %(status)s."
+        ),
+        verb_params={
+            "onboarding_task_id": str(candidate_task.onboarding_task_id),
+            "candidate_id": str(candidate_task.candidate_id),
+            "status": str(candidate_task.status),
+        },
         icon="people-circle",
         redirect=reverse("onboarding-view"),
     )
@@ -1613,12 +1600,13 @@ def candidate_stage_update(request, candidate_id, recruitment_id):
         notify.send(
             request.user.employee_get,
             recipient=users,
-            verb=f"The stage of {candidate_stage.candidate_id} \
-                was updated to {candidate_stage.onboarding_stage_id}.",
-            verb_ar=f"تم تحديث مرحلة المرشح {candidate_stage.candidate_id} إلى {candidate_stage.onboarding_stage_id}.",
-            verb_de=f"Die Phase des Kandidaten {candidate_stage.candidate_id} wurde auf {candidate_stage.onboarding_stage_id} aktualisiert.",
-            verb_es=f"La etapa del candidato {candidate_stage.candidate_id} se ha actualizado a {candidate_stage.onboarding_stage_id}.",
-            verb_fr=f"L'étape du candidat {candidate_stage.candidate_id} a été mise à jour à {candidate_stage.onboarding_stage_id}.",
+            verb=gettext_noop(
+                "The stage of %(candidate_id)s was updated to %(onboarding_stage_id)s."
+            ),
+            verb_params={
+                "candidate_id": str(candidate_stage.candidate_id),
+                "onboarding_stage_id": str(candidate_stage.onboarding_stage_id),
+            },
             icon="people-circle",
             redirect=reverse("onboarding-view"),
         )

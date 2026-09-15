@@ -12,6 +12,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from employee.models import Employee
 from horilla.http.response import HorillaRedirect
@@ -69,11 +70,7 @@ class StageCreateForm(HorillaFormView):
                 notify.send(
                     self.request.user.employee_get,
                     recipient=users,
-                    verb="You are chosen as onboarding stage manager",
-                    verb_ar="لقد تم اختيارك كمدير مرحلة التدريب.",
-                    verb_de="Sie wurden als Onboarding-Stage-Manager ausgewählt.",
-                    verb_es="Ha sido seleccionado/a como responsable de etapa de incorporación.",
-                    verb_fr="Vous avez été choisi(e) en tant que responsable de l'étape d'intégration.",
+                    verb=gettext_noop("You are chosen as onboarding stage manager"),
                     icon="people-circle",
                     redirect=reverse("onboarding-view"),
                 )
@@ -156,11 +153,7 @@ class TaskCreateForm(HorillaFormView):
             notify.send(
                 self.request.user.employee_get,
                 recipient=users,
-                verb="You are chosen as an onboarding task manager",
-                verb_ar="لقد تم اختيارك كمدير مهام التدريب.",
-                verb_de="Sie wurden als Onboarding-Aufgabenmanager ausgewählt.",
-                verb_es="Ha sido seleccionado/a como responsable de tareas de incorporación.",
-                verb_fr="Vous avez été choisi(e) en tant que responsable des tâches d'intégration.",
+                verb=gettext_noop("You are chosen as an onboarding task manager"),
                 icon="people-circle",
                 redirect=reverse("onboarding-view"),
             )
@@ -209,11 +202,7 @@ class TaskUpdateFormView(HorillaFormView):
                 notify.send(
                     self.request.user.employee_get,
                     recipient=users,
-                    verb="You are chosen as an onboarding task manager",
-                    verb_ar="لقد تم اختيارك كمدير مهام التدريب.",
-                    verb_de="Sie wurden als Onboarding-Aufgabenmanager ausgewählt.",
-                    verb_es="Ha sido seleccionado/a como responsable de tareas de incorporación.",
-                    verb_fr="Vous avez été choisi(e) en tant que responsable des tâches d'intégration.",
+                    verb=gettext_noop("You are chosen as an onboarding task manager"),
                     icon="people-circle",
                     redirect=reverse("onboarding-view"),
                 )
