@@ -12,6 +12,7 @@ from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
@@ -245,11 +246,10 @@ class MeetingsFormView(HorillaFormView):
                 notify.send(
                     self.request.user.employee_get,
                     recipient=managers,
-                    verb=f"You have been added as a manager for the meeting {instance.title}",
-                    verb_ar=f"لقد تمت إضافتك كمدير للاجتماع {instance.title}",
-                    verb_de=f"Sie wurden als Manager für das Meeting {instance.title} hinzugefügt",
-                    verb_es=f"Se le ha agregado como administrador de la reunión {instance.title}",
-                    verb_fr=f"Vous avez été ajouté en tant que responsable de réunion {instance.title}",
+                    verb=gettext_noop(
+                        "You have been added as a manager for the meeting %(title)s"
+                    ),
+                    verb_params={"title": str(instance.title)},
                     icon="information",
                     redirect=reverse("view-meetings") + f"?search={instance.title}",
                 )
@@ -257,11 +257,8 @@ class MeetingsFormView(HorillaFormView):
                 notify.send(
                     self.request.user.employee_get,
                     recipient=employees,
-                    verb=f"You have been added to the meeting {instance.title}",
-                    verb_ar=f"لقد تمت إضافتك إلى اجتماع {instance.title}.",
-                    verb_de=f"Sie wurden zur {instance.title} Besprechung hinzugefügt",
-                    verb_es=f"Te han agregado a la reunión {instance.title}",
-                    verb_fr=f"Vous avez été ajouté à la réunion {instance.title}",
+                    verb=gettext_noop("You have been added to the meeting %(title)s"),
+                    verb_params={"title": str(instance.title)},
                     icon="information",
                     redirect=reverse("view-meetings") + f"?search={instance.title}",
                 )
@@ -269,11 +266,10 @@ class MeetingsFormView(HorillaFormView):
                 notify.send(
                     self.request.user.employee_get,
                     recipient=answer_employees,
-                    verb=f"You have been added as an answerable employee for the meeting {instance.title}",
-                    verb_ar=f"لقد تمت إضافتك كموظف مسؤول عن الاجتماع {instance.title}",
-                    verb_de=f"Du wurden als Mitarbeiter zum Ausfüllen für das {instance.title}-Meeting hinzugefügt",
-                    verb_es=f"Se le ha agregado como empleado responsable de la reunión {instance.title}",
-                    verb_fr=f"Vous avez été ajouté en tant que employé responsable pour la réunion {instance.title}",
+                    verb=gettext_noop(
+                        "You have been added as an answerable employee for the meeting %(title)s"
+                    ),
+                    verb_params={"title": str(instance.title)},
                     icon="information",
                     redirect=reverse("view-meetings") + f"?search={instance.title}",
                 )

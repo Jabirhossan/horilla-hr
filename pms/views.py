@@ -23,6 +23,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from django.views.decorators.http import require_http_methods
 
 from base.methods import (
@@ -156,11 +157,7 @@ def obj_form_save(request, objective_form):
             notify.send(
                 request.user.employee_get,
                 recipient=emp.employee_user_id,
-                verb="You got an OKR!.",
-                verb_ar="لقد حققت هدفًا ونتيجة رئيسية!",
-                verb_de="Du hast ein Ziel-Key-Ergebnis erreicht!",
-                verb_es="¡Has logrado un Resultado Clave de Objetivo!",
-                verb_fr="Vous avez atteint un Résultat Clé d'Objectif !",
+                verb=gettext_noop("You got an OKR!"),
                 redirect=reverse(
                     "objective-detailed-view", kwargs={"obj_id": objective.id}
                 ),
@@ -262,11 +259,7 @@ def objective_update(request, obj_id):
                 notify.send(
                     request.user.employee_get,
                     recipient=emp.employee_user_id,
-                    verb="You got an OKR!.",
-                    verb_ar="لقد حققت هدفًا ونتيجة رئيسية!",
-                    verb_de="Du hast ein Ziel-Key-Ergebnis erreicht!",
-                    verb_es="¡Has logrado un Resultado Clave de Objetivo!",
-                    verb_fr="Vous avez atteint un Résultat Clé d'Objectif !",
+                    verb=gettext_noop("You got an OKR!"),
                     redirect=reverse(
                         "objective-detailed-view", kwargs={"obj_id": objective.id}
                     ),
@@ -491,11 +484,7 @@ def add_assignees(request, obj_id):
                 notify.send(
                     request.user.employee_get,
                     recipient=emp.employee_user_id,
-                    verb="You got an OKR!.",
-                    verb_ar="لقد حققت هدفًا ونتيجة رئيسية!",
-                    verb_de="Du hast ein Ziel-Key-Ergebnis erreicht!",
-                    verb_es="¡Has logrado un Resultado Clave de Objetivo!",
-                    verb_fr="Vous avez atteint un Résultat Clé d'Objectif !",
+                    verb=gettext_noop("You got an OKR!"),
                     redirect=reverse(
                         "objective-detailed-view", kwargs={"obj_id": objective.id}
                     ),
@@ -1344,16 +1333,13 @@ def change_employee_objective_status(request):
             notify.send(
                 request.user.employee_get,
                 recipient=emp_objective.employee_id.employee_user_id,
-                verb=f"The status of the objective '{emp_objective.objective_id}'\
-                    has been changed to {emp_objective.status}.",
-                verb_ar=f"تم تغيير حالة الهدف '{emp_objective.objective_id}'\
-                    إلى {emp_objective.status}.",
-                verb_de=f"Der Status des Ziels '{emp_objective.objective_id}'\
-                    wurde zu {emp_objective.status} geändert.",
-                verb_es=f"El estado del objetivo '{emp_objective.objective_id}'\
-                    ha sido cambiado a {emp_objective.status}.",
-                verb_fr=f"Le statut de l'objectif '{emp_objective.objective_id}'\
-                    a été changé à {emp_objective.status}.",
+                verb=gettext_noop(
+                    "The status of the objective '%(objective_id)s' has been changed to %(status)s."
+                ),
+                verb_params={
+                    "objective_id": str(emp_objective.objective_id),
+                    "status": str(emp_objective.status),
+                },
                 redirect=reverse(
                     "objective-detailed-view",
                     kwargs={"obj_id": emp_objective.objective_id.id},
@@ -1549,11 +1535,7 @@ def send_feedback_notifications(request, feedback):
         notify.send(
             request.user.employee_get,
             recipient=employee.employee_user_id,
-            verb="You have received feedback!",
-            verb_ar="لقد تلقيت ملاحظات!",
-            verb_de="Sie haben Feedback erhalten!",
-            verb_es="¡Has recibido retroalimentación!",
-            verb_fr="Vous avez reçu des commentaires !",
+            verb=gettext_noop("You have received feedback!"),
             redirect=reverse("feedback-detailed-view", kwargs={"id": feedback.id}),
             icon="chatbox-ellipses",
         )
@@ -1562,11 +1544,7 @@ def send_feedback_notifications(request, feedback):
         notify.send(
             request.user.employee_get,
             recipient=employee.employee_user_id,
-            verb="You have been requested to provide feedback!",
-            verb_ar="لقد طُلب منك تقديم ملاحظات!",
-            verb_de="Sie wurden gebeten, Feedback zu geben!",
-            verb_es="Se le ha solicitado que proporcione comentarios.",
-            verb_fr="Il vous a été demandé de fournir des commentaires.",
+            verb=gettext_noop("You have been requested to provide feedback!"),
             redirect=reverse("feedback-detailed-view", kwargs={"id": feedback.id}),
             icon="chatbox-ellipses",
         )
@@ -3243,11 +3221,7 @@ def anonymous_feedback_add(request):
                     notify.send(
                         HorillaUser.objects.filter(username="Horilla Bot").first(),
                         recipient=feedback.employee_id.employee_user_id,
-                        verb="You received an anonymous feedback!",
-                        verb_ar="لقد تلقيت تقييمًا مجهولًا!",
-                        verb_de="Sie haben anonymes Feedback erhalten!",
-                        verb_es="¡Has recibido un comentario anónimo!",
-                        verb_fr="Vous avez reçu un feedback anonyme!",
+                        verb=gettext_noop("You received anonymous feedback!"),
                         redirect=reverse("feedback-view"),
                         icon="bag-check",
                     )
@@ -3421,11 +3395,7 @@ def employee_keyresult_creation(request, emp_obj_id):
                 notify.send(
                     request.user.employee_get,
                     recipient=employee.employee_user_id,
-                    verb="You got an Key Result!.",
-                    verb_ar="لقد حصلت على نتيجة رئيسية!",
-                    verb_de="Du hast ein Schlüsselergebnis erreicht!",
-                    verb_es="¡Has conseguido un Resultado Clave!",
-                    verb_fr="Vous avez obtenu un Résultat Clé!",
+                    verb=gettext_noop("You got a Key Result!"),
                     redirect=reverse(
                         "objective-detailed-view",
                         kwargs={"obj_id": emp_objective.objective_id.id},
@@ -3474,11 +3444,7 @@ def employee_keyresult_update(request, kr_id):
             notify.send(
                 request.user.employee_get,
                 recipient=employee.employee_user_id,
-                verb="Your Key Result updated.",
-                verb_ar="تم تحديث نتيجتك الرئيسية.",
-                verb_de="Ihr Schlüsselergebnis wurde aktualisiert.",
-                verb_es="Se ha actualizado su Resultado Clave.",
-                verb_fr="Votre Résultat Clé a été mis à jour.",
+                verb=gettext_noop("Your Key Result updated."),
                 redirect=reverse(
                     "objective-detailed-view",
                     kwargs={"obj_id": emp_kr.employee_objective_id.objective_id.id},
@@ -3724,11 +3690,10 @@ def create_meetings(request):
                     notify.send(
                         request.user.employee_get,
                         recipient=answer_employees,
-                        verb=f"You have been added as an answerable employee for the meeting {instance.title}",
-                        verb_ar=f"لقد تمت إضافتك كموظف مسؤول عن الاجتماع {instance.title}",
-                        verb_de=f"Du wurden als Mitarbeiter zum Ausfüllen für das {instance.title}-Meeting hinzugefügt",
-                        verb_es=f"Se le ha agregado como empleado responsable de la reunión {instance.title}",
-                        verb_fr=f"Vous avez été ajouté en tant que employé responsable pour la réunion {instance.title}",
+                        verb=gettext_noop(
+                            "You have been added as an answerable employee for the meeting %(title)s"
+                        ),
+                        verb_params={"title": str(instance.title)},
                         icon="information",
                         redirect=reverse("view-meetings") + f"?search={instance.title}",
                     )
@@ -3739,11 +3704,10 @@ def create_meetings(request):
                     notify.send(
                         request.user.employee_get,
                         recipient=employees,
-                        verb=f"You have been added to the meeting {instance.title}",
-                        verb_ar=f"لقد تمت إضافتك إلى اجتماع {instance.title}.",
-                        verb_de=f"Sie wurden zur {instance.title} Besprechung hinzugefügt",
-                        verb_es=f"Te han agregado a la reunión {instance.title}",
-                        verb_fr=f"Vous avez été ajouté à la réunion {instance.title}",
+                        verb=gettext_noop(
+                            "You have been added to the meeting %(title)s"
+                        ),
+                        verb_params={"title": str(instance.title)},
                         icon="information",
                         redirect=reverse("view-meetings") + f"?search={instance.title}",
                     )
@@ -3754,11 +3718,10 @@ def create_meetings(request):
                     notify.send(
                         request.user.employee_get,
                         recipient=managers,
-                        verb=f"You have been added as a manager for the meeting {instance.title}",
-                        verb_ar=f"لقد تمت إضافتك كمدير للاجتماع {instance.title}",
-                        verb_de=f"Sie wurden als Manager für das Meeting {instance.title} hinzugefügt",
-                        verb_es=f"Se le ha agregado como administrador de la reunión {instance.title}",
-                        verb_fr=f"Vous avez été ajouté en tant que responsable de réunion {instance.title}",
+                        verb=gettext_noop(
+                            "You have been added as a manager for the meeting %(title)s"
+                        ),
+                        verb_params={"title": str(instance.title)},
                         icon="information",
                         redirect=reverse("view-meetings") + f"?search={instance.title}",
                     )

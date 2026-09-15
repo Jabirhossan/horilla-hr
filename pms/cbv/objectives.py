@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from django.urls import resolve, reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from attendance.cbv.tab_shell import AttendanceTabContentShell
 from employee.cbv.employee_profile import EmployeeProfileView
@@ -544,11 +545,7 @@ class CreateObjectiveFormView(HorillaFormView):
                     notify.send(
                         self.request.user.employee_get,
                         recipient=emp.employee_user_id,
-                        verb="You got an OKR!.",
-                        verb_ar="لقد حققت هدفًا ونتيجة رئيسية!",
-                        verb_de="Du hast ein Ziel-Key-Ergebnis erreicht!",
-                        verb_es="¡Has logrado un Resultado Clave de Objetivo!",
-                        verb_fr="Vous avez atteint un Résultat Clé d'Objectif !",
+                        verb=gettext_noop("You got an OKR!"),
                         redirect=reverse(
                             "objective-detailed-view", kwargs={"obj_id": objective.id}
                         ),
@@ -577,11 +574,7 @@ class CreateObjectiveFormView(HorillaFormView):
                         notify.send(
                             self.request.user.employee_get,
                             recipient=emp.employee_user_id,
-                            verb="You got an OKR!.",
-                            verb_ar="لقد حققت هدفًا ونتيجة رئيسية!",
-                            verb_de="Du hast ein Ziel-Key-Ergebnis erreicht!",
-                            verb_es="¡Has logrado un Resultado Clave de Objetivo!",
-                            verb_fr="Vous avez atteint un Résultat Clé d'Objectif !",
+                            verb=gettext_noop("You got an OKR!"),
                             redirect=reverse(
                                 "objective-detailed-view",
                                 kwargs={"obj_id": objective.id},
@@ -680,11 +673,7 @@ class AddAssigneesFormView(HorillaFormView):
                     notify.send(
                         self.request.user.employee_get,
                         recipient=emp.employee_user_id,
-                        verb="You got an OKR!.",
-                        verb_ar="لقد حققت هدفًا ونتيجة رئيسية!",
-                        verb_de="Du hast ein Ziel-Key-Ergebnis erreicht!",
-                        verb_es="¡Has logrado un Resultado Clave de Objetivo!",
-                        verb_fr="Vous avez atteint un Résultat Clé d'Objectif !",
+                        verb=gettext_noop("You got an OKR!"),
                         redirect=reverse(
                             "objective-detailed-view", kwargs={"obj_id": objective.id}
                         ),
@@ -777,11 +766,7 @@ class CreateEmployeeKeyResultFormView(HorillaFormView):
                 notify.send(
                     self.request.user.employee_get,
                     recipient=employee.employee_user_id,
-                    verb="Your Key Result updated.",
-                    verb_ar="تم تحديث نتيجتك الرئيسية.",
-                    verb_de="Ihr Schlüsselergebnis wurde aktualisiert.",
-                    verb_es="Se ha actualizado su Resultado Clave.",
-                    verb_fr="Votre Résultat Clé a été mis à jour.",
+                    verb=gettext_noop("Your Key Result updated."),
                     redirect=reverse(
                         "objective-detailed-view",
                         kwargs={
@@ -801,11 +786,7 @@ class CreateEmployeeKeyResultFormView(HorillaFormView):
                 notify.send(
                     self.request.user.employee_get,
                     recipient=employee.employee_user_id,
-                    verb="You got an Key Result!.",
-                    verb_ar="لقد حصلت على نتيجة رئيسية!",
-                    verb_de="Du hast ein Schlüsselergebnis erreicht!",
-                    verb_es="¡Has conseguido un Resultado Clave!",
-                    verb_fr="Vous avez obtenu un Résultat Clé!",
+                    verb=gettext_noop("You got a Key Result!"),
                     redirect=reverse(
                         "objective-detailed-view",
                         kwargs={"obj_id": emp_objective.objective_id.id},

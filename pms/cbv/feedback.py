@@ -11,6 +11,7 @@ from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from attendance.cbv.tab_shell import AttendanceTabContentShell
 from base.decorators import manager_can_enter
@@ -641,11 +642,7 @@ class AddAnonymousFeedbackForm(HorillaFormView):
                     notify.send(
                         HorillaUser.objects.filter(username="Horilla Bot").first(),
                         recipient=feedback.employee_id.employee_user_id,
-                        verb="You received an anonymous feedback!",
-                        verb_ar="لقد تلقيت تقييمًا مجهولًا!",
-                        verb_de="Sie haben anonymes Feedback erhalten!",
-                        verb_es="¡Has recibido un comentario anónimo!",
-                        verb_fr="Vous avez reçu un feedback anonyme!",
+                        verb=gettext_noop("You received anonymous feedback!"),
                         redirect=reverse("feedback-view"),
                         icon="bag-check",
                     )
