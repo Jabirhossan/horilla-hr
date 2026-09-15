@@ -20,6 +20,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from asset.filters import (
     AssetAllocationFilter,
@@ -783,7 +784,7 @@ def asset_request_approve(request, req_id):
                 notify.send(
                     request.user.employee_get,
                     recipient=allocation.assigned_to_employee_id.employee_user_id,
-                    verb=_("Your asset request has been approved!"),
+                    verb=gettext_noop("Your asset request has been approved!"),
                     redirect=reverse("asset-request-allocation-view")
                     + f"?asset_request_date={asset_request.asset_request_date}&"
                     f"asset_request_status={asset_request.asset_request_status}",
@@ -869,11 +870,7 @@ def asset_request_reject(request, req_id):
     notify.send(
         request.user.employee_get,
         recipient=asset_request.requested_employee_id.employee_user_id,
-        verb="Your asset request rejected!.",
-        verb_ar="تم رفض طلب الأصول الخاص بك!",
-        verb_de="Ihr Antragsantrag wurde abgelehnt!",
-        verb_es="¡Se ha rechazado su solicitud de activo!",
-        verb_fr="Votre demande d'actif a été rejetée !",
+        verb=gettext_noop("Your asset request rejected!"),
         redirect=reverse("asset-request-allocation-view")
         + f"?asset_request_date={asset_request.asset_request_date}\
         &asset_request_status={asset_request.asset_request_status}",
@@ -946,16 +943,13 @@ def asset_allocate_return_request(request, asset_id):
     notify.send(
         request.user.employee_get,
         recipient=permed_users,
-        verb=f"Return request for {asset_assign.asset_id} initiated from\
-            {asset_assign.assigned_to_employee_id}",
-        verb_ar=f"تم بدء طلب الإرجاع للمورد {asset_assign.asset_id}\
-            من الموظف {asset_assign.assigned_to_employee_id}",
-        verb_de=f"Rückgabewunsch für {asset_assign.asset_id} vom Mitarbeiter\
-            {asset_assign.assigned_to_employee_id} initiiert",
-        verb_es=f"Solicitud de devolución para {asset_assign.asset_id}\
-            iniciada por el empleado {asset_assign.assigned_to_employee_id}",
-        verb_fr=f"Demande de retour pour {asset_assign.asset_id}\
-            initiée par l'employé {asset_assign.assigned_to_employee_id}",
+        verb=gettext_noop(
+            "Return request for %(asset_id)s initiated from %(assigned_to_employee_id)s"
+        ),
+        verb_params={
+            "asset_id": str(asset_assign.asset_id),
+            "assigned_to_employee_id": str(asset_assign.assigned_to_employee_id),
+        },
         redirect=reverse("asset-request-allocation-view")
         + f"?assigned_to_employee_id={asset_assign.assigned_to_employee_id}&\
         asset_id={asset_assign.asset_id}&assigned_date={asset_assign.assigned_date}",

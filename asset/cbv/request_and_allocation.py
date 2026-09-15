@@ -12,6 +12,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from django.views.decorators.http import require_http_methods
 from django.views.generic.edit import DeleteView
 
@@ -53,16 +54,8 @@ class RequestAndAllocationView(TemplateView):
     template_name = "cbv/request_and_allocation/request_and_allocation.html"
 
     def get(self, request, *args, **kwargs):
-        # Deep-link support for e.g. the dashboard's "pending approvals"
-        # card: ?asset_request_status=Requested. The query string can't be
-        # relied on to survive down to the Asset Request tab's own list
-        # fetch - this page auto-submits an unrelated (Asset Allocation)
-        # filter form on load, which htmx rebuilds the request URL from,
-        # dropping any param that isn't one of that form's own fields.
-        # Stash it in the session instead, which AssetRequestList.get_queryset
-        # picks up as a fallback, immune to that. A plain (non-deep-link)
-        # visit to this page clears any stale value instead of letting it
-        # linger indefinitely.
+        # Stash ?asset_request_status in the session for AssetRequestList to pick
+        # up, since it'd otherwise be dropped when the page's htmx filter form rebuilds the URL.
         status = request.GET.get("asset_request_status")
         if status:
             request.session["asset_request_deep_link_status"] = status
@@ -115,11 +108,8 @@ class AllocationList(HorillaListView):
         data-toggle="oh-modal-toggle"
     """
 
-    # Mirrors AllocationList.nested_group_by_fields below -- same mixed
-    # list already used by the classic group_by_fields above, which
-    # tolerates a field not existing on the currently active tab's model
-    # by falling back silently (see the try/except around both the
-    # classic and nested grouping branches in HorillaListView).
+    # Mixed fields from both tabs' models; HorillaListView falls back silently
+    # for whichever fields don't exist on the currently active tab's model.
     nested_group_by_fields = [
         ("requested_employee_id", _("Asset Request / Employee")),
         ("asset_category_id", _("Asset Request / Asset Category")),
@@ -235,28 +225,17 @@ class AssetRequestList(HorillaListView):
             field="requested_employee_id",
         ) | queryset.filter(requested_employee_id=self.request.user.employee_get)
 
-        # Fallback for a deep link into this tab (see
-        # RequestAndAllocationView.get) - only applies when the current
-        # request didn't already specify its own status filter. Checked by
-        # key presence, not truthiness: clicking the "x" on the "Asset
-        # request status" chip (clearFilterFromTag in clearFilter.js) sets
-        # the form field to "" and resubmits, so the key IS present (just
-        # empty) - `not self.request.GET.get(...)` would still be True for
-        # that, silently re-applying the just-cleared filter forever. Read
-        # (not popped) since HorillaListView calls get_queryset() more than
-        # once per request; RequestAndAllocationView.get clears it on the
-        # next plain visit instead, so it doesn't linger indefinitely -- an
-        # explicit clear here also drops it immediately instead of waiting
-        # for that.
+        # Deep-link fallback from RequestAndAllocationView.get; checked by key
+        # presence (not truthiness) since clearing the status chip resubmits
+        # the field as "", which must not re-trigger this fallback.
         if "asset_request_status" not in self.request.GET:
             deep_link_status = self.request.session.get(
                 "asset_request_deep_link_status"
             )
             if deep_link_status:
                 queryset = queryset.filter(asset_request_status=deep_link_status)
-                # Also reflect it in the "Filters:" chip row - otherwise the
-                # list is correctly filtered but looks unfiltered, since
-                # that display reads self._saved_filters, not this queryset.
+                # Reflect it in the "Filters:" chip row too, which reads
+                # _saved_filters rather than the queryset itself.
                 saved_filters = self._saved_filters.copy()
                 saved_filters["asset_request_status"] = deep_link_status
                 self._saved_filters = saved_filters
@@ -401,17 +380,8 @@ class RequestAndAllocationTab(HorillaTabView):
             )
 
 
-class _RequestAndAllocationNavBase(HorillaNavView):
-    """
-    Shared base for each Request & Allocation tab's own, independent Nav -
-    everything (nav_title/search_url/search_swap_target/filter_instance/
-    filter_body_template/group_by_fields/create_attrs/actions) differs per
-    tab, since each tab is backed by its own model with its own create flow.
-    """
-
-
 @method_decorator(login_required, name="dispatch")
-class AssetNav(_RequestAndAllocationNavBase):
+class AssetNav(HorillaNavView):
     """
     Independent Nav for the Asset tab. No create flow of its own (this tab
     just lists the logged-in employee's own allocations).
@@ -421,9 +391,7 @@ class AssetNav(_RequestAndAllocationNavBase):
     filter_instance = CustomAssetFilter()
     filter_form_context_name = "form"
     filter_body_template = "cbv/request_and_allocation/asset_filter.html"
-    # Modern slide-over filter panel (generic/horilla_nav.html's own
-    # {% if modern_filter %} branch) -- same treatment as every other
-    # panel this session.
+    # Modern slide-over filter panel (generic/horilla_nav.html's {% if modern_filter %} branch).
     modern_filter = True
 
     group_by_fields = [
@@ -439,7 +407,7 @@ class AssetNav(_RequestAndAllocationNavBase):
 
 
 @method_decorator(login_required, name="dispatch")
-class AssetRequestNav(_RequestAndAllocationNavBase):
+class AssetRequestNav(HorillaNavView):
     """
     Independent Nav for the Asset Request tab.
     """
@@ -448,16 +416,7 @@ class AssetRequestNav(_RequestAndAllocationNavBase):
     filter_instance = AssetRequestFilter()
     filter_form_context_name = "form"
     filter_body_template = "cbv/request_and_allocation/asset_request_filter.html"
-    # Modern slide-over filter panel (generic/horilla_nav.html's own
-    # {% if modern_filter %} branch) -- same treatment as every other
-    # panel this session. AssetRequestFilter.ajax_fields carries the
-    # AJAX-loaded comboboxes this needs. Since this tab now has its own
-    # independent Nav (this class's own filter_instance IS
-    # AssetRequestFilter), the generic custom_filter_fields/
-    # custom_filter_rows context (HorillaNavView.get_context_data)
-    # covers its "+ Add filter" builder directly -- no more manual
-    # asset_request_custom_filter_fields/rows wiring needed now that
-    # the combined 3-in-1 Nav is gone.
+    # Modern slide-over filter panel; AssetRequestFilter.ajax_fields feeds its AJAX comboboxes.
     modern_filter = True
 
     group_by_fields = [
@@ -480,7 +439,7 @@ class AssetRequestNav(_RequestAndAllocationNavBase):
 
 
 @method_decorator(login_required, name="dispatch")
-class AssetAllocationNav(_RequestAndAllocationNavBase):
+class AssetAllocationNav(HorillaNavView):
     """
     Independent Nav for the Asset Allocation tab.
     """
@@ -489,10 +448,7 @@ class AssetAllocationNav(_RequestAndAllocationNavBase):
     filter_instance = AssetAllocationFilter()
     filter_form_context_name = "form"
     filter_body_template = "cbv/request_and_allocation/asset_allocation_filter.html"
-    # Modern slide-over filter panel (generic/horilla_nav.html's own
-    # {% if modern_filter %} branch) -- same treatment as every other
-    # panel this session. AssetAllocationFilter.ajax_fields carries the
-    # AJAX-loaded comboboxes this needs.
+    # Modern slide-over filter panel; AssetAllocationFilter.ajax_fields feeds its AJAX comboboxes.
     modern_filter = True
 
     group_by_fields = [
@@ -841,11 +797,7 @@ class AssetApproveFormView(HorillaFormView):
             notify.send(
                 self.request.user.employee_get,
                 recipient=asset_request.requested_employee_id.employee_user_id,
-                verb="Your asset request approved!.",
-                verb_ar="تم الموافقة على طلب الأصول الخاص بك!",
-                verb_de="Ihr Antragsantrag wurde genehmigt!",
-                verb_es="¡Su solicitud de activo ha sido aprobada!",
-                verb_fr="Votre demande d'actif a été approuvée !",
+                verb=gettext_noop("Your asset request approved!"),
                 redirect=reverse("asset-request-allocation-view")
                 + f"?asset_request_date={asset_request.asset_request_date}\
                 &asset_request_status={asset_request.asset_request_status}",
