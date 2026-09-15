@@ -13,6 +13,7 @@ from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from base.filters import ShiftRequestFilter
 from base.forms import (
@@ -538,18 +539,11 @@ class ShiftRequestFormView(HorillaFormView):
                 with contextlib.suppress(Exception):
                     notify.send(
                         instance.employee_id,
-                        recipient=(
-                            instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                        recipient=instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                        verb=gettext_noop(
+                            "You have new shift request to approve for %(employee)s"
                         ),
-                        verb=f"You have new shift request to approve \
-                            for {instance.employee_id}",
-                        verb_ar=f"لديك طلب وردية جديد للموافقة عليه لـ {instance.employee_id}",
-                        verb_de=f"Sie müssen eine neue Schichtanfrage \
-                            für {instance.employee_id} genehmigen",
-                        verb_es=f"Tiene una nueva solicitud de turno para \
-                            aprobar para {instance.employee_id}",
-                        verb_fr=f"Vous avez une nouvelle demande de quart de\
-                            travail à approuver pour {instance.employee_id}",
+                        verb_params={"employee": str(instance.employee_id)},
                         icon="information",
                         redirect=reverse("shift-request-view") + f"?id={instance.id}",
                     )
@@ -671,26 +665,22 @@ class ShiftAllocationFormView(HorillaFormView):
                 with contextlib.suppress(Exception):
                     notify.send(
                         form.instance.employee_id,
-                        recipient=(
-                            form.instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                        recipient=form.instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                        verb=gettext_noop(
+                            "You have a new shift reallocation request to approve for %(employee)s."
                         ),
-                        verb=f"You have a new shift reallocation request to approve for {instance.employee_id}.",
-                        verb_ar=f"لديك طلب تخصيص جديد للورديات يتعين عليك الموافقة عليه لـ {instance.employee_id}.",
-                        verb_de=f"Sie haben eine neue Anfrage zur Verschiebung der Schichtzuteilung zur Genehmigung für {instance.employee_id}.",
-                        verb_es=f"Tienes una nueva solicitud de reasignación de turnos para aprobar para {instance.employee_id}.",
-                        verb_fr=f"Vous avez une nouvelle demande de réaffectation de shift à approuver pour {instance.employee_id}.",
+                        verb_params={"employee": str(instance.employee_id)},
                         icon="information",
                         redirect=reverse("shift-request-view") + f"?id={instance.id}",
                     )
 
                     notify.send(
                         instance.employee_id,
-                        recipient=(reallocate_emp.employee_user_id),
-                        verb=f"You have a new shift reallocation request from {instance.employee_id}.",
-                        verb_ar=f"لديك طلب تخصيص جديد للورديات من {instance.employee_id}.",
-                        verb_de=f"Sie haben eine neue Anfrage zur Verschiebung der Schichtzuteilung von {instance.employee_id}.",
-                        verb_es=f"Tienes una nueva solicitud de reasignación de turnos de {instance.employee_id}.",
-                        verb_fr=f"Vous avez une nouvelle demande de réaffectation de shift de {instance.employee_id}.",
+                        recipient=reallocate_emp.employee_user_id,
+                        verb=gettext_noop(
+                            "You have a new shift reallocation request from %(employee)s."
+                        ),
+                        verb_params={"employee": str(instance.employee_id)},
                         icon="information",
                         redirect=reverse("shift-request-view") + f"?id={instance.id}",
                     )

@@ -11,6 +11,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from base.forms import AnnouncementCommentForm, AnnouncementForm
 from base.methods import closest_numbers, filter_own_records
@@ -135,25 +136,21 @@ def create_announcement(request):
                         sender,
                         recipient=users,
                         verb=verb,
-                        verb_ar="لقد تم ذكرك في إعلان.",
-                        verb_de="Sie wurden in einer Ankündigung erwähnt.",
-                        verb_es="Has sido mencionado en un anuncio.",
-                        verb_fr="Vous avez été mentionné dans une annonce.",
                         redirect="/",
                         icon="chatbox-ellipses",
                     )
 
             send_notification(
                 user_map.filter(employee_get__id__in=dept_emp_ids),
-                _("Your department was mentioned in an announcement."),
+                gettext_noop("Your department was mentioned in an announcement."),
             )
             send_notification(
                 user_map.filter(employee_get__id__in=job_emp_ids),
-                _("Your job position was mentioned in an announcement."),
+                gettext_noop("Your job position was mentioned in an announcement."),
             )
             send_notification(
                 user_map.filter(employee_get__id__in=direct_only_ids),
-                _("You have been mentioned in an announcement."),
+                gettext_noop("You have been mentioned in an announcement."),
             )
 
             messages.success(request, _("Announcement created successfully."))
@@ -177,11 +174,7 @@ def create_announcement(request):
             notify.send(
                 request.user.employee_get,
                 recipient=emp_dep,
-                verb="Your department was mentioned in a post.",
-                verb_ar="تم ذكر قسمك في منشور.",
-                verb_de="Ihr Abteilung wurde in einem Beitrag erwähnt.",
-                verb_es="Tu departamento fue mencionado en una publicación.",
-                verb_fr="Votre département a été mentionné dans un post.",
+                verb=gettext_noop("Your department was mentioned in a post."),
                 redirect="/",
                 icon="chatbox-ellipses",
             )
@@ -189,11 +182,7 @@ def create_announcement(request):
             notify.send(
                 request.user.employee_get,
                 recipient=emp_jobs,
-                verb="Your job position was mentioned in a post.",
-                verb_ar="تم ذكر وظيفتك في منشور.",
-                verb_de="Ihre Arbeitsposition wurde in einem Beitrag erwähnt.",
-                verb_es="Tu puesto de trabajo fue mencionado en una publicación.",
-                verb_fr="Votre poste de travail a été mentionné dans un post.",
+                verb=gettext_noop("Your job position was mentioned in a post."),
                 redirect="/",
                 icon="chatbox-ellipses",
             )
@@ -288,11 +277,7 @@ def update_announcement(request, anoun_id):
             notify.send(
                 request.user.employee_get,
                 recipient=emp_dep,
-                verb="Your department was mentioned in a post.",
-                verb_ar="تم ذكر قسمك في منشور.",
-                verb_de="Ihr Abteilung wurde in einem Beitrag erwähnt.",
-                verb_es="Tu departamento fue mencionado en una publicación.",
-                verb_fr="Votre département a été mentionné dans un post.",
+                verb=gettext_noop("Your department was mentioned in a post."),
                 redirect="/",
                 icon="chatbox-ellipses",
             )
@@ -300,11 +285,7 @@ def update_announcement(request, anoun_id):
             notify.send(
                 request.user.employee_get,
                 recipient=emp_jobs,
-                verb="Your job position was mentioned in a post.",
-                verb_ar="تم ذكر وظيفتك في منشور.",
-                verb_de="Ihre Arbeitsposition wurde in einem Beitrag erwähnt.",
-                verb_es="Tu puesto de trabajo fue mencionado en una publicación.",
-                verb_fr="Votre poste de travail a été mentionné dans un post.",
+                verb=gettext_noop("Your job position was mentioned in a post."),
                 redirect="/",
                 icon="chatbox-ellipses",
             )
@@ -362,11 +343,8 @@ def create_announcement_comment(request, anoun_id):
             notify.send(
                 request.user.employee_get,
                 recipient=unique_users,
-                verb=f"Comment under the announcement {anoun.title}.",
-                verb_ar=f"تعليق تحت الإعلان {anoun.title}.",
-                verb_de=f"Kommentar unter der Ankündigung {anoun.title}.",
-                verb_es=f"Comentario bajo el anuncio {anoun.title}.",
-                verb_fr=f"Commentaire sous l'annonce {anoun.title}.",
+                verb=gettext_noop("Comment under the announcement %(title)s."),
+                verb_params={"title": str(anoun.title)},
                 redirect="/",
                 icon="chatbox-ellipses",
             )

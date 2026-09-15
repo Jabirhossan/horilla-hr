@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.urls import resolve, reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from base.forms import AnnouncementForm
 from base.methods import closest_numbers
@@ -122,11 +123,7 @@ class AnnouncementFormView(HorillaFormView):
             notify.send(
                 self.request.user.employee_get,
                 recipient=emp_dep,
-                verb="Your department was mentioned in a post.",
-                verb_ar="تم ذكر قسمك في منشور.",
-                verb_de="Ihr Abteilung wurde in einem Beitrag erwähnt.",
-                verb_es="Tu departamento fue mencionado en una publicación.",
-                verb_fr="Votre département a été mentionné dans un post.",
+                verb=gettext_noop("Your department was mentioned in a post."),
                 redirect="/",
                 icon="chatbox-ellipses",
             )
@@ -134,11 +131,7 @@ class AnnouncementFormView(HorillaFormView):
             notify.send(
                 self.request.user.employee_get,
                 recipient=emp_jobs,
-                verb="Your job position was mentioned in a post.",
-                verb_ar="تم ذكر وظيفتك في منشور.",
-                verb_de="Ihre Arbeitsposition wurde in einem Beitrag erwähnt.",
-                verb_es="Tu puesto de trabajo fue mencionado en una publicación.",
-                verb_fr="Votre poste de travail a été mentionné dans un post.",
+                verb=gettext_noop("Your job position was mentioned in a post."),
                 redirect="/",
                 icon="chatbox-ellipses",
             )

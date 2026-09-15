@@ -2,6 +2,7 @@ import calendar
 from datetime import date, datetime, timedelta
 
 from django.urls import reverse
+from django.utils.translation import gettext_noop
 
 from horilla.scheduling import register_job
 from notifications.signals import notify
@@ -46,11 +47,7 @@ def update_rotating_work_type_assign(rotating_work_type, new_date):
         notify.send(
             bot,
             recipient=employee.employee_user_id,
-            verb="Your Work Type has been changed.",
-            verb_ar="لقد تغير نوع عملك.",
-            verb_de="Ihre Art der Arbeit hat sich geändert.",
-            verb_es="Su tipo de trabajo ha sido cambiado.",
-            verb_fr="Votre type de travail a été modifié.",
+            verb=gettext_noop("Your Work Type has been changed."),
             icon="infinite",
             redirect=reverse("employee-profile"),
         )
@@ -159,11 +156,7 @@ def update_rotating_shift_assign(rotating_shift, new_date):
         notify.send(
             bot,
             recipient=employee.employee_user_id,
-            verb="Your shift has been changed.",
-            verb_ar="تم تغيير التحول الخاص بك.",
-            verb_de="Ihre Schicht wurde geändert.",
-            verb_es="Tu turno ha sido cambiado.",
-            verb_fr="Votre quart de travail a été modifié.",
+            verb=gettext_noop("Your shift has been changed."),
             icon="infinite",
             redirect=reverse("employee-profile"),
         )
@@ -276,11 +269,7 @@ def switch_shift():
                 notify.send(
                     bot,
                     recipient=employee.employee_user_id,
-                    verb="Shift Changes notification",
-                    verb_ar="التحول تغيير الإخطار",
-                    verb_de="Benachrichtigung über Schichtänderungen",
-                    verb_es="Notificación de cambios de turno",
-                    verb_fr="Notification des changements de quart de travail",
+                    verb=gettext_noop("Shift Changes notification"),
                     icon="refresh",
                     redirect=reverse("employee-profile"),
                 )
@@ -317,11 +306,9 @@ def undo_shift():
                 notify.send(
                     bot,
                     recipient=employee.employee_user_id,
-                    verb="Shift changes notification, Requested date expired.",
-                    verb_ar="التحول يغير الإخطار ، التاريخ المطلوب انتهت صلاحيته.",
-                    verb_de="Benachrichtigung über Schichtänderungen, gewünschtes Datum abgelaufen.",
-                    verb_es="Notificación de cambios de turno, Fecha solicitada vencida.",
-                    verb_fr="Notification de changement d'équipe, la date demandée a expiré.",
+                    verb=gettext_noop(
+                        "Shift changes notification, Requested date expired."
+                    ),
                     icon="refresh",
                     redirect=reverse("employee-profile"),
                 )
@@ -356,11 +343,7 @@ def switch_work_type():
             notify.send(
                 bot,
                 recipient=employee.employee_user_id,
-                verb="Work Type Changes notification",
-                verb_ar="إخطار تغييرات نوع العمل",
-                verb_de="Benachrichtigung über Änderungen des Arbeitstyps",
-                verb_es="Notificación de cambios de tipo de trabajo",
-                verb_fr="Notification de changement de type de travail",
+                verb=gettext_noop("Work Type Changes notification"),
                 icon="swap-horizontal",
                 redirect=reverse("employee-profile"),
             )
@@ -397,11 +380,9 @@ def undo_work_type():
             notify.send(
                 bot,
                 recipient=employee.employee_user_id,
-                verb="Work type changes notification, Requested date expired.",
-                verb_ar="إعلام بتغيير نوع العمل ، انتهاء صلاحية التاريخ المطلوب.",
-                verb_de="Benachrichtigung über Änderungen des Arbeitstyps, angefordertes Datum abgelaufen.",
-                verb_es="Notificación de cambios de tipo de trabajo, fecha solicitada vencida.",
-                verb_fr="Notification de changement de type de travail, la date demandée a expiré.",
+                verb=gettext_noop(
+                    "Work type changes notification, Requested date expired."
+                ),
                 icon="swap-horizontal",
                 redirect=reverse("employee-profile"),
             )

@@ -43,6 +43,7 @@ from django.utils.decorators import method_decorator
 from django.utils.html import format_html, strip_tags
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
+from django.utils.translation import gettext_noop
 from django.views import View
 from django.views.decorators.http import require_http_methods
 from django.views.generic import RedirectView, TemplateView
@@ -2772,11 +2773,7 @@ def rotating_work_type_assign_add(request):
             notify.send(
                 request.user.employee_get,
                 recipient=users,
-                verb="You are added to rotating work type",
-                verb_ar="تمت إضافتك إلى نوع العمل المتناوب",
-                verb_de="Sie werden zum rotierenden Arbeitstyp hinzugefügt",
-                verb_es="Se le agrega al tipo de trabajo rotativo",
-                verb_fr="Vous êtes ajouté au type de travail rotatif",
+                verb=gettext_noop("You are added to rotating work type"),
                 icon="infinite",
                 redirect=reverse("employee-profile"),
             )
@@ -3469,11 +3466,7 @@ def rotating_shift_assign_add(request):
             notify.send(
                 request.user.employee_get,
                 recipient=users,
-                verb="You are added to rotating shift",
-                verb_ar="تمت إضافتك إلى وردية الدورية",
-                verb_de="Sie werden der rotierenden Arbeitsschicht hinzugefügt",
-                verb_es="Estás agregado a turno rotativo",
-                verb_fr="Vous êtes ajouté au quart de travail rotatif",
+                verb=gettext_noop("You are added to rotating shift"),
                 icon="infinite",
                 redirect=reverse("employee-profile"),
             )
@@ -4445,19 +4438,11 @@ def work_type_request(request):
             try:
                 notify.send(
                     instance.employee_id,
-                    recipient=(
-                        instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                    recipient=instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                    verb=gettext_noop(
+                        "You have new work type request to validate for %(employee)s"
                     ),
-                    verb=f"You have new work type request to \
-                            validate for {instance.employee_id}",
-                    verb_ar=f"لديك طلب نوع وظيفة جديد للتحقق من \
-                            {instance.employee_id}",
-                    verb_de=f"Sie haben eine neue Arbeitstypanfrage zur \
-                            Validierung für {instance.employee_id}",
-                    verb_es=f"Tiene una nueva solicitud de tipo de trabajo para \
-                            validar para {instance.employee_id}",
-                    verb_fr=f"Vous avez une nouvelle demande de type de travail\
-                            à valider pour {instance.employee_id}",
+                    verb_params={"employee": str(instance.employee_id)},
                     icon="information",
                     redirect=reverse("work-type-request-view") + f"?id={instance.id}",
                 )
@@ -4546,11 +4531,7 @@ def work_type_request_cancel(request, id):
     notify.send(
         request.user.employee_get,
         recipient=work_type_request.employee_id.employee_user_id,
-        verb="Your work type request has been rejected.",
-        verb_ar="تم إلغاء طلب نوع وظيفتك",
-        verb_de="Ihre Arbeitstypanfrage wurde storniert",
-        verb_es="Su solicitud de tipo de trabajo ha sido cancelada",
-        verb_fr="Votre demande de type de travail a été annulée",
+        verb=gettext_noop("Your work type request has been rejected."),
         redirect=reverse("work-type-request-view") + f"?id={work_type_request.id}",
         icon="close",
     )
@@ -4591,11 +4572,7 @@ def work_type_request_bulk_cancel(request):
             notify.send(
                 request.user.employee_get,
                 recipient=work_type_request.employee_id.employee_user_id,
-                verb="Your work type request has been canceled.",
-                verb_ar="تم إلغاء طلب نوع وظيفتك.",
-                verb_de="Ihre Arbeitstypanfrage wurde storniert.",
-                verb_es="Su solicitud de tipo de trabajo ha sido cancelada.",
-                verb_fr="Votre demande de type de travail a été annulée.",
+                verb=gettext_noop("Your work type request has been canceled."),
                 redirect=reverse("work-type-request-view")
                 + f"?id={work_type_request.id}",
                 icon="close",
@@ -4636,11 +4613,7 @@ def work_type_request_approve(request, id):
         notify.send(
             request.user.employee_get,
             recipient=work_type_request.employee_id.employee_user_id,
-            verb="Your work type request has been approved.",
-            verb_ar="تمت الموافقة على طلب نوع وظيفتك.",
-            verb_de="Ihre Arbeitstypanfrage wurde genehmigt.",
-            verb_es="Su solicitud de tipo de trabajo ha sido aprobada.",
-            verb_fr="Votre demande de type de travail a été approuvée.",
+            verb=gettext_noop("Your work type request has been approved."),
             redirect=reverse("work-type-request-view") + f"?id={work_type_request.id}",
             icon="checkmark",
         )
@@ -4688,11 +4661,7 @@ def work_type_request_bulk_approve(request):
             notify.send(
                 request.user.employee_get,
                 recipient=work_type_request.employee_id.employee_user_id,
-                verb="Your work type request has been approved.",
-                verb_ar="تمت الموافقة على طلب نوع وظيفتك.",
-                verb_de="Ihre Arbeitstypanfrage wurde genehmigt.",
-                verb_es="Su solicitud de tipo de trabajo ha sido aprobada.",
-                verb_fr="Votre demande de type de travail a été approuvée.",
+                verb=gettext_noop("Your work type request has been approved."),
                 redirect=reverse("work-type-request-view")
                 + f"?id={work_type_request.id}",
                 icon="checkmark",
@@ -4746,11 +4715,7 @@ def work_type_request_delete(request, obj_id):
         notify.send(
             request.user.employee_get,
             recipient=employee.employee_user_id,
-            verb="Your work type request has been deleted.",
-            verb_ar="تم حذف طلب نوع وظيفتك.",
-            verb_de="Ihre Arbeitstypanfrage wurde gelöscht.",
-            verb_es="Su solicitud de tipo de trabajo ha sido eliminada.",
-            verb_fr="Votre demande de type de travail a été supprimée.",
+            verb=gettext_noop("Your work type request has been deleted."),
             redirect="#",
             icon="trash",
         )
@@ -4855,11 +4820,7 @@ def work_type_request_bulk_delete(request):
             notify.send(
                 request.user.employee_get,
                 recipient=user,
-                verb="Your work type request has been deleted.",
-                verb_ar="تم حذف طلب نوع وظيفتك.",
-                verb_de="Ihre Arbeitstypanfrage wurde gelöscht.",
-                verb_es="Su solicitud de tipo de trabajo ha sido eliminada.",
-                verb_fr="Votre demande de type de travail a été supprimée.",
+                verb=gettext_noop("Your work type request has been deleted."),
                 redirect="#",
                 icon="trash",
             )
@@ -4909,18 +4870,11 @@ def shift_request(request):
             try:
                 notify.send(
                     instance.employee_id,
-                    recipient=(
-                        instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                    recipient=instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                    verb=gettext_noop(
+                        "You have new shift request to approve for %(employee)s"
                     ),
-                    verb=f"You have new shift request to approve \
-                        for {instance.employee_id}",
-                    verb_ar=f"لديك طلب وردية جديد للموافقة عليه لـ {instance.employee_id}",
-                    verb_de=f"Sie müssen eine neue Schichtanfrage \
-                        für {instance.employee_id} genehmigen",
-                    verb_es=f"Tiene una nueva solicitud de turno para \
-                        aprobar para {instance.employee_id}",
-                    verb_fr=f"Vous avez une nouvelle demande de quart de\
-                        travail à approuver pour {instance.employee_id}",
+                    verb_params={"employee": str(instance.employee_id)},
                     icon="information",
                     redirect=reverse("shift-request-view") + f"?id={instance.id}",
                 )
@@ -4983,14 +4937,11 @@ def shift_request_allocation(request):
             try:
                 notify.send(
                     instance.employee_id,
-                    recipient=(
-                        instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                    recipient=instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                    verb=gettext_noop(
+                        "You have a new shift reallocation request to approve for %(employee)s."
                     ),
-                    verb=f"You have a new shift reallocation request to approve for {instance.employee_id}.",
-                    verb_ar=f"لديك طلب تخصيص جديد للورديات يتعين عليك الموافقة عليه لـ {instance.employee_id}.",
-                    verb_de=f"Sie haben eine neue Anfrage zur Verschiebung der Schichtzuteilung zur Genehmigung für {instance.employee_id}.",
-                    verb_es=f"Tienes una nueva solicitud de reasignación de turnos para aprobar para {instance.employee_id}.",
-                    verb_fr=f"Vous avez une nouvelle demande de réaffectation de shift à approuver pour {instance.employee_id}.",
+                    verb_params={"employee": str(instance.employee_id)},
                     icon="information",
                     redirect=reverse("shift-request-view") + f"?id={instance.id}",
                 )
@@ -5001,11 +4952,10 @@ def shift_request_allocation(request):
                 notify.send(
                     instance.employee_id,
                     recipient=reallocate_emp,
-                    verb=f"You have a new shift reallocation request from {instance.employee_id}.",
-                    verb_ar=f"لديك طلب تخصيص جديد للورديات من {instance.employee_id}.",
-                    verb_de=f"Sie haben eine neue Anfrage zur Verschiebung der Schichtzuteilung von {instance.employee_id}.",
-                    verb_es=f"Tienes una nueva solicitud de reasignación de turnos de {instance.employee_id}.",
-                    verb_fr=f"Vous avez une nouvelle demande de réaffectation de shift de {instance.employee_id}.",
+                    verb=gettext_noop(
+                        "You have a new shift reallocation request from %(employee)s."
+                    ),
+                    verb_params={"employee": str(instance.employee_id)},
                     icon="information",
                     redirect=reverse("shift-request-view") + f"?id={instance.id}",
                 )
@@ -5345,14 +5295,11 @@ def shift_allocation_request_update(request, shift_request_id):
             try:
                 notify.send(
                     instance.employee_id,
-                    recipient=(
-                        instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                    recipient=instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                    verb=gettext_noop(
+                        "You have a new shift reallocation request to approve for %(employee)s."
                     ),
-                    verb=f"You have a new shift reallocation request to approve for {instance.employee_id}.",
-                    verb_ar=f"لديك طلب تخصيص جديد للورديات يتعين عليك الموافقة عليه لـ {instance.employee_id}.",
-                    verb_de=f"Sie haben eine neue Anfrage zur Verschiebung der Schichtzuteilung zur Genehmigung für {instance.employee_id}.",
-                    verb_es=f"Tienes una nueva solicitud de reasignación de turnos para aprobar para {instance.employee_id}.",
-                    verb_fr=f"Vous avez une nouvelle demande de réaffectation de shift à approuver pour {instance.employee_id}.",
+                    verb_params={"employee": str(instance.employee_id)},
                     icon="information",
                     redirect=reverse("shift-request-view") + f"?id={instance.id}",
                 )
@@ -5363,11 +5310,10 @@ def shift_allocation_request_update(request, shift_request_id):
                 notify.send(
                     instance.employee_id,
                     recipient=reallocate_emp,
-                    verb=f"You have a new shift reallocation request from {instance.employee_id}.",
-                    verb_ar=f"لديك طلب تخصيص جديد للورديات من {instance.employee_id}.",
-                    verb_de=f"Sie haben eine neue Anfrage zur Verschiebung der Schichtzuteilung von {instance.employee_id}.",
-                    verb_es=f"Tienes una nueva solicitud de reasignación de turnos de {instance.employee_id}.",
-                    verb_fr=f"Vous avez une nouvelle demande de réaffectation de shift de {instance.employee_id}.",
+                    verb=gettext_noop(
+                        "You have a new shift reallocation request from %(employee)s."
+                    ),
+                    verb_params={"employee": str(instance.employee_id)},
                     icon="information",
                     redirect=reverse("shift-request-view") + f"?id={instance.id}",
                 )
@@ -5434,11 +5380,7 @@ def shift_request_cancel(request, id):
     notify.send(
         request.user.employee_get,
         recipient=shift_request.employee_id.employee_user_id,
-        verb="Your shift request has been canceled.",
-        verb_ar="تم إلغاء طلبك للوردية.",
-        verb_de="Ihr Schichtantrag wurde storniert.",
-        verb_es="Se ha cancelado su solicitud de turno.",
-        verb_fr="Votre demande de quart a été annulée.",
+        verb=gettext_noop("Your shift request has been canceled."),
         redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
         icon="close",
     )
@@ -5446,11 +5388,7 @@ def shift_request_cancel(request, id):
         notify.send(
             request.user.employee_get,
             recipient=shift_request.reallocate_to.employee_user_id,
-            verb="Your shift request has been rejected.",
-            verb_ar="تم إلغاء طلبك للوردية.",
-            verb_de="Ihr Schichtantrag wurde storniert.",
-            verb_es="Se ha cancelado su solicitud de turno.",
-            verb_fr="Votre demande de quart a été annulée.",
+            verb=gettext_noop("Your shift request has been rejected."),
             redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
             icon="close",
         )
@@ -5487,11 +5425,7 @@ def shift_allocation_request_cancel(request, id):
     notify.send(
         request.user.employee_get,
         recipient=shift_request.employee_id.employee_user_id,
-        verb="Your shift request has been canceled.",
-        verb_ar="تم إلغاء طلبك للوردية.",
-        verb_de="Ihr Schichtantrag wurde storniert.",
-        verb_es="Se ha cancelado su solicitud de turno.",
-        verb_fr="Votre demande de quart a été annulée.",
+        verb=gettext_noop("Your shift request has been canceled."),
         redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
         icon="close",
     )
@@ -5535,11 +5469,7 @@ def shift_request_bulk_cancel(request):
             notify.send(
                 request.user.employee_get,
                 recipient=shift_request.employee_id.employee_user_id,
-                verb="Your shift request has been canceled.",
-                verb_ar="تم إلغاء طلبك للوردية.",
-                verb_de="Ihr Schichtantrag wurde storniert.",
-                verb_es="Se ha cancelado su solicitud de turno.",
-                verb_fr="Votre demande de quart a été annulée.",
+                verb=gettext_noop("Your shift request has been canceled."),
                 redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
                 icon="close",
             )
@@ -5547,11 +5477,7 @@ def shift_request_bulk_cancel(request):
                 notify.send(
                     request.user.employee_get,
                     recipient=shift_request.employee_id.employee_user_id,
-                    verb="Your shift request has been canceled.",
-                    verb_ar="تم إلغاء طلبك للوردية.",
-                    verb_de="Ihr Schichtantrag wurde storniert.",
-                    verb_es="Se ha cancelado su solicitud de turno.",
-                    verb_fr="Votre demande de quart a été annulée.",
+                    verb=gettext_noop("Your shift request has been canceled."),
                     redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
                     icon="close",
                 )
@@ -5620,11 +5546,7 @@ def shift_request_approve(request, id):
         notify.send(
             user.employee_get,
             recipient=recipient,
-            verb="Your shift request has been approved.",
-            verb_ar="تمت الموافقة على طلبك للوردية.",
-            verb_de="Ihr Schichtantrag wurde genehmigt.",
-            verb_es="Se ha aprobado su solicitud de turno.",
-            verb_fr="Votre demande de quart a été approuvée.",
+            verb=gettext_noop("Your shift request has been approved."),
             redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
             icon="checkmark",
         )
@@ -5654,11 +5576,8 @@ def shift_allocation_request_approve(request, id):
         notify.send(
             request.user.employee_get,
             recipient=shift_request.employee_id.employee_user_id,
-            verb=f"{request.user.employee_get} is available for shift reallocation.",
-            verb_ar=f"{request.user.employee_get} متاح لإعادة توزيع الورديات.",
-            verb_de=f"{request.user.employee_get} steht für die Verschiebung der Schichtzuteilung zur Verfügung.",
-            verb_es=f"{request.user.employee_get} está disponible para la reasignación de turnos.",
-            verb_fr=f"{request.user.employee_get} est disponible pour la réaffectation de shift.",
+            verb=gettext_noop("%(employee_get)s is available for shift reallocation."),
+            verb_params={"employee_get": str(request.user.employee_get)},
             redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
             icon="checkmark",
         )
@@ -5708,11 +5627,7 @@ def shift_request_bulk_approve(request):
             notify.send(
                 request.user.employee_get,
                 recipient=shift_request.employee_id.employee_user_id,
-                verb="Your shift request has been approved.",
-                verb_ar="تمت الموافقة على طلبك للوردية.",
-                verb_de="Ihr Schichtantrag wurde genehmigt.",
-                verb_es="Se ha aprobado su solicitud de turno.",
-                verb_fr="Votre demande de quart a été approuvée.",
+                verb=gettext_noop("Your shift request has been approved."),
                 redirect=reverse("shift-request-view") + f"?id={shift_request.id}",
                 icon="checkmark",
             )
@@ -5742,11 +5657,7 @@ def shift_request_delete(request, id):
         notify.send(
             request.user.employee_get,
             recipient=user,
-            verb="Your shift request has been deleted.",
-            verb_ar="تم حذف طلب الوردية الخاص بك.",
-            verb_de="Ihr Schichtantrag wurde gelöscht.",
-            verb_es="Se ha eliminado su solicitud de turno.",
-            verb_fr="Votre demande de quart a été supprimée.",
+            verb=gettext_noop("Your shift request has been deleted."),
             redirect="#",
             icon="trash",
         )
@@ -5808,11 +5719,7 @@ def shift_request_bulk_delete(request):
             notify.send(
                 request.user.employee_get,
                 recipient=user,
-                verb="Your shift request has been deleted.",
-                verb_ar="تم حذف طلب الوردية الخاص بك.",
-                verb_de="Ihr Schichtantrag wurde gelöscht.",
-                verb_es="Se ha eliminado su solicitud de turno.",
-                verb_fr="Votre demande de quart a été supprimée.",
+                verb=gettext_noop("Your shift request has been deleted."),
                 redirect="#",
                 icon="trash",
             )
@@ -7310,11 +7217,10 @@ def create_shiftrequest_comment(request, shift_id):
                         notify.send(
                             request.user.employee_get,
                             recipient=rec,
-                            verb=f"{shift.employee_id}'s shift request has received a comment.",
-                            verb_ar=f"تلقت طلب تحويل {shift.employee_id} تعليقًا.",
-                            verb_de=f"{shift.employee_id}s Schichtantrag hat einen Kommentar erhalten.",
-                            verb_es=f"La solicitud de turno de {shift.employee_id} ha recibido un comentario.",
-                            verb_fr=f"La demande de changement de poste de {shift.employee_id} a reçu un commentaire.",
+                            verb=gettext_noop(
+                                "%(employee)s's shift request has received a comment."
+                            ),
+                            verb_params={"employee": str(shift.employee_id)},
                             redirect=reverse("shift-request-view") + f"?id={shift.id}",
                             icon="chatbox-ellipses",
                         )
@@ -7326,11 +7232,9 @@ def create_shiftrequest_comment(request, shift_id):
                         notify.send(
                             request.user.employee_get,
                             recipient=rec,
-                            verb="Your shift request has received a comment.",
-                            verb_ar="تلقت طلبك للتحول تعليقًا.",
-                            verb_de="Ihr Schichtantrag hat einen Kommentar erhalten.",
-                            verb_es="Tu solicitud de turno ha recibido un comentario.",
-                            verb_fr="Votre demande de changement de poste a reçu un commentaire.",
+                            verb=gettext_noop(
+                                "Your shift request has received a comment."
+                            ),
                             redirect=reverse("shift-request-view") + f"?id={shift.id}",
                             icon="chatbox-ellipses",
                         )
@@ -7342,11 +7246,10 @@ def create_shiftrequest_comment(request, shift_id):
                         notify.send(
                             request.user.employee_get,
                             recipient=rec,
-                            verb=f"{shift.employee_id}'s shift request has received a comment.",
-                            verb_ar=f"تلقت طلب تحويل {shift.employee_id} تعليقًا.",
-                            verb_de=f"{shift.employee_id}s Schichtantrag hat einen Kommentar erhalten.",
-                            verb_es=f"La solicitud de turno de {shift.employee_id} ha recibido un comentario.",
-                            verb_fr=f"La demande de changement de poste de {shift.employee_id} a reçu un commentaire.",
+                            verb=gettext_noop(
+                                "%(employee)s's shift request has received a comment."
+                            ),
+                            verb_params={"employee": str(shift.employee_id)},
                             redirect=reverse("shift-request-view") + f"?id={shift.id}",
                             icon="chatbox-ellipses",
                         )
@@ -7355,11 +7258,7 @@ def create_shiftrequest_comment(request, shift_id):
                     notify.send(
                         request.user.employee_get,
                         recipient=rec,
-                        verb="Your shift request has received a comment.",
-                        verb_ar="تلقت طلبك للتحول تعليقًا.",
-                        verb_de="Ihr Schichtantrag hat einen Kommentar erhalten.",
-                        verb_es="Tu solicitud de turno ha recibido un comentario.",
-                        verb_fr="Votre demande de changement de poste a reçu un commentaire.",
+                        verb=gettext_noop("Your shift request has received a comment."),
                         redirect=reverse("shift-request-view") + f"?id={shift.id}",
                         icon="chatbox-ellipses",
                     )
@@ -7610,11 +7509,10 @@ def create_worktyperequest_comment(request, worktype_id):
                         notify.send(
                             request.user.employee_get,
                             recipient=rec,
-                            verb=f"{work_type.employee_id}'s work type request has received a comment.",
-                            verb_ar=f"تلقت طلب نوع العمل {work_type.employee_id} تعليقًا.",
-                            verb_de=f"{work_type.employee_id}s Arbeitsart-Antrag hat einen Kommentar erhalten.",
-                            verb_es=f"La solicitud de tipo de trabajo de {work_type.employee_id} ha recibido un comentario.",
-                            verb_fr=f"La demande de type de travail de {work_type.employee_id} a reçu un commentaire.",
+                            verb=gettext_noop(
+                                "%(employee)s's work type request has received a comment."
+                            ),
+                            verb_params={"employee": str(work_type.employee_id)},
                             redirect=reverse("work-type-request-view")
                             + f"?id={work_type.id}",
                             icon="chatbox-ellipses",
@@ -7627,11 +7525,9 @@ def create_worktyperequest_comment(request, worktype_id):
                         notify.send(
                             request.user.employee_get,
                             recipient=rec,
-                            verb="Your work type request has received a comment.",
-                            verb_ar="تلقى طلب نوع العمل الخاص بك تعليقًا.",
-                            verb_de="Ihr Arbeitsart-Antrag hat einen Kommentar erhalten.",
-                            verb_es="Tu solicitud de tipo de trabajo ha recibido un comentario.",
-                            verb_fr="Votre demande de type de travail a reçu un commentaire.",
+                            verb=gettext_noop(
+                                "Your work type request has received a comment."
+                            ),
                             redirect=reverse("work-type-request-view")
                             + f"?id={work_type.id}",
                             icon="chatbox-ellipses",
@@ -7644,11 +7540,10 @@ def create_worktyperequest_comment(request, worktype_id):
                         notify.send(
                             request.user.employee_get,
                             recipient=rec,
-                            verb=f"{work_type.employee_id}'s work type request has received a comment.",
-                            verb_ar=f"تلقت طلب نوع العمل {work_type.employee_id} تعليقًا.",
-                            verb_de=f"{work_type.employee_id}s Arbeitsart-Antrag hat einen Kommentar erhalten.",
-                            verb_es=f"La solicitud de tipo de trabajo de {work_type.employee_id} ha recibido un comentario.",
-                            verb_fr=f"La demande de type de travail de {work_type.employee_id} a reçu un commentaire.",
+                            verb=gettext_noop(
+                                "%(employee)s's work type request has received a comment."
+                            ),
+                            verb_params={"employee": str(work_type.employee_id)},
                             redirect=reverse("work-type-request-view")
                             + f"?id={work_type.id}",
                             icon="chatbox-ellipses",
@@ -7658,11 +7553,9 @@ def create_worktyperequest_comment(request, worktype_id):
                     notify.send(
                         request.user.employee_get,
                         recipient=rec,
-                        verb="Your work type request has received a comment.",
-                        verb_ar="تلقى طلب نوع العمل الخاص بك تعليقًا.",
-                        verb_de="Ihr Arbeitsart-Antrag hat einen Kommentar erhalten.",
-                        verb_es="Tu solicitud de tipo de trabajo ha recibido un comentario.",
-                        verb_fr="Votre demande de type de travail a reçu un commentaire.",
+                        verb=gettext_noop(
+                            "Your work type request has received a comment."
+                        ),
                         redirect=reverse("work-type-request-view")
                         + f"?id={work_type.id}",
                         icon="chatbox-ellipses",

@@ -12,6 +12,7 @@ from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from base.filters import WorkTypeRequestFilter
 from base.forms import WorkTypeForm, WorkTypeRequestColumnForm, WorkTypeRequestForm
@@ -438,19 +439,11 @@ class WorkTypeFormView(HorillaFormView):
                 with contextlib.suppress(Exception):
                     notify.send(
                         instance.employee_id,
-                        recipient=(
-                            instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                        recipient=instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                        verb=gettext_noop(
+                            "You have new work type request to validate for %(employee)s"
                         ),
-                        verb=f"You have new work type request to \
-                            validate for {instance.employee_id}",
-                        verb_ar=f"لديك طلب نوع وظيفة جديد للتحقق من \
-                                {instance.employee_id}",
-                        verb_de=f"Sie haben eine neue Arbeitstypanfrage zur \
-                                Validierung für {instance.employee_id}",
-                        verb_es=f"Tiene una nueva solicitud de tipo de trabajo para \
-                                validar para {instance.employee_id}",
-                        verb_fr=f"Vous avez une nouvelle demande de type de travail\
-                                à valider pour {instance.employee_id}",
+                        verb_params={"employee": str(instance.employee_id)},
                         icon="information",
                         redirect=reverse("work-type-request-view")
                         + f"?id={instance.id}",

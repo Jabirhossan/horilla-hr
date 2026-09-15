@@ -10,6 +10,7 @@ from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from base.cbv.settings_rotatingwork import DynamicRotatingWorkTypeCreate
 from base.decorators import manager_can_enter
@@ -375,11 +376,7 @@ class RotatingWorkTypeFormView(HorillaFormView):
                 notify.send(
                     self.request.user.employee_get,
                     recipient=users,
-                    verb="You are added to rotating work type",
-                    verb_ar="تمت إضافتك إلى نوع العمل المتناوب",
-                    verb_de="Sie werden zum rotierenden Arbeitstyp hinzugefügt",
-                    verb_es="Se le agrega al tipo de trabajo rotativo",
-                    verb_fr="Vous êtes ajouté au type de travail rotatif",
+                    verb=gettext_noop("You are added to rotating work type"),
                     icon="infinite",
                     redirect=reverse("employee-profile"),
                 )

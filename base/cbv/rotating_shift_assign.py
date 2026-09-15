@@ -12,6 +12,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from base.cbv.rotating_shift import DynamicRotatingShiftTypeFormView
 from base.decorators import manager_can_enter
@@ -377,11 +378,7 @@ class RotatingShiftFormView(HorillaFormView):
                     notify.send(
                         self.request.user.employee_get,
                         recipient=users,
-                        verb="You are added to rotating shift",
-                        verb_ar="تمت إضافتك إلى وردية الدورية",
-                        verb_de="Sie werden der rotierenden Arbeitsschicht hinzugefügt",
-                        verb_es="Estás agregado a turno rotativo",
-                        verb_fr="Vous êtes ajouté au quart de travail rotatif",
+                        verb=gettext_noop("You are added to rotating shift"),
                         icon="infinite",
                         redirect=reverse("employee-profile"),
                     )
