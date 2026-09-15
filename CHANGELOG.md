@@ -32,6 +32,88 @@ date and open a fresh Unreleased above it.
 ### Security      — vulnerabilities fixed; link the advisory and credit the reporter
 -->
 
+## [2.1.7] — 2026-09-16
+
+Bug-fix release, and the first to carry a **security fix**: archiving an
+employee did not revoke their login. Anyone offboarded by archiving since 2.1.x
+kept working credentials — see below for what to check after upgrading.
+
+One migration, `notifications.0003`, **drops five columns**. Read the Changed
+section before upgrading.
+
+### Security
+
+- **Archiving an employee did not revoke their login.**
+  ([#1239](https://github.com/horilla/horilla-hr/issues/1239), reported by
+  **@Safeer1877**) Archiving removed the employee from every list and left the
+  linked user account active, so an offboarded person could still sign in with
+  every permission they held. Two faults masked each other: the user's flag was
+  assigned the employee's *previous* value, and the user object was never saved
+  — so nothing was written either way. The login gate is
+  `HorillaUser.is_active`, which `CompanyScopedBackend` inherits from
+  `ModelBackend` and which knows nothing about `Employee.is_active`.
+
+  Affected the three archive views **and both REST API archive endpoints**
+  (`EmployeeBulkArchiveView`, `EmployeeArchiveView`), which were outside the
+  original report.
+
+  **After upgrading**, check for user accounts that are still active while
+  their employee record is archived — the fix corrects future archives but
+  does not retroactively disable accounts archived before it. Clearing
+  `is_active` also stops future logins without invalidating a session already
+  in flight.
+
+- **Three CRITICAL CVEs in the container's `perl-base`**
+  (CVE-2026-13221, CVE-2026-42496, CVE-2026-8376). The image installed
+  packages without first upgrading what the base image already carried, so a
+  published Debian security patch was never picked up. The build now upgrades
+  before installing.
+
+### Fixed
+
+- **Password reset emails linked to `example.com`.**
+  ([#1241](https://github.com/horilla/horilla-hr/issues/1241), reported by
+  **@KerelOlivier**) The link was built from `django.contrib.sites`, whose only
+  row on a normal install is the framework's own default — and which Horilla
+  never updates. Reset links now use the request host, matching what
+  leave-request mail already did. The host is taken from `request.get_host()`,
+  which is validated against `ALLOWED_HOSTS`; deployments behind a proxy should
+  set `USE_X_FORWARDED_HOST` rather than have an unvalidated forwarded header
+  steer a link that grants account access.
+
+- **Creating a payslip returned a 500 after the payslip had been saved.**
+  ([#1238](https://github.com/horilla/horilla-hr/issues/1238), reported by
+  **@Safeer1877**) The redirect used a URL name belonging to an argument-less
+  list view, so it raised `NoReverseMatch` *after* the payslip was committed.
+  The obvious response — clicking Create again — produced a duplicate for the
+  same employee and period. Also affected adding a bonus and a deduction.
+
+- **Unpaid leave was deducted twice** when `deduct_leave_from_basic_pay` is
+  enabled, which is the model default.
+  ([#1225](https://github.com/horilla/horilla-hr/issues/1225), reported by
+  **@Safeer1877**) The loss of pay came out of basic pay and again out of net
+  pay, so the employee was underpaid by exactly the LOP amount.
+
+- **The version shown in the UI said 2.1.5** on installs built from `2.0`
+  after 2.1.6, because an unrelated commit reverted the version module.
+
+- Numerous URL, HTMX-request and error-handling fixes across Asset,
+  Attendance, Base, Leave, Offboarding, PMS and Project, including a
+  `RelatedObjectDoesNotExist` when work information is absent and a duplicate
+  key error on some URLs.
+
+### Changed
+
+- **Notification text now uses Django's native i18n** rather than storing one
+  column per language. `notifications.0003` **removes the `verb_ar`,
+  `verb_de`, `verb_en`, `verb_es` and `verb_fr` columns**, and that is not
+  reversible: any text stored in them is dropped. Notifications are translated
+  at render time from the base `verb` instead. Take a database backup before
+  upgrading if those columns matter to you.
+
+- Dependency updates, including `djangorestframework` 3.17.2 → 3.18.1 and
+  `sentry-sdk` 2.20.0 → 2.69.1.
+
 ## [2.1.6] — 2026-09-11
 
 Bug-fix release. No security content. One migration, `employee.0006`, which
@@ -384,7 +466,8 @@ Secret — message delivery stops until it is set.
 docker pull horilla/horilla-hr:2.1.1
 ```
 
-[Unreleased]: https://github.com/horilla/horilla-hr/compare/2.1.6...HEAD
+[Unreleased]: https://github.com/horilla/horilla-hr/compare/2.1.7...HEAD
+[2.1.7]: https://github.com/horilla/horilla-hr/compare/2.1.6...2.1.7
 [2.1.6]: https://github.com/horilla/horilla-hr/compare/2.1.5...2.1.6
 [2.1.5]: https://github.com/horilla/horilla-hr/compare/2.1.4...2.1.5
 [2.1.4]: https://github.com/horilla/horilla-hr/compare/2.1.3...2.1.4
