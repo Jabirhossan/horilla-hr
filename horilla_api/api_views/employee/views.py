@@ -2,6 +2,7 @@ from django.db.models import ProtectedError, Q
 from django.http import Http404
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
@@ -311,13 +312,8 @@ class EmployeeBankDetailsAPIView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # Was manager_permission_required, which has no owner path at all and asks
-    # only whether anybody reports to the caller -- so any line manager could
-    # delete any employee's bank record. Same flaw as the PUT above
-    # (GHSA-39gq-9wwx-p8hx), with destruction rather than redirection as the
-    # outcome. The permission string is left as-is: scoping the manager check is
-    # the security fix, and swapping change_ for delete_ here would silently
-    # change who can use the endpoint on existing installs.
+    # Was manager_permission_required (no owner scoping, any manager could delete any
+    # employee's bank record - GHSA-39gq-9wwx-p8hx). Permission string kept as-is on purpose.
     @manager_or_owner_permission_required(
         EmployeeBankDetails, "employee.change_employeebankdetails"
     )
@@ -780,11 +776,8 @@ class DocumentRequestAPIView(APIView):
                 notify.send(
                     request.user.employee_get,
                     recipient=employees,
-                    verb=f"{request.user.employee_get} requested a document.",
-                    verb_ar=f"طلب {request.user.employee_get} مستنداً.",
-                    verb_de=f"{request.user.employee_get} hat ein Dokument angefordert.",
-                    verb_es=f"{request.user.employee_get} solicitó un documento.",
-                    verb_fr=f"{request.user.employee_get} a demandé un document.",
+                    verb=gettext_noop("%(employee_get)s requested a document."),
+                    verb_params={"employee_get": str(request.user.employee_get)},
                     redirect="/employee/employee-profile",
                     icon="chatbox-ellipses",
                     api_redirect=f"/api/employee/document-request/{obj.id}",
@@ -797,12 +790,8 @@ class DocumentRequestAPIView(APIView):
     @manager_permission_required("horilla_documents.change_documentrequests")
     def put(self, request, pk):
         document_request = self.get_object(pk)
-        # A document request is addressed to a set of employees, so the generic
-        # target-scoped decorators -- which resolve one `employee_id` -- do not
-        # apply. Editing it means editing what every addressee is being asked
-        # for, so the caller must hold the permission or manage all of them
-        # (GHSA-97wm-28fj-g4pj). `manager_permission_required` above only
-        # established that somebody, somewhere, reports to the caller.
+        # A request can be addressed to multiple employees, so editing it requires the
+        # permission or managing all addressees, not just one (GHSA-97wm-28fj-g4pj).
         if not request.user.has_perm("horilla_documents.change_documentrequests"):
             employee = request.user.employee_get
             addressees = document_request.employee_id.all()
@@ -837,15 +826,8 @@ class DocumentAPIView(APIView):
 
     def get_object(self, pk, request, perm="horilla_documents.view_document"):
         """
-        Resolve a document and authorize the caller against it.
-
-        ``request`` used to default to None, and the check ran only when a
-        caller happened to pass it -- authorization was opt-in per handler.
-        delete() did not opt in, so any authenticated employee could destroy any
-        other employee's contracts and identity documents by id
-        (GHSA-x72c-5gf7-97g3). An optional argument that silently disables an
-        authorization check is the defect; making it required means the next
-        handler added here cannot forget it.
+        Resolve a document and authorize the caller against it. `request` is required
+        (not optional) so no handler can silently skip authorization (GHSA-x72c-5gf7-97g3).
         """
         try:
             document = Document.objects.get(pk=pk)
@@ -890,11 +872,8 @@ class DocumentAPIView(APIView):
                 notify.send(
                     request.user.employee_get,
                     recipient=request.user.employee_get.get_reporting_manager().employee_user_id,
-                    verb=f"{request.user.employee_get} uploaded a document",
-                    verb_ar=f"قام {request.user.employee_get} بتحميل مستند",
-                    verb_de=f"{request.user.employee_get} hat ein Dokument hochgeladen",
-                    verb_es=f"{request.user.employee_get} subió un documento",
-                    verb_fr=f"{request.user.employee_get} a téléchargé un document",
+                    verb=gettext_noop("%(employee_get)s uploaded a document"),
+                    verb_params={"employee_get": str(request.user.employee_get)},
                     redirect=f"/employee/employee-view/{request.user.employee_get.id}/",
                     icon="chatbox-ellipses",
                     api_redirect=f"/api/employee/documents/",
@@ -904,14 +883,8 @@ class DocumentAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # The owner_can_enter decorators that used to sit on put and delete are
-    # gone. They were configured with model=Employee while the pk in the URL is
-    # a Document id, so they resolved an Employee from a document id: wrong in
-    # both directions. Usually no employee had that id, and the decorator's
-    # `or not employee` branch let the call through unchecked; when the ids did
-    # collide it authorized against an unrelated employee and could refuse the
-    # document's actual owner. get_object performs the real per-document check,
-    # so removing them takes away misleading cover, not protection.
+    # The owner_can_enter decorators formerly here resolved an Employee from a Document id
+    # (wrong model), so removing them takes away misleading cover, not protection - get_object does the real check.
     def put(self, request, pk):
         document = self.get_object(pk, request, "horilla_documents.change_document")
         serializer = DocumentSerializer(document, data=request.data)
@@ -951,10 +924,8 @@ class DocumentBulkApproveRejectAPIView(APIView):
         if ids:
             documents = Document.objects.filter(id__in=ids)
             if not request.user.has_perm("horilla_documents.add_document"):
-                # Same rule as the single-record approve/reject endpoint: never
-                # your own, and only for employees you manage. Without this the
-                # bulk route is the unscoped version of the one next door
-                # (GHSA-97wm-28fj-g4pj).
+                # Same rule as the single-record endpoint: never your own, only employees
+                # you manage - otherwise this is the unscoped version (GHSA-97wm-28fj-g4pj).
                 employee = request.user.employee_get
                 documents = documents.exclude(employee_id=employee)
                 documents = documents.filter(

@@ -1,8 +1,12 @@
+from datetime import datetime, timedelta
 from typing import Any
 
+from bs4 import BeautifulSoup
+from django.db.models import Q
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
@@ -16,6 +20,8 @@ from base.filters import (
     WorkTypeRequestFilter,
 )
 from base.models import (
+    Announcement,
+    AnnouncementExpire,
     Company,
     Department,
     EmployeeShift,
@@ -390,19 +396,11 @@ class WorkTypeRequestView(APIView):
             try:
                 notify.send(
                     instance.employee_id,
-                    recipient=(
-                        instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                    recipient=instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                    verb=gettext_noop(
+                        "You have new work type request to validate for %(employee)s"
                     ),
-                    verb=f"You have new work type request to \
-                                validate for {instance.employee_id}",
-                    verb_ar=f"لديك طلب نوع وظيفة جديد للتحقق من \
-                                {instance.employee_id}",
-                    verb_de=f"Sie haben eine neue Arbeitstypanfrage zur \
-                                Validierung für {instance.employee_id}",
-                    verb_es=f"Tiene una nueva solicitud de tipo de trabajo para \
-                                validar para {instance.employee_id}",
-                    verb_fr=f"Vous avez une nouvelle demande de type de travail\
-                                à valider pour {instance.employee_id}",
+                    verb_params={"employee": str(instance.employee_id)},
                     icon="information",
                     redirect=f"/employee/work-type-request-view?id={instance.id}",
                     api_redirect=f"/api/base/worktype-requests/{instance.id}",
@@ -460,11 +458,7 @@ class WorkTypeRequestCancelView(APIView):
                 notify.send(
                     request.user.employee_get,
                     recipient=work_type_request.employee_id.employee_user_id,
-                    verb="Your work type request has been rejected.",
-                    verb_ar="تم إلغاء طلب نوع وظيفتك",
-                    verb_de="Ihre Arbeitstypanfrage wurde storniert",
-                    verb_es="Su solicitud de tipo de trabajo ha sido cancelada",
-                    verb_fr="Votre demande de type de travail a été annulée",
+                    verb=gettext_noop("Your work type request has been rejected."),
                     redirect=f"/employee/work-type-request-view?id={work_type_request.id}",
                     icon="close",
                     api_redirect="/api/base/worktype-requests/<int:pk>/",
@@ -495,11 +489,7 @@ class WorkRequestApproveView(APIView):
                     notify.send(
                         request.user.employee_get,
                         recipient=work_type_request.employee_id.employee_user_id,
-                        verb="Your work type request has been approved.",
-                        verb_ar="تمت الموافقة على طلب نوع وظيفتك.",
-                        verb_de="Ihre Arbeitstypanfrage wurde genehmigt.",
-                        verb_es="Su solicitud de tipo de trabajo ha sido aprobada.",
-                        verb_fr="Votre demande de type de travail a été approuvée.",
+                        verb=gettext_noop("Your work type request has been approved."),
                         redirect=f"/employee/work-type-request-view?id={work_type_request.id}",
                         icon="checkmark",
                         api_redirect="/api/base/worktype-requests/<int:pk>/",
@@ -593,11 +583,7 @@ class RotatingWorkTypeAssignView(APIView):
                 notify.send(
                     request.user.employee_get,
                     recipient=users,
-                    verb="You are added to rotating work type",
-                    verb_ar="تمت إضافتك إلى نوع العمل المتناوب",
-                    verb_de="Sie werden zum rotierenden Arbeitstyp hinzugefügt",
-                    verb_es="Se le agrega al tipo de trabajo rotativo",
-                    verb_fr="Vous êtes ajouté au type de travail rotatif",
+                    verb=gettext_noop("You are added to rotating work type"),
                     icon="infinite",
                     redirect="/employee/employee-profile/",
                     api_redirect="",
@@ -1323,14 +1309,6 @@ class CheckUserLevel(APIView):
         if request.user.has_perm(perm):
             return Response(status=200)
         return Response({"error": _("No permission")}, status=400)
-
-
-from datetime import datetime, timedelta
-
-from bs4 import BeautifulSoup
-from django.db.models import Q
-
-from base.models import Announcement, AnnouncementExpire
 
 
 class AnnouncementPagination(PageNumberPagination):

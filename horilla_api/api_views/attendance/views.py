@@ -8,6 +8,7 @@ from django.http import QueryDict
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
@@ -373,11 +374,10 @@ class ValidateAttendanceView(APIView):
             notify.send(
                 request.user.employee_get,
                 recipient=attendance.employee_id.employee_user_id,
-                verb=f"Your attendance for the date {attendance.attendance_date} is validated",
-                verb_ar=f"تم تحقيق حضورك في تاريخ {attendance.attendance_date}",
-                verb_de=f"Deine Anwesenheit für das Datum {attendance.attendance_date} ist bestätigt.",
-                verb_es=f"Se valida tu asistencia para la fecha {attendance.attendance_date}.",
-                verb_fr=f"Votre présence pour la date {attendance.attendance_date} est validée.",
+                verb=gettext_noop(
+                    "Your attendance for the date %(attendance_date)s is validated"
+                ),
+                verb_params={"attendance_date": str(attendance.attendance_date)},
                 redirect="/attendance/view-my-attendance",
                 icon="checkmark",
                 api_redirect=f"/api/attendance/attendance?employee_id{attendance.employee_id}",
@@ -411,11 +411,10 @@ class OvertimeApproveView(APIView):
             notify.send(
                 request.user.employee_get,
                 recipient=attendance.employee_id.employee_user_id,
-                verb=f"Your {attendance.attendance_date}'s attendance overtime approved.",
-                verb_ar=f"تمت الموافقة على إضافة ساعات العمل الإضافية لتاريخ {attendance.attendance_date}.",
-                verb_de=f"Die Überstunden für den {attendance.attendance_date} wurden genehmigt.",
-                verb_es=f"Se ha aprobado el tiempo extra de asistencia para el {attendance.attendance_date}.",
-                verb_fr=f"Les heures supplémentaires pour la date {attendance.attendance_date} ont été approuvées.",
+                verb=gettext_noop(
+                    "Your %(attendance_date)s's attendance overtime approved."
+                ),
+                verb_params={"attendance_date": str(attendance.attendance_date)},
                 redirect="/attendance/attendance-overtime-view",
                 icon="checkmark",
                 api_redirect="/api/attendance/attendance-hour-account/",
