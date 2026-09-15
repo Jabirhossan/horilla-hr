@@ -44,6 +44,7 @@ from django.utils import timezone as django_timezone
 from django.utils.timezone import now
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from django.views.decorators.http import require_http_methods
 from PIL import Image
 from xlsxwriter.utility import xl_range
@@ -1413,11 +1414,10 @@ def validate_bulk_attendance(request):
             notify.send(
                 request.user.employee_get,
                 recipient=attendance.employee_id.employee_user_id,
-                verb=f"Your attendance for the date {attendance.attendance_date} is validated",
-                verb_ar=f"تم التحقق من حضورك في تاريخ {attendance.attendance_date}",
-                verb_de=f"Ihre Anwesenheit für das Datum {attendance.attendance_date} wurde bestätigt",
-                verb_es=f"Se ha validado su asistencia para la fecha {attendance.attendance_date}",
-                verb_fr=f"Votre présence pour la date {attendance.attendance_date} est validée",
+                verb=gettext_noop(
+                    "Your attendance for the date %(attendance_date)s is validated"
+                ),
+                verb_params={"attendance_date": str(attendance.attendance_date)},
                 redirect=reverse("view-my-attendance") + f"?id={attendance.id}",
                 icon="checkmark",
             )
@@ -1482,11 +1482,10 @@ def validate_this_attendance(request, obj_id):
         notify.send(
             request.user.employee_get,
             recipient=attendance.employee_id.employee_user_id,
-            verb=f"Your attendance for the date {attendance.attendance_date} is validated",
-            verb_ar=f"تم تحقيق حضورك في تاريخ {attendance.attendance_date}",
-            verb_de=f"Deine Anwesenheit für das Datum {attendance.attendance_date} ist bestätigt.",
-            verb_es=f"Se valida tu asistencia para la fecha {attendance.attendance_date}.",
-            verb_fr=f"Votre présence pour la date {attendance.attendance_date} est validée.",
+            verb=gettext_noop(
+                "Your attendance for the date %(attendance_date)s is validated"
+            ),
+            verb_params={"attendance_date": str(attendance.attendance_date)},
             redirect=reverse("view-my-attendance") + f"?id={attendance.id}",
             icon="checkmark",
         )
@@ -1518,19 +1517,14 @@ def revalidate_this_attendance(request, obj_id):
         with contextlib.suppress(Exception):
             notify.send(
                 request.user.employee_get,
-                recipient=(
-                    attendance.employee_id.employee_work_info.reporting_manager_id.employee_user_id
+                recipient=attendance.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
+                verb=gettext_noop(
+                    "%(employee)s requested revalidation for %(attendance_date)s attendance"
                 ),
-                verb=f"{attendance.employee_id} requested revalidation for \
-                    {attendance.attendance_date} attendance",
-                verb_ar=f"{attendance.employee_id} طلب إعادة\
-                      التحقق من حضور تاريخ {attendance.attendance_date}",
-                verb_de=f"{attendance.employee_id} beantragte eine Neubewertung der \
-                    Teilnahme am {attendance.attendance_date}",
-                verb_es=f"{attendance.employee_id} solicitó la validación nuevamente \
-                    para la asistencia del {attendance.attendance_date}",
-                verb_fr=f"{attendance.employee_id} a demandé une revalidation pour la \
-                    présence du {attendance.attendance_date}",
+                verb_params={
+                    "employee": str(attendance.employee_id),
+                    "attendance_date": str(attendance.attendance_date),
+                },
                 redirect=reverse("view-my-attendance") + f"?id={attendance.id}",
                 icon="refresh",
             )
@@ -1569,16 +1563,10 @@ def approve_overtime(request, obj_id):
             notify.send(
                 request.user.employee_get,
                 recipient=attendance.employee_id.employee_user_id,
-                verb=f"Your {attendance.attendance_date}'s attendance \
-                    overtime approved.",
-                verb_ar=f"تمت الموافقة على إضافة ساعات العمل الإضافية لتاريخ \
-                    {attendance.attendance_date}.",
-                verb_de=f"Die Überstunden für den {attendance.attendance_date}\
-                      wurden genehmigt.",
-                verb_es=f"Se ha aprobado el tiempo extra de asistencia para el \
-                    {attendance.attendance_date}.",
-                verb_fr=f"Les heures supplémentaires pour la date\
-                      {attendance.attendance_date} ont été approuvées.",
+                verb=gettext_noop(
+                    "Your %(attendance_date)s's attendance overtime approved."
+                ),
+                verb_params={"attendance_date": str(attendance.attendance_date)},
                 redirect=reverse("attendance-overtime-view") + f"?id={attendance.id}",
                 icon="checkmark",
             )
@@ -1614,16 +1602,10 @@ def approve_bulk_overtime(request):
             notify.send(
                 request.user.employee_get,
                 recipient=attendance.employee_id.employee_user_id,
-                verb=f"Overtime approved for\
-                      {attendance.attendance_date}'s attendance",
-                verb_ar=f"تمت الموافقة على العمل الإضافي لحضور تاريخ \
-                    {attendance.attendance_date}",
-                verb_de=f"Überstunden für die Anwesenheit am \
-                    {attendance.attendance_date} genehmigt",
-                verb_es=f"Horas extra aprobadas para la asistencia del \
-                    {attendance.attendance_date}",
-                verb_fr=f"Heures supplémentaires approuvées pour la présence du \
-                    {attendance.attendance_date}",
+                verb=gettext_noop(
+                    "Overtime approved for %(attendance_date)s's attendance"
+                ),
+                verb_params={"attendance_date": str(attendance.attendance_date)},
                 redirect=reverse("attendance-overtime-view") + f"?id={attendance.id}",
                 icon="checkmark",
             )
@@ -2356,11 +2338,10 @@ def create_attendancerequest_comment(request, attendance_id):
                         notify.send(
                             request.user.employee_get,
                             recipient=rec,
-                            verb=f"{attendance.employee_id}'s attendance request has received a comment.",
-                            verb_ar=f"تلقت طلب الحضور {attendance.employee_id} تعليقًا.",
-                            verb_de=f"{attendance.employee_id}s Anfrage zur Anwesenheit hat einen Kommentar erhalten.",
-                            verb_es=f"La solicitud de asistencia de {attendance.employee_id} ha recibido un comentario.",
-                            verb_fr=f"La demande de présence de {attendance.employee_id} a reçu un commentaire.",
+                            verb=gettext_noop(
+                                "%(employee)s's attendance request has received a comment."
+                            ),
+                            verb_params={"employee": str(attendance.employee_id)},
                             redirect=reverse("request-attendance-view")
                             + f"?id={attendance.id}",
                             icon="chatbox-ellipses",
@@ -2373,11 +2354,9 @@ def create_attendancerequest_comment(request, attendance_id):
                         notify.send(
                             request.user.employee_get,
                             recipient=rec,
-                            verb="Your attendance request has received a comment.",
-                            verb_ar="تلقى طلب الحضور الخاص بك تعليقًا.",
-                            verb_de="Ihr Antrag auf Anwesenheit hat einen Kommentar erhalten.",
-                            verb_es="Tu solicitud de asistencia ha recibido un comentario.",
-                            verb_fr="Votre demande de présence a reçu un commentaire.",
+                            verb=gettext_noop(
+                                "Your attendance request has received a comment."
+                            ),
                             redirect=reverse("request-attendance-view")
                             + f"?id={attendance.id}",
                             icon="chatbox-ellipses",
@@ -2390,11 +2369,10 @@ def create_attendancerequest_comment(request, attendance_id):
                         notify.send(
                             request.user.employee_get,
                             recipient=rec,
-                            verb=f"{attendance.employee_id}'s attendance request has received a comment.",
-                            verb_ar=f"تلقت طلب الحضور {attendance.employee_id} تعليقًا.",
-                            verb_de=f"{attendance.employee_id}s Anfrage zur Anwesenheit hat einen Kommentar erhalten.",
-                            verb_es=f"La solicitud de asistencia de {attendance.employee_id} ha recibido un comentario.",
-                            verb_fr=f"La demande de présence de {attendance.employee_id} a reçu un commentaire.",
+                            verb=gettext_noop(
+                                "%(employee)s's attendance request has received a comment."
+                            ),
+                            verb_params={"employee": str(attendance.employee_id)},
                             redirect=reverse("request-attendance-view")
                             + f"?id={attendance.id}",
                             icon="chatbox-ellipses",
@@ -2404,11 +2382,9 @@ def create_attendancerequest_comment(request, attendance_id):
                     notify.send(
                         request.user.employee_get,
                         recipient=rec,
-                        verb="Your attendance request has received a comment.",
-                        verb_ar="تلقى طلب الحضور الخاص بك تعليقًا.",
-                        verb_de="Ihr Antrag auf Anwesenheit hat einen Kommentar erhalten.",
-                        verb_es="Tu solicitud de asistencia ha recibido un comentario.",
-                        verb_fr="Votre demande de présence a reçu un commentaire.",
+                        verb=gettext_noop(
+                            "Your attendance request has received a comment."
+                        ),
                         redirect=reverse("request-attendance-view")
                         + f"?id={attendance.id}",
                         icon="chatbox-ellipses",

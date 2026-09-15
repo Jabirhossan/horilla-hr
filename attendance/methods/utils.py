@@ -386,15 +386,6 @@ def pending_hour_data(labels, records):
     return data
 
 
-def get_employee_last_name(attendance):
-    """
-    This method is used to return the last name
-    """
-    if attendance.employee_id.employee_last_name:
-        return attendance.employee_id.employee_last_name
-    return ""
-
-
 def attendance_day_checking(attendance_date, minimum_hour, employee=None):
     # Convert the string to a datetime object
     attendance_datetime = datetime.strptime(attendance_date, "%Y-%m-%d")
