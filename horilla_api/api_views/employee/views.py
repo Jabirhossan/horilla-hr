@@ -986,9 +986,9 @@ class EmployeeBulkArchiveView(APIView):
         for employee_id in ids:
             employee = Employee.objects.get(id=employee_id)
             employee.is_active = is_active
-            employee.employee_user_id.is_active = is_active
             if employee.get_archive_condition() is False:
                 employee.save()
+                employee.sync_login_access()
             error.append(
                 {
                     "employee": str(employee),
@@ -1005,10 +1005,10 @@ class EmployeeArchiveView(APIView):
     def post(self, request, id, is_active):
         employee = Employee.objects.get(id=id)
         employee.is_active = is_active
-        employee.employee_user_id.is_active = is_active
         response = None
         if employee.get_archive_condition() is False:
             employee.save()
+            employee.sync_login_access()
         else:
             response = {
                 "employee": str(employee),

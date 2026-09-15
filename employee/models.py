@@ -409,6 +409,29 @@ class Employee(models.Model):
             attendance_date=datetime.today()
         ).first()
 
+    def sync_login_access(self):
+        """Mirror ``is_active`` onto the linked user account.
+
+        Archiving an employee is the expected way to offboard someone, but the
+        login gate is ``HorillaUser.is_active`` -- ``CompanyScopedBackend``
+        inherits ``ModelBackend.user_can_authenticate``, which reads that flag
+        and knows nothing about ``Employee.is_active``. Setting the employee
+        flag alone therefore hid the person from every list while leaving their
+        credentials working.
+
+        Call this immediately after a save that changed ``is_active``. It is
+        deliberately NOT wired into ``save()``: ``ToggleDashboardAccess``
+        revokes a login while leaving the employee active, and syncing on every
+        save would silently hand that access back.
+
+        Derives the user's value from ``self.is_active`` rather than negating
+        anything, so it cannot reintroduce the inversion this replaces.
+        """
+        user = self.employee_user_id
+        if user is not None and user.is_active != self.is_active:
+            user.is_active = self.is_active
+            user.save(update_fields=["is_active"])
+
     def get_archive_condition(self):
         """
         Determine whether an employee is eligible for archiving based on their

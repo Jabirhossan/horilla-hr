@@ -2306,9 +2306,9 @@ def employee_bulk_archive(request):
                 return HttpResponse("<script>$('#filterEmployee').click();</script>")
 
         employee.is_active = is_active
-        employee.employee_user_id.is_active = is_active
         if employee.get_archive_condition() is False:
             employee.save()
+            employee.sync_login_access()
             message = _("archived")
             if is_active:
                 message = _("un-archived")
@@ -2336,7 +2336,6 @@ def employee_archive(request, obj_id):
         messages.error(request, _("Employee not found."))
         return HorillaRedirect(request)
     employee.is_active = not employee.is_active
-    employee.employee_user_id.is_active = not employee.is_active
     save = True
     message = "Employee un-archived"
     if not employee.is_active:
@@ -2359,6 +2358,7 @@ def employee_archive(request, obj_id):
             message = _("Employee archived")
     if save:
         employee.save()
+        employee.sync_login_access()
         messages.success(request, message)
         key = "HTTP_HX_REQUEST"
         if key not in request.META.keys():
@@ -2497,7 +2497,6 @@ def get_manager_in(request):
     else:
         title = _("Can't Archive")
     employee.is_active = not employee.is_active
-    employee.employee_user_id.is_active = not employee.is_active
     save = True
     message = "Employee un-archived"
     if not employee.is_active:
@@ -2508,6 +2507,7 @@ def get_manager_in(request):
             message = _("Employee archived")
     if save:
         employee.save()
+        employee.sync_login_access()
         messages.success(request, message)
         return HorillaRedirect(request)
     else:
