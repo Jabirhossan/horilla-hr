@@ -12,6 +12,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from base.context_processors import intial_notice_period
 from base.methods import closest_numbers, eval_validate, paginator_qry, sortby
@@ -247,11 +248,7 @@ def create_offboarding(request):
             notify.send(
                 request.user.employee_get,
                 recipient=users,
-                verb="You are chosen as an offboarding manager",
-                verb_ar="لقد تم اختيارك كمدير عملية المغادرة",
-                verb_de="Sie wurden als Offboarding-Manager ausgewählt",
-                verb_es="Has sido elegido como gerente de offboarding",
-                verb_fr="Vous avez été choisi comme responsable du processus de départ",
+                verb=gettext_noop("You are chosen as an offboarding manager"),
                 icon="people-circle",
                 redirect=reverse("offboarding-pipeline"),
             )
@@ -308,11 +305,7 @@ def create_stage(request):
             notify.send(
                 request.user.employee_get,
                 recipient=users,
-                verb="You are chosen as offboarding stage manager",
-                verb_ar="لقد تم اختيارك كمدير لمرحلة عملية المغادرة",
-                verb_de="Sie wurden als Manager der Offboarding-Phase ausgewählt",
-                verb_es="Has sido elegido como gerente de la etapa de offboarding",
-                verb_fr="Vous avez été choisi comme responsable de l'étape de départ",
+                verb=gettext_noop("You are chosen as offboarding stage manager"),
                 icon="people-circle",
                 redirect=reverse("offboarding-pipeline"),
             )
@@ -389,11 +382,13 @@ def add_employee(request):
                 notify.send(
                     request.user.employee_get,
                     recipient=instance.employee_id.employee_user_id,
-                    verb=f"You have been added to the {stage} of {stage.offboarding_id}",
-                    verb_ar=f"لقد تمت إضافتك إلى {stage} من {stage.offboarding_id}",
-                    verb_de=f"Du wurdest zu {stage} von {stage.offboarding_id} hinzugefügt",
-                    verb_es=f"Has sido añadido a {stage} de {stage.offboarding_id}",
-                    verb_fr=f"Vous avez été ajouté à {stage} de {stage.offboarding_id}",
+                    verb=gettext_noop(
+                        "You have been added to the %(stage)s of %(offboarding_id)s"
+                    ),
+                    verb_params={
+                        "stage": str(stage),
+                        "offboarding_id": str(stage.offboarding_id),
+                    },
                     redirect=reverse("offboarding-pipeline"),
                     icon="information",
                 )
@@ -418,11 +413,7 @@ def delete_employee(request):
             recipient=HorillaUser.objects.filter(
                 id__in=instances.values_list("employee_id__employee_user_id", flat=True)
             ),
-            verb=f"You have been removed from the offboarding",
-            verb_ar=f"لقد تمت إزالتك من إنهاء الخدمة",
-            verb_de=f"Du wurdest aus dem Offboarding entfernt",
-            verb_es=f"Has sido eliminado del offboarding",
-            verb_fr=f"Vous avez été retiré de l'offboarding",
+            verb=gettext_noop("You have been removed from the offboarding"),
             redirect=reverse("offboarding-pipeline"),
             icon="information",
         )
@@ -549,11 +540,7 @@ def change_stage(request):
         recipient=HorillaUser.objects.filter(
             id__in=employees.values_list("employee_id__employee_user_id", flat=True)
         ),
-        verb=f"Offboarding stage has been changed",
-        verb_ar=f"تم تغيير مرحلة إنهاء الخدمة",
-        verb_de=f"Die Offboarding-Stufe wurde geändert",
-        verb_es=f"Se ha cambiado la etapa de offboarding",
-        verb_fr=f"L'étape d'offboarding a été changée",
+        verb=gettext_noop("Offboarding stage has been changed"),
         redirect=reverse("offboarding-pipeline"),
         icon="information",
     )
@@ -617,11 +604,7 @@ def change_offboarding_stage(request):
         recipient=HorillaUser.objects.filter(
             id__in=employees.values_list("employee_id__employee_user_id", flat=True)
         ),
-        verb=f"Offboarding stage has been changed",
-        verb_ar=f"تم تغيير مرحلة إنهاء الخدمة",
-        verb_de=f"Die Offboarding-Stufe wurde geändert",
-        verb_es=f"Se ha cambiado la etapa de offboarding",
-        verb_fr=f"L'étape d'offboarding a été changée",
+        verb=gettext_noop("Offboarding stage has been changed"),
         redirect=reverse("offboarding-pipeline"),
         icon="information",
     )
@@ -793,11 +776,7 @@ def update_task_status(request, *args, **kwargs):
                 "task_id__managers__employee_user_id", flat=True
             )
         ),
-        verb=f"Offboarding Task status has been updated",
-        verb_ar=f"تم تحديث حالة مهمة إنهاء الخدمة",
-        verb_de=f"Der Status der Offboarding-Aufgabe wurde aktualisiert",
-        verb_es=f"Se ha actualizado el estado de la tarea de offboarding",
-        verb_fr=f"Le statut de la tâche d'offboarding a été mis à jour",
+        verb=gettext_noop("Offboarding Task status has been updated"),
         redirect=reverse("offboarding-pipeline"),
         icon="information",
     )
@@ -1243,11 +1222,10 @@ def update_status(request):
             notify.send(
                 request.user.employee_get,
                 recipient=letter.employee_id.employee_user_id,
-                verb=f"Resignation request has been {letter.get_status_display()}",
-                verb_ar=f"تم {letter.get_status_display()} طلب الاستقالة",
-                verb_de=f"Der Rücktrittsantrag wurde {letter.get_status_display()}",
-                verb_es=f"La solicitud de renuncia ha sido {letter.get_status_display()}",
-                verb_fr=f"La demande de démission a été {letter.get_status_display()}",
+                verb=gettext_noop(
+                    "Resignation request has been %(get_status_display)s"
+                ),
+                verb_params={"get_status_display": str(letter.get_status_display())},
                 redirect="#",
                 icon="information",
             )

@@ -17,6 +17,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.html import escapejs
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from django.views import View
 
 from base.context_processors import intial_notice_period
@@ -212,11 +213,13 @@ class OffboardingStageAddEmployeeForm(HorillaFormView):
                 notify.send(
                     self.request.user.employee_get,
                     recipient=instance.employee_id.employee_user_id,
-                    verb=f"You have been added to the {stage} of {stage.offboarding_id}",
-                    verb_ar=f"لقد تمت إضافتك إلى {stage} من {stage.offboarding_id}",
-                    verb_de=f"Du wurdest zu {stage} von {stage.offboarding_id} hinzugefügt",
-                    verb_es=f"Has sido añadido a {stage} de {stage.offboarding_id}",
-                    verb_fr=f"Vous avez été ajouté à {stage} de {stage.offboarding_id}",
+                    verb=gettext_noop(
+                        "You have been added to the %(stage)s of %(offboarding_id)s"
+                    ),
+                    verb_params={
+                        "stage": str(stage),
+                        "offboarding_id": str(stage.offboarding_id),
+                    },
                     redirect=reverse("offboarding-pipeline"),
                     icon="information",
                 )

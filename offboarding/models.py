@@ -12,6 +12,7 @@ from django.dispatch import receiver
 from django.urls import reverse, reverse_lazy
 from django.utils.timesince import timesince
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company
@@ -639,11 +640,8 @@ class EmployeeTask(HorillaModel):
         notify.send(
             request.user.employee_get,
             recipient=self.employee_id.employee_id.employee_user_id,
-            verb=f'Offboarding task "{self.task_id.title}" has been assigned',
-            verb_ar=f"",
-            verb_de=f"",
-            verb_es=f"",
-            verb_fr=f"",
+            verb=gettext_noop('Offboarding task "%(title)s" has been assigned'),
+            verb_params={"title": str(self.task_id.title)},
             redirect="offboarding/offboarding-pipeline",
             icon="information",
         )

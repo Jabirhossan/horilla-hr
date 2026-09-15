@@ -11,6 +11,7 @@ from django import forms
 from django.contrib import messages
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from base.forms import ModelForm
 from employee.forms import MultipleFileField
@@ -321,11 +322,10 @@ class ResignationLetterForm(ModelForm):
                 notify.send(
                     request.user.employee_get,
                     recipient=self.instance.employee_id.get_reporting_manager().employee_user_id,
-                    verb=f"{self.instance.employee_id.get_full_name()} requested for resignation.",
-                    verb_ar=f"",
-                    verb_de=f"",
-                    verb_es=f"",
-                    verb_fr=f"",
+                    verb=gettext_noop("%(get_full_name)s requested for resignation."),
+                    verb_params={
+                        "get_full_name": str(self.instance.employee_id.get_full_name())
+                    },
                     redirect="#",
                     icon="information",
                 )
