@@ -10,9 +10,11 @@ from typing import Any
 
 from django import forms
 from django.apps import apps
+from django.core.exceptions import ValidationError
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 import payroll.models.models
 from base.forms import Form, ModelForm
@@ -635,9 +637,6 @@ class ContractExportFieldForm(forms.Form):
     )
 
 
-from django.core.exceptions import ValidationError
-
-
 def rate_validator(value):
     """
     Percentage validator
@@ -1157,11 +1156,10 @@ class ReimbursementForm(ModelForm):
                     notify.send(
                         instance.employee_id,  # 816
                         recipient=manager.employee_user_id,
-                        verb=f"You have a new reimbursement request to approve for {instance.employee_id}.",
-                        verb_ar=f"لديك طلب استرداد نفقات جديد يتعين عليك الموافقة عليه لـ {instance.employee_id}.",
-                        verb_de=f"Sie haben einen neuen Rückerstattungsantrag zur Genehmigung für {instance.employee_id}.",
-                        verb_es=f"Tienes una nueva solicitud de reembolso para aprobar para {instance.employee_id}.",
-                        verb_fr=f"Vous avez une nouvelle demande de remboursement à approuver pour {instance.employee_id}.",
+                        verb=gettext_noop(
+                            "You have a new reimbursement request to approve for %(employee)s."
+                        ),
+                        verb_params={"employee": str(instance.employee_id)},
                         icon="information",
                         redirect=f"/payroll/view-reimbursement?id={instance.id}",
                     )

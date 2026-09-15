@@ -24,6 +24,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from django.views.decorators.cache import never_cache
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, Side
@@ -1079,11 +1080,7 @@ def generate_payslip(request):
                 notify.send(
                     request.user.employee_get,
                     recipient=employee.employee_user_id,
-                    verb="Payslip has been generated for you.",
-                    verb_ar="تم إصدار كشف راتب لك.",
-                    verb_de="Gehaltsabrechnung wurde für Sie erstellt.",
-                    verb_es="Se ha generado la nómina para usted.",
-                    verb_fr="La fiche de paie a été générée pour vous.",
+                    verb=gettext_noop("Payslip has been generated for you."),
                     redirect=reverse(
                         "view-created-payslip", kwargs={"payslip_id": instance.id}
                     ),
@@ -1216,11 +1213,7 @@ def create_payslip(request, new_post_data=None):
                 notify.send(
                     request.user.employee_get,
                     recipient=employee.employee_user_id,
-                    verb="Payslip has been generated for you.",
-                    verb_ar="تم إصدار كشف راتب لك.",
-                    verb_de="Gehaltsabrechnung wurde für Sie erstellt.",
-                    verb_es="Se ha generado la nómina para usted.",
-                    verb_fr="La fiche de paie a été générée pour vous.",
+                    verb=gettext_noop("Payslip has been generated for you."),
                     redirect=reverse(
                         "view-created-payslip", kwargs={"payslip_id": payslip.pk}
                     ),
@@ -2189,11 +2182,7 @@ def approve_reimbursements(request):
             notify.send(
                 request.user.employee_get,
                 recipient=emp.employee_user_id,
-                verb="Your reimbursement request has been rejected.",
-                verb_ar="تم رفض طلب استرداد النفقات الخاص بك.",
-                verb_de="Ihr Erstattungsantrag wurde abgelehnt.",
-                verb_es="Su solicitud de reembolso ha sido rechazada.",
-                verb_fr="Votre demande de remboursement a été rejetée.",
+                verb=gettext_noop("Your reimbursement request has been rejected."),
                 redirect=reverse("view-reimbursement") + f"?id={reimbursement.id}",
                 icon="checkmark",
             )
@@ -2201,11 +2190,7 @@ def approve_reimbursements(request):
             notify.send(
                 request.user.employee_get,
                 recipient=emp.employee_user_id,
-                verb="Your reimbursement request has been approved.",
-                verb_ar="تمت الموافقة على طلب استرداد نفقاتك.",
-                verb_de="Ihr Rückerstattungsantrag wurde genehmigt.",
-                verb_es="Se ha aprobado tu solicitud de reembolso.",
-                verb_fr="Votre demande de remboursement a été approuvée.",
+                verb=gettext_noop("Your reimbursement request has been approved."),
                 redirect=reverse("view-reimbursement") + f"?id={reimbursement.id}",
                 icon="checkmark",
             )
@@ -2241,11 +2226,7 @@ def delete_reimbursements(request):
         notify.send(
             request.user.employee_get,
             recipient=recipients,
-            verb="Your reimbursement request has been deleted.",
-            verb_ar="تم حذف طلب استرداد نفقاتك.",
-            verb_de="Ihr Rückerstattungsantrag wurde gelöscht.",
-            verb_es="Tu solicitud de reembolso ha sido eliminada.",
-            verb_fr="Votre demande de remboursement a été supprimée.",
+            verb=gettext_noop("Your reimbursement request has been deleted."),
             redirect="/",
             icon="trash",
         )

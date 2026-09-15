@@ -21,6 +21,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from django.views.decorators.http import require_http_methods
 
 from base.methods import (
@@ -1731,11 +1732,10 @@ def create_payrollrequest_comment(request, payroll_id):
                     notify.send(
                         request.user.employee_get,
                         recipient=rec,
-                        verb=f"{payroll.employee_id}'s reimbursement request has received a comment.",
-                        verb_ar=f"تلقى طلب استرداد نفقات {payroll.employee_id} تعليقًا.",
-                        verb_de=f"{payroll.employee_id}s Rückerstattungsantrag hat einen Kommentar erhalten.",
-                        verb_es=f"La solicitud de reembolso de gastos de {payroll.employee_id} ha recibido un comentario.",
-                        verb_fr=f"La demande de remboursement de frais de {payroll.employee_id} a reçu un commentaire.",
+                        verb=gettext_noop(
+                            "%(employee)s's reimbursement request has received a comment."
+                        ),
+                        verb_params={"employee": str(payroll.employee_id)},
                         redirect=reverse("view-reimbursement"),
                         icon="chatbox-ellipses",
                     )
@@ -1747,11 +1747,9 @@ def create_payrollrequest_comment(request, payroll_id):
                     notify.send(
                         request.user.employee_get,
                         recipient=rec,
-                        verb="Your reimbursement request has received a comment.",
-                        verb_ar="تلقى طلب استرداد نفقاتك تعليقًا.",
-                        verb_de="Ihr Rückerstattungsantrag hat einen Kommentar erhalten.",
-                        verb_es="Tu solicitud de reembolso ha recibido un comentario.",
-                        verb_fr="Votre demande de remboursement a reçu un commentaire.",
+                        verb=gettext_noop(
+                            "Your reimbursement request has received a comment."
+                        ),
                         redirect=reverse("view-reimbursement"),
                         icon="chatbox-ellipses",
                     )
@@ -1763,11 +1761,10 @@ def create_payrollrequest_comment(request, payroll_id):
                     notify.send(
                         request.user.employee_get,
                         recipient=rec,
-                        verb=f"{payroll.employee_id}'s reimbursement request has received a comment.",
-                        verb_ar=f"تلقى طلب استرداد نفقات {payroll.employee_id} تعليقًا.",
-                        verb_de=f"{payroll.employee_id}s Rückerstattungsantrag hat einen Kommentar erhalten.",
-                        verb_es=f"La solicitud de reembolso de gastos de {payroll.employee_id} ha recibido un comentario.",
-                        verb_fr=f"La demande de remboursement de frais de {payroll.employee_id} a reçu un commentaire.",
+                        verb=gettext_noop(
+                            "%(employee)s's reimbursement request has received a comment."
+                        ),
+                        verb_params={"employee": str(payroll.employee_id)},
                         redirect=reverse("view-reimbursement"),
                         icon="chatbox-ellipses",
                     )
@@ -1776,11 +1773,9 @@ def create_payrollrequest_comment(request, payroll_id):
                 notify.send(
                     request.user.employee_get,
                     recipient=rec,
-                    verb="Your reimbursement request has received a comment.",
-                    verb_ar="تلقى طلب استرداد نفقاتك تعليقًا.",
-                    verb_de="Ihr Rückerstattungsantrag hat einen Kommentar erhalten.",
-                    verb_es="Tu solicitud de reembolso ha recibido un comentario.",
-                    verb_fr="Votre demande de remboursement a reçu un commentaire.",
+                    verb=gettext_noop(
+                        "Your reimbursement request has received a comment."
+                    ),
                     redirect=reverse("view-reimbursement"),
                     icon="chatbox-ellipses",
                 )

@@ -11,6 +11,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from base.methods import has_export_access
 from employee import views as employee_view
@@ -430,11 +431,7 @@ class PayrollCreateFormView(HorillaFormView):
             notify.send(
                 self.request.user.employee_get,
                 recipient=employee.employee_user_id,
-                verb="Payslip has been generated for you.",
-                verb_ar="تم إصدار كشف راتب لك.",
-                verb_de="Gehaltsabrechnung wurde für Sie erstellt.",
-                verb_es="Se ha generado la nómina para usted.",
-                verb_fr="La fiche de paie a été générée pour vous.",
+                verb=gettext_noop("Payslip has been generated for you."),
                 redirect=reverse(
                     "view-created-payslip", kwargs={"payslip_id": payslip.pk}
                 ),
