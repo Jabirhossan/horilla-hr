@@ -19,7 +19,7 @@ branch it is checking would pass against the broken code too.
 Reported as https://github.com/horilla/horilla-hr/issues/1241 by @KerelOlivier.
 """
 
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, override_settings
 
 from base.forms import PassWordResetForm
 from horilla.testkit import make_company, make_employee
@@ -44,6 +44,21 @@ class _CapturingResetForm(PassWordResetForm):
         self.captured_context = context
 
 
+# The hosts below are invented for the test. request.get_host() validates
+# against ALLOWED_HOSTS and raises DisallowedHost otherwise -- which is the
+# behaviour being relied on in production, and the reason CI (which sets
+# ALLOWED_HOSTS=localhost,127.0.0.1) rejected them. Declare them here rather
+# than letting the suite depend on whatever the environment happens to allow.
+@override_settings(
+    ALLOWED_HOSTS=[
+        "hr.acme-corp.test",
+        "real-host.test",
+        "ignored.test",
+        "localhost",
+        "127.0.0.1",
+        "testserver",
+    ]
+)
 class PasswordResetDomainTests(TestCase):
     @classmethod
     def setUpTestData(cls):
