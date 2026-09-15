@@ -12,6 +12,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from employee.models import Employee
 from horilla_views.cbv_methods import login_required, permission_required
@@ -412,11 +413,9 @@ class LeaveTypeAssignForm(HorillaFormView):
                                 notify.send(
                                     self.request.user.employee_get,
                                     recipient=employee.employee_user_id,
-                                    verb="New leave type is assigned to you",
-                                    verb_ar="تم تعيين نوع إجازة جديد لك",
-                                    verb_de="Ihnen wurde ein neuer Urlaubstyp zugewiesen",
-                                    verb_es="Se le ha asignado un nuevo tipo de permiso",
-                                    verb_fr="Un nouveau type de congé vous a été attribué",
+                                    verb=gettext_noop(
+                                        "New leave type is assigned to you"
+                                    ),
                                     icon="people-circle",
                                     redirect=reverse("user-request-view"),
                                 )

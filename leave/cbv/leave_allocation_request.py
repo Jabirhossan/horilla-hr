@@ -11,6 +11,7 @@ from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from attendance.cbv.tab_shell import AttendanceTabContentShell
 from base.methods import choosesubordinates, filtersubordinates, is_reportingmanager
@@ -447,11 +448,10 @@ class LeaveAllocationRequestFormView(HorillaFormView):
                     notify.send(
                         self.request.user.employee_get,
                         recipient=instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                        verb=f"Leave allocation request updated for {instance.employee_id}.",
-                        verb_ar=f"تم تحديث طلب تخصيص الإجازة لـ {instance.employee_id}.",
-                        verb_de=f"Urlaubszuteilungsanforderung aktualisiert für {instance.employee_id}.",
-                        verb_es=f"Solicitud de asignación de licencia actualizada para {instance.employee_id}.",
-                        verb_fr=f"Demande d'allocation de congé mise à jour pour {instance.employee_id}.",
+                        verb=gettext_noop(
+                            "Leave allocation request updated for %(employee)s."
+                        ),
+                        verb_params={"employee": str(instance.employee_id)},
                         icon="people-cicle",
                         redirect=reverse("leave-allocation-request-view")
                         + f"?id={instance.id}",
@@ -462,11 +462,10 @@ class LeaveAllocationRequestFormView(HorillaFormView):
                     notify.send(
                         self.request.user.employee_get,
                         recipient=instance.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                        verb=f"New leave allocation request created for {instance.employee_id}.",
-                        verb_ar=f"تم إنشاء طلب تخصيص إجازة جديد لـ {instance.employee_id}.",
-                        verb_de=f"Neue Anfrage zur Urlaubszuweisung erstellt für {instance.employee_id}.",
-                        verb_es=f"Nueva solicitud de asignación de permisos creada para {instance.employee_id}.",
-                        verb_fr=f"Nouvelle demande d'allocation de congé créée pour {instance.employee_id}.",
+                        verb=gettext_noop(
+                            "New leave allocation request created for %(employee)s."
+                        ),
+                        verb_params={"employee": str(instance.employee_id)},
                         icon="people-cicle",
                         redirect=reverse("leave-allocation-request-view")
                         + f"?id={instance.id}",

@@ -24,6 +24,7 @@ from django.utils.encoding import force_str
 from django.utils.html import format_html
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 from django.views.decorators.http import require_http_methods
 from xhtml2pdf import pisa
 
@@ -88,6 +89,9 @@ def generate_error_report(error_list, error_data, file_name):
     ]
     for key in keys_to_remove:
         del error_data[key]
+    data_frame = pd.DataFrame(error_data, columns=error_data.keys())
+    response = HttpResponse(content_type="application/ms-excel")
+    response["Content-Disposition"] = f'attachment; filename="{file_name}"'
     writer = pd.ExcelWriter(response, engine="xlsxwriter")
     try:
         styled_data_frame = data_frame.style.map(
@@ -501,11 +505,9 @@ def leave_request_creation(request, type_id=None, emp_id=None):
                         notify.send(
                             request.user.employee_get,
                             recipient=managers[0],
-                            verb="You have a new leave request to validate.",
-                            verb_ar="لديك طلب إجازة جديد يجب التحقق منه.",
-                            verb_de="Sie haben eine neue Urlaubsanfrage zur Validierung.",
-                            verb_es="Tiene una nueva solicitud de permiso que debe validar.",
-                            verb_fr="Vous avez une nouvelle demande de congé à valider.",
+                            verb=gettext_noop(
+                                "You have a new leave request to validate."
+                            ),
                             icon="people-circle",
                             redirect=f"/leave/request-view?id={leave_request.id}",
                         )
@@ -519,11 +521,10 @@ def leave_request_creation(request, type_id=None, emp_id=None):
                     notify.send(
                         request.user.employee_get,
                         recipient=leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                        verb=f"New leave request created for {leave_request.employee_id}.",
-                        verb_ar=f"تم إنشاء طلب إجازة جديد لـ {leave_request.employee_id}.",
-                        verb_de=f"Neuer Urlaubsantrag erstellt für {leave_request.employee_id}.",
-                        verb_es=f"Nueva solicitud de permiso creada para {leave_request.employee_id}.",
-                        verb_fr=f"Nouvelle demande de congé créée pour {leave_request.employee_id}.",
+                        verb=gettext_noop(
+                            "New leave request created for %(employee)s."
+                        ),
+                        verb_params={"employee": str(leave_request.employee_id)},
                         icon="people-circle",
                         redirect=reverse("request-view") + f"?id={leave_request.id}",
                     )
@@ -940,11 +941,8 @@ def leave_request_update(request, id):
                     notify.send(
                         request.user.employee_get,
                         recipient=leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                        verb=f"Leave request updated for {leave_request.employee_id}.",
-                        verb_ar=f"تم تحديث طلب الإجازة لـ {leave_request.employee_id}.",
-                        verb_de=f"Urlaubsantrag aktualisiert für {leave_request.employee_id}.",
-                        verb_es=f"Solicitud de permiso actualizada para {leave_request.employee_id}.",
-                        verb_fr=f"Demande de congé mise à jour pour {leave_request.employee_id}.",
+                        verb=gettext_noop("Leave request updated for %(employee)s."),
+                        verb_params={"employee": str(leave_request.employee_id)},
                         icon="people-circle",
                         redirect=reverse("request-view") + f"?id={leave_request.id}",
                     )
@@ -1116,11 +1114,9 @@ def leave_request_approve(request, id, emp_id=None):
                                 notify.send(
                                     request.user.employee_get,
                                     recipient=managers[condition_approval.sequence],
-                                    verb="You have a new leave request to validate.",
-                                    verb_ar="لديك طلب إجازة جديد يجب التحقق منه.",
-                                    verb_de="Sie haben eine neue Urlaubsanfrage zur Validierung.",
-                                    verb_es="Tiene una nueva solicitud de permiso que debe validar.",
-                                    verb_fr="Vous avez une nouvelle demande de congé à valider.",
+                                    verb=gettext_noop(
+                                        "You have a new leave request to validate."
+                                    ),
                                     icon="people-circle",
                                     redirect=f"/leave/request-view?id={leave_request.id}",
                                 )
@@ -1137,11 +1133,7 @@ def leave_request_approve(request, id, emp_id=None):
                         notify.send(
                             request.user.employee_get,
                             recipient=leave_request.employee_id.employee_user_id,
-                            verb="Your Leave request has been approved",
-                            verb_ar="تمت الموافقة على طلب الإجازة الخاص بك",
-                            verb_de="Ihr Urlaubsantrag wurde genehmigt",
-                            verb_es="Se ha aprobado su solicitud de permiso",
-                            verb_fr="Votre demande de congé a été approuvée",
+                            verb=gettext_noop("Your Leave request has been approved"),
                             icon="people-circle",
                             redirect=reverse("user-request-view")
                             + f"?id={leave_request.id}",
@@ -1309,11 +1301,7 @@ def leave_request_cancel(request, id, emp_id=None):
                     notify.send(
                         request.user.employee_get,
                         recipient=leave_request.employee_id.employee_user_id,
-                        verb="Your leave request has been rejected.",
-                        verb_ar="تم رفض طلب الإجازة الخاص بك",
-                        verb_de="Ihr Urlaubsantrag wurde abgelehnt",
-                        verb_es="Tu solicitud de permiso ha sido rechazada",
-                        verb_fr="Votre demande de congé a été rejetée",
+                        verb=gettext_noop("Your leave request has been rejected."),
                         icon="people-circle",
                         redirect=reverse("user-request-view")
                         + f"?id={leave_request.id}",
@@ -1545,11 +1533,7 @@ def leave_assign_one(request, obj_id):
                 notify.send(
                     request.user.employee_get,
                     recipient=employee.employee_user_id,
-                    verb="New leave type is assigned to you",
-                    verb_ar="تم تعيين نوع إجازة جديد لك",
-                    verb_de="Ihnen wurde ein neuer Urlaubstyp zugewiesen",
-                    verb_es="Se le ha asignado un nuevo tipo de permiso",
-                    verb_fr="Un nouveau type de congé vous a été attribué",
+                    verb=gettext_noop("New leave type is assigned to you"),
                     icon="people-circle",
                     redirect=reverse("user-request-view"),
                 )
@@ -1774,11 +1758,7 @@ def leave_assign(request):
                             notify.send(
                                 request.user.employee_get,
                                 recipient=user_id,
-                                verb="New leave type is assigned to you",
-                                verb_ar="تم تعيين نوع إجازة جديد لك",
-                                verb_de="Dir wurde ein neuer Urlaubstyp zugewiesen",
-                                verb_es="Se te ha asignado un nuevo tipo de permiso",
-                                verb_fr="Un nouveau type de congé vous a été attribué",
+                                verb=gettext_noop("New leave type is assigned to you"),
                                 icon="people-circle",
                                 redirect=reverse("user-request-view"),
                             )
@@ -1829,11 +1809,8 @@ def available_leave_update(request, id):
                 notify.send(
                     request.user.employee_get,
                     recipient=available_leave.employee_id.employee_user_id,
-                    verb=f"Your {available_leave.leave_type_id} leave type updated.",
-                    verb_ar=f"تم تحديث نوع الإجازة {available_leave.leave_type_id} الخاص بك.",
-                    verb_de=f"Ihr Urlaubstyp {available_leave.leave_type_id} wurde aktualisiert.",
-                    verb_es=f"Se ha actualizado su tipo de permiso {available_leave.leave_type_id}.",
-                    verb_fr=f"Votre type de congé {available_leave.leave_type_id} a été mis à jour.",
+                    verb=gettext_noop("Your %(leave_type)s leave type updated."),
+                    verb_params={"leave_type": str(available_leave.leave_type_id)},
                     icon="people-circle",
                     redirect=reverse("user-request-view"),
                 )
@@ -2438,11 +2415,9 @@ def user_leave_request(request, id):
                         notify.send(
                             request.user.employee_get,
                             recipient=managers[0],
-                            verb="You have a new leave request to validate.",
-                            verb_ar="لديك طلب إجازة جديد يجب التحقق منه.",
-                            verb_de="Sie haben eine neue Urlaubsanfrage zur Validierung.",
-                            verb_es="Tiene una nueva solicitud de permiso que debe validar.",
-                            verb_fr="Vous avez une nouvelle demande de congé à valider.",
+                            verb=gettext_noop(
+                                "You have a new leave request to validate."
+                            ),
                             icon="people-circle",
                             redirect=f"/leave/request-view?id={leave_request.id}",
                         )
@@ -2455,11 +2430,7 @@ def user_leave_request(request, id):
                     notify.send(
                         request.user.employee_get,
                         recipient=leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                        verb="You have a new leave request to validate.",
-                        verb_ar="لديك طلب إجازة جديد يجب التحقق منه.",
-                        verb_de="Sie haben eine neue Urlaubsanfrage zur Validierung.",
-                        verb_es="Tiene una nueva solicitud de permiso que debe validar.",
-                        verb_fr="Vous avez une nouvelle demande de congé à valider.",
+                        verb=gettext_noop("You have a new leave request to validate."),
                         icon="people-circle",
                         redirect=reverse("request-view") + f"?id={leave_request.id}",
                     )
@@ -3401,11 +3372,9 @@ def leave_request_create(request):
                             notify.send(
                                 request.user.employee_get,
                                 recipient=managers[0],
-                                verb="You have a new leave request to validate.",
-                                verb_ar="لديك طلب إجازة جديد يجب التحقق منه.",
-                                verb_de="Sie haben eine neue Urlaubsanfrage zur Validierung.",
-                                verb_es="Tiene una nueva solicitud de permiso que debe validar.",
-                                verb_fr="Vous avez une nouvelle demande de congé à valider.",
+                                verb=gettext_noop(
+                                    "You have a new leave request to validate."
+                                ),
                                 icon="people-circle",
                                 redirect=f"/leave/request-view?id={leave_request.id}",
                             )
@@ -3415,11 +3384,10 @@ def leave_request_create(request):
                         notify.send(
                             request.user.employee_get,
                             recipient=leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                            verb=f"New leave request created for {leave_request.employee_id}.",
-                            verb_ar=f"تم إنشاء طلب إجازة جديد لـ {leave_request.employee_id}.",
-                            verb_de=f"Neuer Urlaubsantrag für {leave_request.employee_id} erstellt.",
-                            verb_es=f"Nueva solicitud de permiso creada para {leave_request.employee_id}.",
-                            verb_fr=f"Nouvelle demande de congé créée pour {leave_request.employee_id}.",
+                            verb=gettext_noop(
+                                "New leave request created for %(employee)s."
+                            ),
+                            verb_params={"employee": str(leave_request.employee_id)},
                             icon="people-circle",
                             redirect=reverse("request-view")
                             + f"?id={leave_request.id}",
@@ -3618,11 +3586,10 @@ def leave_allocation_request_create(request):
                 notify.send(
                     request.user.employee_get,
                     recipient=leave_allocation_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                    verb=f"New leave allocation request created for {leave_allocation_request.employee_id}.",
-                    verb_ar=f"تم إنشاء طلب تخصيص إجازة جديد لـ {leave_allocation_request.employee_id}.",
-                    verb_de=f"Neue Anfrage zur Urlaubszuweisung erstellt für {leave_allocation_request.employee_id}.",
-                    verb_es=f"Nueva solicitud de asignación de permisos creada para {leave_allocation_request.employee_id}.",
-                    verb_fr=f"Nouvelle demande d'allocation de congé créée pour {leave_allocation_request.employee_id}.",
+                    verb=gettext_noop(
+                        "New leave allocation request created for %(employee)s."
+                    ),
+                    verb_params={"employee": str(leave_allocation_request.employee_id)},
                     icon="people-cicle",
                     redirect=reverse("leave-allocation-request-view")
                     + f"?id={leave_allocation_request.id}",
@@ -3758,11 +3725,12 @@ def leave_allocation_request_update(request, req_id):
                     notify.send(
                         request.user.employee_get,
                         recipient=leave_allocation_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                        verb=f"Leave allocation request updated for {leave_allocation_request.employee_id}.",
-                        verb_ar=f"تم تحديث طلب تخصيص الإجازة لـ {leave_allocation_request.employee_id}.",
-                        verb_de=f"Urlaubszuteilungsanforderung aktualisiert für {leave_allocation_request.employee_id}.",
-                        verb_es=f"Solicitud de asignación de licencia actualizada para {leave_allocation_request.employee_id}.",
-                        verb_fr=f"Demande d'allocation de congé mise à jour pour {leave_allocation_request.employee_id}.",
+                        verb=gettext_noop(
+                            "Leave allocation request updated for %(employee)s."
+                        ),
+                        verb_params={
+                            "employee": str(leave_allocation_request.employee_id)
+                        },
                         icon="people-cicle",
                         redirect=reverse("leave-allocation-request-view")
                         + f"?id={leave_allocation_request.id}",
@@ -3818,11 +3786,7 @@ def leave_allocation_request_approve(request, req_id):
             notify.send(
                 request.user.employee_get,
                 recipient=leave_allocation_request.employee_id.employee_user_id,
-                verb="Your leave allocation request has been approved",
-                verb_ar="تمت الموافقة على طلب تخصيص إجازتك",
-                verb_de="Ihr Antrag auf Urlaubszuweisung wurde genehmigt",
-                verb_es="Se ha aprobado su solicitud de asignación de vacaciones",
-                verb_fr="Votre demande d'allocation de congé a été approuvée",
+                verb=gettext_noop("Your leave allocation request has been approved"),
                 icon="people-circle",
                 redirect=reverse("leave-allocation-request-view")
                 + f"?id={leave_allocation_request.id}",
@@ -3878,11 +3842,9 @@ def leave_allocation_request_reject(request, req_id):
                     notify.send(
                         request.user.employee_get,
                         recipient=leave_allocation_request.employee_id.employee_user_id,
-                        verb="Your leave allocation request has been rejected",
-                        verb_ar="تم رفض طلب تخصيص إجازتك",
-                        verb_de="Ihr Antrag auf Urlaubszuweisung wurde abgelehnt",
-                        verb_es="Se ha rechazado su solicitud de asignación de vacaciones",
-                        verb_fr="Votre demande d'allocation de congé a été rejetée",
+                        verb=gettext_noop(
+                            "Your leave allocation request has been rejected"
+                        ),
                         icon="people-circle",
                         redirect=reverse("leave-allocation-request-view")
                         + f"?id={leave_allocation_request.id}",
@@ -4395,11 +4357,10 @@ def create_leaverequest_comment(request, leave_id):
                         notify.send(
                             request.user.employee_get,
                             recipient=rec,
-                            verb=f"{leave.employee_id}'s leave request has received a comment.",
-                            verb_ar=f"تلقت طلب إجازة {leave.employee_id} تعليقًا.",
-                            verb_de=f"{leave.employee_id}s Urlaubsantrag hat einen Kommentar erhalten.",
-                            verb_es=f"La solicitud de permiso de {leave.employee_id} ha recibido un comentario.",
-                            verb_fr=f"La demande de congé de {leave.employee_id} a reçu un commentaire.",
+                            verb=gettext_noop(
+                                "%(employee)s's leave request has received a comment."
+                            ),
+                            verb_params={"employee": str(leave.employee_id)},
                             redirect=reverse("request-view") + f"?id={leave.id}",
                             icon="chatbox-ellipses",
                         )
@@ -4411,11 +4372,9 @@ def create_leaverequest_comment(request, leave_id):
                         notify.send(
                             request.user.employee_get,
                             recipient=rec,
-                            verb="Your leave request has received a comment.",
-                            verb_ar="تلقى طلب إجازتك تعليقًا.",
-                            verb_de="Ihr Urlaubsantrag hat einen Kommentar erhalten.",
-                            verb_es="Tu solicitud de permiso ha recibido un comentario.",
-                            verb_fr="Votre demande de congé a reçu un commentaire.",
+                            verb=gettext_noop(
+                                "Your leave request has received a comment."
+                            ),
                             redirect=reverse("user-request-view") + f"?id={leave.id}",
                             icon="chatbox-ellipses",
                         )
@@ -4427,11 +4386,10 @@ def create_leaverequest_comment(request, leave_id):
                         notify.send(
                             request.user.employee_get,
                             recipient=rec,
-                            verb=f"{leave.employee_id}'s leave request has received a comment.",
-                            verb_ar=f"تلقت طلب إجازة {leave.employee_id} تعليقًا.",
-                            verb_de=f"{leave.employee_id}s Urlaubsantrag hat einen Kommentar erhalten.",
-                            verb_es=f"La solicitud de permiso de {leave.employee_id} ha recibido un comentario.",
-                            verb_fr=f"La demande de congé de {leave.employee_id} a reçu un commentaire.",
+                            verb=gettext_noop(
+                                "%(employee)s's leave request has received a comment."
+                            ),
+                            verb_params={"employee": str(leave.employee_id)},
                             redirect=reverse("request-view") + f"?id={leave.id}",
                             icon="chatbox-ellipses",
                         )
@@ -4440,11 +4398,7 @@ def create_leaverequest_comment(request, leave_id):
                     notify.send(
                         request.user.employee_get,
                         recipient=rec,
-                        verb="Your leave request has received a comment.",
-                        verb_ar="تلقى طلب إجازتك تعليقًا.",
-                        verb_de="Ihr Urlaubsantrag hat einen Kommentar erhalten.",
-                        verb_es="Tu solicitud de permiso ha recibido un comentario.",
-                        verb_fr="Votre demande de congé a reçu un commentaire.",
+                        verb=gettext_noop("Your leave request has received a comment."),
                         redirect=reverse("user-request-view") + f"?id={leave.id}",
                         icon="chatbox-ellipses",
                     )
@@ -4568,11 +4522,10 @@ def create_allocationrequest_comment(request, leave_id):
                         notify.send(
                             request.user.employee_get,
                             recipient=rec,
-                            verb=f"{leave.employee_id}'s leave allocation request has received a comment.",
-                            verb_ar=f"تلقت طلب تخصيص الإجازة لـ {leave.employee_id} تعليقًا.",
-                            verb_de=f"{leave.employee_id}s Anfrage zur Urlaubszuweisung hat einen Kommentar erhalten.",
-                            verb_es=f"La solicitud de asignación de permisos de {leave.employee_id} ha recibido un comentario.",
-                            verb_fr=f"La demande d'allocation de congé de {leave.employee_id} a reçu un commentaire.",
+                            verb=gettext_noop(
+                                "%(employee)s's leave allocation request has received a comment."
+                            ),
+                            verb_params={"employee": str(leave.employee_id)},
                             redirect=reverse("leave-allocation-request-view")
                             + f"?id={leave.id}",
                             icon="chatbox-ellipses",
@@ -4585,11 +4538,9 @@ def create_allocationrequest_comment(request, leave_id):
                         notify.send(
                             request.user.employee_get,
                             recipient=rec,
-                            verb="Your leave allocation request has received a comment.",
-                            verb_ar="تلقى طلب تخصيص الإجازة الخاص بك تعليقًا.",
-                            verb_de="Ihr Antrag auf Urlaubszuweisung hat einen Kommentar erhalten.",
-                            verb_es="Tu solicitud de asignación de permisos ha recibido un comentario.",
-                            verb_fr="Votre demande d'allocation de congé a reçu un commentaire.",
+                            verb=gettext_noop(
+                                "Your leave allocation request has received a comment."
+                            ),
                             redirect=reverse("leave-allocation-request-view")
                             + f"?id={leave.id}",
                             icon="chatbox-ellipses",
@@ -4602,11 +4553,10 @@ def create_allocationrequest_comment(request, leave_id):
                         notify.send(
                             request.user.employee_get,
                             recipient=rec,
-                            verb=f"{leave.employee_id}'s leave allocation request has received a comment.",
-                            verb_ar=f"تلقت طلب تخصيص الإجازة لـ {leave.employee_id} تعليقًا.",
-                            verb_de=f"{leave.employee_id}s Anfrage zur Urlaubszuweisung hat einen Kommentar erhalten.",
-                            verb_es=f"La solicitud de asignación de permisos de {leave.employee_id} ha recibido un comentario.",
-                            verb_fr=f"La demande d'allocation de congé de {leave.employee_id} a reçu un commentaire.",
+                            verb=gettext_noop(
+                                "%(employee)s's leave allocation request has received a comment."
+                            ),
+                            verb_params={"employee": str(leave.employee_id)},
                             redirect=reverse("leave-allocation-request-view")
                             + f"?id={leave.id}",
                             icon="chatbox-ellipses",
@@ -4616,11 +4566,9 @@ def create_allocationrequest_comment(request, leave_id):
                     notify.send(
                         request.user.employee_get,
                         recipient=rec,
-                        verb="Your leave allocation request has received a comment.",
-                        verb_ar="تلقى طلب تخصيص الإجازة الخاص بك تعليقًا.",
-                        verb_de="Ihr Antrag auf Urlaubszuweisung hat einen Kommentar erhalten.",
-                        verb_es="Tu solicitud de asignación de permisos ha recibido un comentario.",
-                        verb_fr="Votre demande d'allocation de congé a reçu un commentaire.",
+                        verb=gettext_noop(
+                            "Your leave allocation request has received a comment."
+                        ),
                         redirect=reverse("leave-allocation-request-view")
                         + f"?id={leave.id}",
                         icon="chatbox-ellipses",
@@ -5314,11 +5262,9 @@ if apps.is_installed("attendance"):
                     notify.send(
                         request.user.employee_get,
                         recipient=comp_leave_req.employee_id.employee_user_id,
-                        verb="Your compensatory leave request has been approved",
-                        verb_ar="تمت الموافقة على طلب إجازة الاعتذار الخاص بك",
-                        verb_de="Ihr Antrag auf Freizeitausgleich wurde genehmigt",
-                        verb_es="Su solicitud de permiso compensatorio ha sido aprobada",
-                        verb_fr="Votre demande de congé compensatoire a été approuvée",
+                        verb=gettext_noop(
+                            "Your compensatory leave request has been approved"
+                        ),
                         redirect=reverse("view-compensatory-leave")
                         + f"?id={comp_leave_req.id}",
                     )
@@ -5368,11 +5314,9 @@ if apps.is_installed("attendance"):
                         notify.send(
                             request.user.employee_get,
                             recipient=comp_leave_req.employee_id.employee_user_id,
-                            verb="Your compensatory leave request has been rejected",
-                            verb_ar="تم رفض طلبك للإجازة التعويضية",
-                            verb_de="Ihr Antrag auf Freizeitausgleich wurde abgelehnt",
-                            verb_es="Se ha rechazado su solicitud de permiso compensatorio",
-                            verb_fr="Votre demande de congé compensatoire a été rejetée",
+                            verb=gettext_noop(
+                                "Your compensatory leave request has been rejected"
+                            ),
                             redirect=reverse("view-compensatory-leave")
                             + f"?id={comp_leave_req.id}",
                         )
@@ -5510,11 +5454,10 @@ if apps.is_installed("attendance"):
                             notify.send(
                                 request.user.employee_get,
                                 recipient=rec,
-                                verb=f"{comp_leave.employee_id}'s Compensatory leave request has received a comment.",
-                                verb_ar=f"تلقى طلب إجازة الاعتذار لـ {comp_leave.employee_id} تعليقًا.",
-                                verb_de=f"Der Antrag auf Freizeitausgleich von {comp_leave.employee_id} hat einen Kommentar erhalten.",
-                                verb_es=f"La solicitud de permiso compensatorio de {comp_leave.employee_id} ha recibido un comentario.",
-                                verb_fr=f"La demande de congé compensatoire de {comp_leave.employee_id} a reçu un commentaire.",
+                                verb=gettext_noop(
+                                    "%(employee)s's Compensatory leave request has received a comment."
+                                ),
+                                verb_params={"employee": str(comp_leave.employee_id)},
                                 redirect=reverse("view-compensatory-leave")
                                 + f"?id={comp_leave.id}",
                                 icon="chatbox-ellipses",
@@ -5527,11 +5470,9 @@ if apps.is_installed("attendance"):
                             notify.send(
                                 request.user.employee_get,
                                 recipient=rec,
-                                verb="Your compensatory leave request has received a comment.",
-                                verb_ar="تلقى طلب إجازة العوض الخاص بك تعليقًا.",
-                                verb_de="Ihr Antrag auf Freizeitausgleich hat einen Kommentar erhalten.",
-                                verb_es="Su solicitud de permiso compensatorio ha recibido un comentario.",
-                                verb_fr="Votre demande de congé compensatoire a reçu un commentaire.",
+                                verb=gettext_noop(
+                                    "Your compensatory leave request has received a comment."
+                                ),
                                 redirect=reverse("view-compensatory-leave")
                                 + f"?id={comp_leave.id}",
                                 icon="chatbox-ellipses",
@@ -5544,11 +5485,10 @@ if apps.is_installed("attendance"):
                             notify.send(
                                 request.user.employee_get,
                                 recipient=rec,
-                                verb=f"{comp_leave.employee_id}'s compensatory leave request has received a comment.",
-                                verb_ar=f"تلقى طلب إجازة التعويض لـ {comp_leave.employee_id} تعليقًا.",
-                                verb_de=f"Der Antrag auf Freizeitausgleich von {comp_leave.employee_id} hat einen Kommentar erhalten.",
-                                verb_es=f"El pedido de permiso compensatorio de {comp_leave.employee_id} ha recibido un comentario.",
-                                verb_fr=f"La demande de congé compensatoire de {comp_leave.employee_id} a reçu un commentaire.",
+                                verb=gettext_noop(
+                                    "%(employee)s's compensatory leave request has received a comment."
+                                ),
+                                verb_params={"employee": str(comp_leave.employee_id)},
                                 redirect=reverse("view-compensatory-leave")
                                 + f"?id={comp_leave.id}",
                                 icon="chatbox-ellipses",
@@ -5558,11 +5498,9 @@ if apps.is_installed("attendance"):
                         notify.send(
                             request.user.employee_get,
                             recipient=rec,
-                            verb="Your compensatory leave request has received a comment.",
-                            verb_ar="تلقى طلب إجازة العوض الخاص بك تعليقًا.",
-                            verb_de="Ihr Antrag auf Freizeitausgleich hat einen Kommentar erhalten.",
-                            verb_es="Su solicitud de permiso compensatorio ha recibido un comentario.",
-                            verb_fr="Votre demande de congé compensatoire a reçu un commentaire.",
+                            verb=gettext_noop(
+                                "Your compensatory leave request has received a comment."
+                            ),
                             redirect=reverse("view-compensatory-leave")
                             + f"?id={comp_leave.id}",
                             icon="chatbox-ellipses",

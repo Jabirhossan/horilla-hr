@@ -13,6 +13,7 @@ from django.shortcuts import render
 from django.urls import resolve, reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_noop
 
 from base.models import CompanyLeaves, Holidays
 from horilla.http.response import HorillaRedirect
@@ -469,11 +470,12 @@ class MyLeaveRequestForm(HorillaFormView):
                                 notify.send(
                                     self.request.user.employee_get,
                                     recipient=leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                                    verb=f"New leave request created for {leave_request.employee_id}.",
-                                    verb_ar=f"تم إنشاء طلب إجازة جديد لـ {leave_request.employee_id}.",
-                                    verb_de=f"Neuer Urlaubsantrag für {leave_request.employee_id} erstellt.",
-                                    verb_es=f"Nueva solicitud de permiso creada para {leave_request.employee_id}.",
-                                    verb_fr=f"Nouvelle demande de congé créée pour {leave_request.employee_id}.",
+                                    verb=gettext_noop(
+                                        "New leave request created for %(employee)s."
+                                    ),
+                                    verb_params={
+                                        "employee": str(leave_request.employee_id)
+                                    },
                                     icon="people-circle",
                                     redirect=reverse("request-view")
                                     + f"?id={leave_request.id}",
@@ -637,11 +639,9 @@ class MyLeaveRequestSingleForm(HorillaFormView):
                         notify.send(
                             self.request.user.employee_get,
                             recipient=leave_request.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
-                            verb="You have a new leave request to validate.",
-                            verb_ar="لديك طلب إجازة جديد يجب التحقق منه.",
-                            verb_de="Sie haben eine neue Urlaubsanfrage zur Validierung.",
-                            verb_es="Tiene una nueva solicitud de permiso que debe validar.",
-                            verb_fr="Vous avez une nouvelle demande de congé à valider.",
+                            verb=gettext_noop(
+                                "You have a new leave request to validate."
+                            ),
                             icon="people-circle",
                             redirect=reverse("request-view")
                             + f"?id={leave_request.id}",
