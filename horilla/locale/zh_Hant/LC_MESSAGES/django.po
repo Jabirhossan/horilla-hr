@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: horillatw\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-10 10:51+0530\n"
+"POT-Creation-Date: 2026-09-14 15:26+0530\n"
 "PO-Revision-Date: 2026-08-04 09:08+0000\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Traditional\n"
@@ -325,6 +325,11 @@ msgstr "找不到資產申請。"
 msgid "Asset request approved successfully!."
 msgstr "資產請求批准成功！"
 
+#, fuzzy
+#| msgid "Your asset request approved!."
+msgid "Your asset request approved!"
+msgstr "您的資產請求已獲批准！"
+
 msgid "Days Left"
 msgstr "剩餘天數"
 
@@ -501,6 +506,14 @@ msgstr "請求用戶"
 
 msgid "Asset Requests"
 msgstr "資產申請"
+
+#, python-format
+msgid "The Asset '%(asset_name)s' expires in %(notify_before)s days"
+msgstr ""
+
+#, python-format
+msgid "The document ' %(title)s ' expires in %(notify_before)s days"
+msgstr ""
 
 msgid "Dashboard"
 msgstr "儀表板"
@@ -979,6 +992,11 @@ msgstr "發生錯誤： "
 msgid "Asset request has been rejected."
 msgstr "資產請求已被拒絕。"
 
+#, fuzzy
+#| msgid "Your asset request rejected!."
+msgid "Your asset request rejected!"
+msgstr "您的資產請求被拒絕！"
+
 msgid "Asset allocated successfully!."
 msgstr "資產分配成功！"
 
@@ -988,6 +1006,11 @@ msgstr "找不到資產分配。"
 #, python-brace-format
 msgid "Return request for {} initiated."
 msgstr "已發起 {} 的退貨要求。"
+
+#, python-format
+msgid ""
+"Return request for %(asset_id)s initiated from %(assigned_to_employee_id)s"
+msgstr ""
 
 msgid "Asset Returned Successfully..."
 msgstr "資產返還成功！"
@@ -1147,6 +1170,13 @@ msgstr "新的出勤請求已更新"
 
 msgid "Attendance update request created."
 msgstr "出勤更新請求已建立。"
+
+#, fuzzy, python-format
+#| msgid "The requested attendance is rejected."
+msgid ""
+"%(employee_name)s's attendance update request for %(attendance_date)s is "
+"created"
+msgstr "出席請求被拒絕。"
 
 msgid "Validate Attendances"
 msgstr "驗證出勤"
@@ -2881,15 +2911,6 @@ msgstr "驗證出勤請求"
 msgid "View"
 msgstr "檢視"
 
-msgid "Options"
-msgstr "選項"
-
-msgid "No Records found"
-msgstr "未找到記錄"
-
-msgid "No records found."
-msgstr "未找到任何記錄。"
-
 msgid "Add / View Comment"
 msgstr "新增/查看評論"
 
@@ -3045,11 +3066,27 @@ msgstr "找不到符合查詢條件的出勤紀錄。"
 msgid "Attendance request has been approved"
 msgstr "出席請求已獲批准"
 
+#, fuzzy, python-format
+#| msgid "No attendance requests to validate."
+msgid "Your attendance request for %(attendance_date)s is validated"
+msgstr "無需驗證出勤請求。"
+
+#, fuzzy, python-format
+#| msgid "No attendance requests to validate."
+msgid ""
+"%(employee_name)s's attendance request for %(attendance_date)s is validated"
+msgstr "無需驗證出勤請求。"
+
 msgid "The requested attendance is removed."
 msgstr "所請求的出席已被取消。"
 
 msgid "Attendance request has been rejected"
 msgstr "出席請求已被拒絕"
+
+#, fuzzy, python-format
+#| msgid "The requested attendance is rejected."
+msgid "Your attendance request for %(attendance_date)s is rejected"
+msgstr "出席請求被拒絕。"
 
 msgid "Attendance request not found"
 msgstr "未找到出勤請求"
@@ -3181,6 +3218,11 @@ msgstr "無效的考勤ID"
 msgid "Pending attendance update request for {}'s attendance on {}!"
 msgstr "正在等待 {} 出席 {} 的出勤更新請求！"
 
+#, fuzzy, python-format
+#| msgid "Your attendance for the date "
+msgid "Your attendance for the date %(attendance_date)s is validated"
+msgstr "您出席日期 "
+
 #, python-brace-format
 msgid "{} Attendances validated."
 msgstr "{} 筆出勤已驗證。"
@@ -3192,12 +3234,25 @@ msgstr "您無法驗證自己的出勤紀錄。"
 msgid "%(employee)s %(date)s Attendance validated."
 msgstr "%(employee)s %(date)s 出勤已驗證。"
 
+#, python-format
+msgid "%(employee)s requested revalidation for %(attendance_date)s attendance"
+msgstr ""
+
 msgid "You cannot approve your own overtime."
 msgstr "您無法核准自己的加班。"
 
 #, python-format
 msgid "%(employee)s's %(date)s overtime approved"
 msgstr "%(employee)s 於 %(date)s 的加班已核准"
+
+#, fuzzy, python-format
+#| msgid "%(employee)s's %(date)s overtime approved"
+msgid "Your %(attendance_date)s's attendance overtime approved."
+msgstr "%(employee)s 於 %(date)s 的加班已核准"
+
+#, python-format
+msgid "Overtime approved for %(attendance_date)s's attendance"
+msgstr ""
 
 #, python-brace-format
 msgid " {} Overtime approved"
@@ -3247,6 +3302,16 @@ msgstr "出了一些問題。"
 
 msgid "Comment added successfully!"
 msgstr "評論添加成功！"
+
+#, fuzzy, python-format
+#| msgid "There are no compensatory leave requests at the moment."
+msgid "%(employee)s's attendance request has received a comment."
+msgstr "目前沒有補假請求。"
+
+#, fuzzy
+#| msgid "Your Leave request has been approved"
+msgid "Your attendance request has received a comment."
+msgstr "您的休假申請已獲批准"
 
 msgid "No Comment found matching the query."
 msgstr "找不到符合查詢條件的留言。"
@@ -3321,6 +3386,16 @@ msgstr "公告中提到了您。"
 msgid "Announcement created successfully."
 msgstr "公告創建成功。"
 
+#, fuzzy
+#| msgid "Your department was mentioned in an announcement."
+msgid "Your department was mentioned in a post."
+msgstr "公告中提到了您的部門。"
+
+#, fuzzy
+#| msgid "Your job position was mentioned in an announcement."
+msgid "Your job position was mentioned in a post."
+msgstr "公告中提到了您的職位。"
+
 msgid "Announcement deleted successfully."
 msgstr "公告刪除成功。"
 
@@ -3332,6 +3407,11 @@ msgstr "檔案已成功刪除。"
 
 msgid "You commented a post."
 msgstr "您評論了一則貼文。"
+
+#, fuzzy, python-format
+#| msgid "Comments have been disabled for this announcement."
+msgid "Comment under the announcement %(title)s."
+msgstr "尚未為該應徵者添加註釋。"
 
 msgid "Announcement not found."
 msgstr "找不到公告。"
@@ -3705,6 +3785,9 @@ msgstr "輪班分配更新"
 msgid "Rotating Shift Assign Created Successfully"
 msgstr "輪班分配更新"
 
+msgid "You are added to rotating shift"
+msgstr "您已加入輪班"
+
 msgid "Rotating Work Type"
 msgstr "輪班工作類型"
 
@@ -3725,6 +3808,9 @@ msgstr "工作資訊更新成功"
 
 msgid "Rotating Work Assigned"
 msgstr "輪班工作類型分配"
+
+msgid "You are added to rotating work type"
+msgstr "您已新增至輪班工作類型"
 
 msgid "Rotating Work Assign Created"
 msgstr "輪班工作類型分配"
@@ -3804,8 +3890,23 @@ msgstr "請求更新成功"
 msgid "Shift request added Successfully"
 msgstr "請求更新成功"
 
+#, fuzzy, python-format
+#| msgid "Leave request updated successfully.."
+msgid "You have new shift request to approve for %(employee)s"
+msgstr "休假申請更新成功.."
+
 msgid "Shift Swap Request"
 msgstr "換班申請"
+
+#, fuzzy, python-format
+#| msgid "Leave allocation request updated"
+msgid "You have a new shift reallocation request to approve for %(employee)s."
+msgstr "休假分配請求"
+
+#, fuzzy, python-format
+#| msgid "Leave allocation request updated"
+msgid "You have a new shift reallocation request from %(employee)s."
+msgstr "休假分配請求"
 
 msgid "Work type request"
 msgstr "工作類型請求"
@@ -3854,6 +3955,11 @@ msgstr "請求更新成功"
 
 msgid "Work type Request Created"
 msgstr "工作類型請求已刪除。"
+
+#, fuzzy, python-format
+#| msgid "You have a new leave request to validate."
+msgid "You have new work type request to validate for %(employee)s"
+msgstr "您有一個新的休假申請需要驗證。"
 
 msgid "You do not have access to that company."
 msgstr "您沒有該公司的存取權限。"
@@ -3958,7 +4064,9 @@ msgid ""
 "Members get this group's permissions only in the selected companies. You can "
 "only assign companies you already have access to. Leave empty for all of "
 "those companies."
-msgstr "成員僅在所選公司內取得此群組的權限。您只能指派您已有存取權的公司。留空表示套用至您有權限的所有公司。"
+msgstr ""
+"成員僅在所選公司內取得此群組的權限。您只能指派您已有存取權的公司。留空表示套"
+"用至您有權限的所有公司。"
 
 msgid "You cannot assign this group for companies you do not manage."
 msgstr "您無法為自己未管理的公司指派此群組。"
@@ -4512,6 +4620,32 @@ msgstr "休假類型為必填項"
 
 msgid "Penalty Accounts"
 msgstr "罰款帳戶"
+
+#, fuzzy
+#| msgid "Your work type request has been canceled."
+msgid "Your Work Type has been changed."
+msgstr "您的工作類型請求已被取消。"
+
+#, fuzzy
+#| msgid "Your shift request has been canceled."
+msgid "Your shift has been changed."
+msgstr "您的輪班請求已被取消。"
+
+#, fuzzy
+#| msgid "Send as Notification"
+msgid "Shift Changes notification"
+msgstr "查看所有通知"
+
+msgid "Shift changes notification, Requested date expired."
+msgstr ""
+
+#, fuzzy
+#| msgid "Work Type Distribution"
+msgid "Work Type Changes notification"
+msgstr "工作類型分佈"
+
+msgid "Work type changes notification, Requested date expired."
+msgstr ""
 
 msgid "General"
 msgstr "一般的"
@@ -5199,7 +5333,9 @@ msgstr "目前沒有員工群組。"
 msgid ""
 "Editing members of \"%(name)s\". Unchecking an employee removes them from "
 "this role, and unchecking a company removes that assignment."
-msgstr "正在編輯「%(name)s」的成員。取消勾選員工會將其從此角色移除，取消勾選公司則會移除該項指派。"
+msgstr ""
+"正在編輯「%(name)s」的成員。取消勾選員工會將其從此角色移除，取消勾選公司則會"
+"移除該項指派。"
 
 #, python-format
 msgid ""
@@ -5750,7 +5886,9 @@ msgid ""
 "When enabled, every user of this company can export data from any module. "
 "When disabled, only users (or superusers) with the appropriate export "
 "permission for a module can export its data."
-msgstr "啟用後，此公司的所有使用者皆可匯出任何模組的資料。停用後，僅擁有該模組對應匯出權限的使用者（或超級使用者）可匯出資料。"
+msgstr ""
+"啟用後，此公司的所有使用者皆可匯出任何模組的資料。停用後，僅擁有該模組對應匯"
+"出權限的使用者（或超級使用者）可匯出資料。"
 
 msgid "Allow every user of this company to export data from any module."
 msgstr "允許此公司的每位使用者從任何模組匯出資料。"
@@ -6195,12 +6333,6 @@ msgstr "您的資產請求已獲批准！"
 
 msgid "Your asset request rejected!."
 msgstr "您的資產請求被拒絕！"
-
-msgid "You are added to rotating work type"
-msgstr "您已新增至輪班工作類型"
-
-msgid "You are added to rotating shift"
-msgstr "您已加入輪班"
 
 msgid "Your work type request has been canceled."
 msgstr "您的工作類型請求已被取消。"
@@ -7571,6 +7703,11 @@ msgstr "您沒有權限"
 msgid "Work type request has been rejected."
 msgstr "工作類型請求已被拒絕。"
 
+#, fuzzy
+#| msgid "Your work type request has been deleted."
+msgid "Your work type request has been rejected."
+msgstr "您的工作類型請求已被刪除。"
+
 msgid "No worktype request found matching the query."
 msgstr "找不到符合查詢條件的工作類型申請。"
 
@@ -7615,6 +7752,11 @@ msgstr "無法編輯已批准的輪班申請"
 msgid "Shift request rejected"
 msgstr "輪班請求被拒絕"
 
+#, fuzzy
+#| msgid "Your shift request has been deleted."
+msgid "Your shift request has been rejected."
+msgstr "您的輪班請求已被刪除。"
+
 msgid "No shift request found matching the query."
 msgstr "找不到符合查詢條件的換班申請。"
 
@@ -7625,6 +7767,11 @@ msgid "Shift has been approved."
 msgstr "輪班已獲批准。"
 
 msgid "You are available for shift reallocation."
+msgstr "您可以進行輪班重新分配。"
+
+#, fuzzy, python-format
+#| msgid "You are available for shift reallocation."
+msgid "%(employee_get)s is available for shift reallocation."
 msgstr "您可以進行輪班重新分配。"
 
 msgid "Shifts have been approved."
@@ -7735,11 +7882,31 @@ msgstr "找不到符合查詢條件的多重審核條件。"
 msgid "Multiple approval condition deleted successfully"
 msgstr "已成功刪除多個審核條件"
 
+#, fuzzy, python-format
+#| msgid "There are no compensatory leave requests at the moment."
+msgid "%(employee)s's shift request has received a comment."
+msgstr "目前沒有補假請求。"
+
+#, fuzzy
+#| msgid "Your Leave request has been approved"
+msgid "Your shift request has received a comment."
+msgstr "您的休假申請已獲批准"
+
 msgid "Invalid Request"
 msgstr "無效的請求"
 
 msgid "Comment not found."
 msgstr "找不到留言。"
+
+#, fuzzy, python-format
+#| msgid "There are no compensatory leave requests at the moment."
+msgid "%(employee)s's work type request has received a comment."
+msgstr "目前沒有補假請求。"
+
+#, fuzzy
+#| msgid "Your Leave request has been approved"
+msgid "Your work type request has received a comment."
+msgstr "您的休假申請已獲批准"
 
 msgid "Default pagination updated."
 msgstr "預設分頁已更新。"
@@ -8442,6 +8609,11 @@ msgstr "採取行動"
 msgid "Disciplinary action updated Successfully"
 msgstr "紀律處分已更新。"
 
+#, fuzzy
+#| msgid "Disciplinary action taken."
+msgid "Disciplinary action is taken on you."
+msgstr "已採取紀律處分。"
+
 msgid "Disciplinary action created Successfully"
 msgstr "申報狀態創建成功 "
 
@@ -8456,6 +8628,11 @@ msgstr "文件請求建立成功"
 
 msgid "Document request created successfully"
 msgstr "文件請求建立成功"
+
+#, fuzzy, python-format
+#| msgid "There are no leave allocation requests at the moment."
+msgid "%(employee_get)s requested a document."
+msgstr "目前沒有休假分配請求。"
 
 #, python-format
 msgid "File type %(ext)s is not allowed."
@@ -8478,6 +8655,10 @@ msgstr "上傳文件"
 
 msgid "Document uploaded successfully"
 msgstr "文檔上傳成功"
+
+#, python-format
+msgid "%(employee_get)s uploaded a document"
+msgstr ""
 
 msgid "Bulk Approve Requests"
 msgstr "批量批准請求"
@@ -9763,6 +9944,11 @@ msgstr "{employee} 是超級用戶，無法被封鎖。"
 msgid "Employee personal information updated."
 msgstr "員工個人資料已更新。"
 
+#, fuzzy
+#| msgid "Your work details has been updated."
+msgid "Your work details have been updated."
+msgstr "您的工作詳細資料已更新。"
+
 msgid "Employee work information updated."
 msgstr "員工工作資訊已更新。"
 
@@ -10072,6 +10258,11 @@ msgstr "更新單據"
 msgid "The Ticket created successfully."
 msgstr "單據創建成功。"
 
+#, fuzzy
+#| msgid "You have been assigned as a manager in a feedback!"
+msgid "You have been assigned to a new Ticket"
+msgstr "您已被指定為回饋中的經理！"
+
 msgid "The Ticket updated successfully."
 msgstr "單據已成功更新。"
 
@@ -10169,6 +10360,9 @@ msgstr "建立用於分類客服工單的標籤。"
 
 msgid "Define categories of helpdesk tickets."
 msgstr "定義客服工單的分類。"
+
+msgid "No records found."
+msgstr "未找到任何記錄。"
 
 msgid "Claim Requests"
 msgstr "索賠請求"
@@ -10460,11 +10654,21 @@ msgstr "單據已成功存檔。"
 msgid "Invalid request method."
 msgstr "無效請求"
 
+#, fuzzy, python-format
+#| msgid "The status of the objective is the same as selected."
+msgid "The status of the ticket has been changed to %(status)s."
+msgstr "目標的狀態與選定的相同。"
+
 msgid "The Ticket status updated successfully."
 msgstr "單據狀態已成功更新。"
 
 msgid "You Don't have the permission."
 msgstr "您沒有權限。"
+
+#, fuzzy
+#| msgid "Document has been deleted."
+msgid "The ticket has been deleted."
+msgstr "文檔已刪除。"
 
 #, python-brace-format
 msgid "The Ticket \"{}\" has been deleted successfully."
@@ -10526,8 +10730,22 @@ msgstr "{} 的評論已成功刪除。"
 msgid "Claim request approved successfully."
 msgstr "申請已成功核准。"
 
+#, fuzzy, python-format
+#| msgid "You have been assigned as a manager in a feedback!"
+msgid "You have been assigned to a new Ticket-%(ticket)s."
+msgstr "您已被指定為回饋中的經理！"
+
+#, fuzzy, python-format
+#| msgid "No Employees Assigned to Rotating Shifts."
+msgid "%(employee)s assigned to your ticket - %(ticket)s."
+msgstr "導入輪班"
+
 msgid "Claim request rejected successfully."
 msgstr "申請遭到拒絕。"
+
+#, python-format
+msgid "Your claim request is rejected for Ticket-%(ticket)s"
+msgstr ""
 
 msgid "No Department Manager found matching the query."
 msgstr "找不到符合查詢條件的部門主管。"
@@ -10678,7 +10896,8 @@ msgstr "若「is_fixed」為 False，則必須提供「based_on」。"
 
 msgid ""
 "If 'based_on' is 'attendance', 'per_attendance_fixed_amount' is required."
-msgstr "若「based_on」為「attendance」，則必須提供「per_attendance_fixed_amount」。"
+msgstr ""
+"若「based_on」為「attendance」，則必須提供「per_attendance_fixed_amount」。"
 
 msgid "If 'based_on' is 'shift_id', 'shift_id' is required."
 msgstr "若「based_on」為「shift_id」，則必須提供「shift_id」。"
@@ -10689,7 +10908,9 @@ msgstr "若「based_on」為「work_type_id」，則必須提供「work_type_id�
 msgid ""
 "If 'is_condition_based' is True, 'field', 'value', and 'condition' are "
 "required."
-msgstr "若「is_condition_based」為 True，則必須提供「field」、「value」及「condition」。"
+msgstr ""
+"若「is_condition_based」為 True，則必須提供「field」、「value」及"
+"「condition」。"
 
 msgid "If 'has_max_limit' is True, 'maximum_amount' is required."
 msgstr "若「has_max_limit」為 True，則必須提供「maximum_amount」。"
@@ -10842,6 +11063,26 @@ msgstr "找不到申請請求"
 
 msgid "DepartmentManager not found"
 msgstr "找不到部門主管"
+
+#, fuzzy, python-format
+#| msgid "New leave allocation request created"
+msgid "New leave allocation request created for %(employee)s."
+msgstr "已建立新的休假分配請求"
+
+#, fuzzy, python-format
+#| msgid "Redeem request created for"
+msgid "New leave request created for %(employee)s."
+msgstr "已建立贖回請求"
+
+#, fuzzy, python-format
+#| msgid "Leave request updated successfully.."
+msgid "Leave request updated for %(employee)s."
+msgstr "休假申請更新成功.."
+
+#, fuzzy
+#| msgid "Your Leave request has been approved"
+msgid "Your Leave request has been rejected"
+msgstr "您的休假申請已獲批准"
 
 msgid "Nothing to reject."
 msgstr "沒什麼好拒絕的。"
@@ -11081,7 +11322,9 @@ msgid ""
 "Select the models whose changes should be recorded in the audit log. If no "
 "models are selected, the built-in defaults (Employee, "
 "EmployeeWorkInformation, EmployeeBankDetails) are used."
-msgstr "選擇應在稽核紀錄中記錄變更的資料模型。若未選擇任何模型，則使用內建預設值（Employee、EmployeeWorkInformation、EmployeeBankDetails）。"
+msgstr ""
+"選擇應在稽核紀錄中記錄變更的資料模型。若未選擇任何模型，則使用內建預設值"
+"（Employee、EmployeeWorkInformation、EmployeeBankDetails）。"
 
 msgid "Tracked Fields"
 msgstr "追蹤欄位"
@@ -11122,7 +11365,12 @@ msgid ""
 "empty to\n"
 "                track every field.\n"
 "            "
-msgstr "\n                選擇 <strong>%(app_label)s.%(model_name)s</strong> 中\n                應記錄於稽核記錄的欄位。將清單留空即可\n                追蹤所有欄位。\n            "
+msgstr ""
+"\n"
+"                選擇 <strong>%(app_label)s.%(model_name)s</strong> 中\n"
+"                應記錄於稽核記錄的欄位。將清單留空即可\n"
+"                追蹤所有欄位。\n"
+"            "
 
 msgid "Save Fields"
 msgstr "儲存欄位"
@@ -11135,7 +11383,12 @@ msgid ""
 "Employee\n"
 "                Bank Details) are always tracked and cannot be removed.\n"
 "            "
-msgstr "\n                選擇哪些模型應在稽核記錄中記錄其變更。\n                預設模型（員工、員工工作資訊、員工\n                銀行詳細資料）會一律受到追蹤，且無法移除。\n            "
+msgstr ""
+"\n"
+"                選擇哪些模型應在稽核記錄中記錄其變更。\n"
+"                預設模型（員工、員工工作資訊、員工\n"
+"                銀行詳細資料）會一律受到追蹤，且無法移除。\n"
+"            "
 
 msgid "Per-model Field Selection"
 msgstr "各模型欄位選擇"
@@ -11325,12 +11578,16 @@ msgstr "指定備份檔案應保存於伺服器中的路徑"
 msgid ""
 "Make sure your file is in JSON format and contains your Google OAuth 2.0 "
 "client credentials (web application type)"
-msgstr "請確認您的檔案為 JSON 格式，且包含您的 Google OAuth 2.0 用戶端憑證（網頁應用程式類型）"
+msgstr ""
+"請確認您的檔案為 JSON 格式，且包含您的 Google OAuth 2.0 用戶端憑證（網頁應用"
+"程式類型）"
 
 msgid ""
 "Google Drive folder ID where backups will be stored. The authenticated user "
 "must have write access to this folder."
-msgstr "用於儲存備份的 Google 雲端硬碟資料夾 ID。已驗證的使用者必須擁有此資料夾的寫入權限。"
+msgstr ""
+"用於儲存備份的 Google 雲端硬碟資料夾 ID。已驗證的使用者必須擁有此資料夾的寫入"
+"權限。"
 
 msgid "OAuth access token (automatically managed)"
 msgstr "OAuth 存取權杖（自動管理）"
@@ -11375,7 +11632,9 @@ msgstr "排程"
 msgid ""
 "Leave both blank to always serve this template (subject to state). Set "
 "Active From / Active Until to restrict serving to a time window."
-msgstr "兩者皆留空表示始終提供此範本（視狀態而定）。設定「生效自」／「生效至」可限制提供的時間區間。"
+msgstr ""
+"兩者皆留空表示始終提供此範本（視狀態而定）。設定「生效自」／「生效至」可限制"
+"提供的時間區間。"
 
 msgid "Edit Lock"
 msgstr "編輯鎖定"
@@ -11383,7 +11642,9 @@ msgstr "編輯鎖定"
 msgid ""
 "A template is automatically locked when someone opens the edit page. Locks "
 "expire after 30 minutes or when the editor saves/cancels."
-msgstr "當有人開啟編輯頁面時，範本會自動鎖定。鎖定會在 30 分鐘後失效，或於編輯者儲存／取消時解除。"
+msgstr ""
+"當有人開啟編輯頁面時，範本會自動鎖定。鎖定會在 30 分鐘後失效，或於編輯者儲存"
+"／取消時解除。"
 
 msgid "Lock Status"
 msgstr "鎖定狀態"
@@ -11613,7 +11874,9 @@ msgstr "呈現錯誤："
 msgid ""
 "This preview renders with a minimal dummy context (request, user, now). "
 "Variables that depend on your real views may be empty or missing."
-msgstr "此預覽以最簡化的模擬情境（request、user、now）呈現。相依於實際檢視的變數可能為空白或缺漏。"
+msgstr ""
+"此預覽以最簡化的模擬情境（request、user、now）呈現。相依於實際檢視的變數可能"
+"為空白或缺漏。"
 
 msgid "Refresh"
 msgstr "重新整理"
@@ -11638,7 +11901,10 @@ msgid ""
 "\n"
 "      This version was saved by <strong>%(user)s</strong> at %(ts)s.\n"
 "    "
-msgstr "\n      此版本由 <strong>%(user)s</strong> 於 %(ts)s 儲存。\n    "
+msgstr ""
+"\n"
+"      此版本由 <strong>%(user)s</strong> 於 %(ts)s 儲存。\n"
+"    "
 
 msgid "Diff: Current vs Version"
 msgstr "差異：目前版本與指定版本"
@@ -11912,19 +12178,24 @@ msgstr "每當員工的工作資訊更新時儲存一筆歷史紀錄。適用於
 msgid ""
 "Selected fields will be recorded in employee history whenever they are "
 "updated. Leave empty to track all work information fields."
-msgstr "所選欄位在更新時會被記錄於員工歷史紀錄中。留空則會追蹤所有工作資訊欄位。"
+msgstr ""
+"所選欄位在更新時會被記錄於員工歷史紀錄中。留空則會追蹤所有工作資訊欄位。"
 
 msgid ""
 "Select the companies that should receive these tracking settings. All "
 "companies are selected by default. Company-specific field selections are "
 "preserved; new fields from All Companies are merged in."
-msgstr "選擇應套用這些追蹤設定的公司。預設會選取所有公司。個別公司的欄位選擇會被保留，並會合併「所有公司」新增的欄位。"
+msgstr ""
+"選擇應套用這些追蹤設定的公司。預設會選取所有公司。個別公司的欄位選擇會被保"
+"留，並會合併「所有公司」新增的欄位。"
 
 msgid ""
 "Choose which companies these settings should be applied to. All companies "
 "are selected by default. Existing company-specific fields are kept; new "
 "fields are added to them."
-msgstr "選擇這些設定應套用的公司。預設會選取所有公司。現有的公司專屬欄位將予以保留；新欄位會加入其中。"
+msgstr ""
+"選擇這些設定應套用的公司。預設會選取所有公司。現有的公司專屬欄位將予以保留；"
+"新欄位會加入其中。"
 
 msgid "Select companies…"
 msgstr "選擇公司…"
@@ -11935,7 +12206,9 @@ msgstr "選擇欄位…"
 msgid ""
 "A role is a named set of employees who share the same access. Create a role, "
 "add members, then turn permissions on or off."
-msgstr "角色是一組具名的員工集合，彼此擁有相同的存取權限。請先建立角色、新增成員，再開啟或關閉權限。"
+msgstr ""
+"角色是一組具名的員工集合，彼此擁有相同的存取權限。請先建立角色、新增成員，再"
+"開啟或關閉權限。"
 
 msgid "Create a role"
 msgstr "建立角色"
@@ -11982,7 +12255,9 @@ msgstr "目前尚無人擔任此角色。"
 msgid ""
 "Pick a module on the left, then turn Create / View / Edit / Delete on. Use "
 "View only or Full access for faster setup. Changes save automatically."
-msgstr "請在左側選擇一個模組，然後開啟「新增／檢視／編輯／刪除」權限。使用「僅檢視」或「完整存取」可加快設定。變更會自動儲存。"
+msgstr ""
+"請在左側選擇一個模組，然後開啟「新增／檢視／編輯／刪除」權限。使用「僅檢視」"
+"或「完整存取」可加快設定。變更會自動儲存。"
 
 msgid "Click to rename"
 msgstr "點擊以重新命名"
@@ -12052,7 +12327,9 @@ msgstr "更新 %(name)s 在哪些公司擁有此角色的權限。此角色的�
 msgid ""
 "Update employees or companies for this role. Unchecking an employee removes "
 "them from the role; the selected companies apply to everyone selected."
-msgstr "更新此角色的員工或公司。取消勾選員工會將其從角色中移除；所選公司適用於所有選定人員。"
+msgstr ""
+"更新此角色的員工或公司。取消勾選員工會將其從角色中移除；所選公司適用於所有選"
+"定人員。"
 
 msgid ""
 "Search and pick employees below. Saving adds the selected employees to this "
@@ -12091,7 +12368,9 @@ msgstr "直接檢視或指派權限給個別員工。"
 msgid ""
 "Permissions assigned directly to an employee here apply in all companies. "
 "Use Roles to grant company-specific permissions."
-msgstr "此處直接指派給員工的權限會套用至所有公司。若要授予特定公司的權限，請使用角色。"
+msgstr ""
+"此處直接指派給員工的權限會套用至所有公司。若要授予特定公司的權限，請使用角"
+"色。"
 
 msgid "Search module or feature…"
 msgstr "搜尋模組或功能…"
@@ -12297,6 +12576,9 @@ msgstr "您想刪除此扣除額嗎？"
 msgid "Are you sure you want to delete this assigned leave request?"
 msgstr "您確定要刪除此分配的休假嗎？"
 
+msgid "Options"
+msgstr "選項"
+
 msgid "Do you want to approve this attendance request?"
 msgstr "您要核准此出勤申請嗎？"
 
@@ -12483,8 +12765,15 @@ msgstr "和"
 msgid "Sl No."
 msgstr "序號"
 
-msgid "Add Candidate"
-msgstr "新增應徵者"
+#, fuzzy
+#| msgid "No settings found"
+msgid "No stages found"
+msgstr "找不到設定"
+
+#, fuzzy
+#| msgid "%(recruitment)s has no stage.."
+msgid "This recruitment has no stages yet."
+msgstr "%(recruitment)s 沒有階段.."
 
 msgid "Do you want to delete this project?"
 msgstr "您想刪除此句點嗎？"
@@ -12892,7 +13181,9 @@ msgstr "快速操作"
 msgid ""
 "Login - %(company_name)s\n"
 "                Dashboard"
-msgstr "登入 - %(company_name)s\n                儀表板"
+msgstr ""
+"登入 - %(company_name)s\n"
+"                儀表板"
 
 msgid "Forgot Password"
 msgstr "忘記密碼"
@@ -13663,7 +13954,9 @@ msgstr "請假薪資扣減"
 msgid ""
 "Partial deduction — %(partial_pay_days)s\n"
 "                            day(s) on a partially paid leave type"
-msgstr "部分給薪休假類型中，有 %(partial_pay_days)s\n                            天需部分扣款"
+msgstr ""
+"部分給薪休假類型中，有 %(partial_pay_days)s\n"
+"                            天需部分扣款"
 
 msgid "Basic Pay Deductions"
 msgstr "基本工資扣除"
@@ -14497,7 +14790,9 @@ msgstr "所選期間無資料。"
 msgid ""
 "Showing the first %(shown_rows)s of %(total_rows)s rows. Narrow the filters "
 "or export to CSV for the complete data set."
-msgstr "顯示 %(total_rows)s 列中的前 %(shown_rows)s 列。請縮小篩選範圍，或匯出 CSV 以取得完整資料集。"
+msgstr ""
+"顯示 %(total_rows)s 列中的前 %(shown_rows)s 列。請縮小篩選範圍，或匯出 CSV 以"
+"取得完整資料集。"
 
 msgid "No rows"
 msgstr "沒有資料列"
@@ -14576,6 +14871,9 @@ msgstr "直接將職缺發布至 LinkedIn，並在 Horilla 中管理應徵者。
 
 msgid "Prefix added to every auto-generated employee badge ID (e.g. PEP0001)."
 msgstr "自動產生的員工工號前綴（例如 PEP0001）。"
+
+msgid "Add Candidate"
+msgstr "新增應徵者"
 
 msgid "Do you want to archive this talent pool?"
 msgstr "您要封存此人才庫嗎？"
@@ -14777,7 +15075,10 @@ msgid ""
 "Where this tour applies. With 'URL name' enter the resolver name (e.g. "
 "'dashboard'); with 'Path starts with' enter a path prefix (e.g. '/"
 "employee/'). Leave blank to allow on any page."
-msgstr "此導覽適用的位置。選擇「URL名稱」時請輸入解析器名稱（例如「dashboard」）；選擇「路徑開頭為」時請輸入路徑前綴（例如「/employee/」）。留空則允許於任何頁面顯示。"
+msgstr ""
+"此導覽適用的位置。選擇「URL名稱」時請輸入解析器名稱（例如「dashboard」）；選"
+"擇「路徑開頭為」時請輸入路徑前綴（例如「/employee/」）。留空則允許於任何頁面"
+"顯示。"
 
 msgid "Match by"
 msgstr "比對依據"
@@ -14839,7 +15140,9 @@ msgstr "元素選取器"
 msgid ""
 "CSS selector of the element to highlight (e.g. '#notificationIcon'). Leave "
 "blank for a centered message step."
-msgstr "要標示的元素之 CSS 選擇器（例如「#notificationIcon」）。若要顯示置中訊息步驟，請留空。"
+msgstr ""
+"要標示的元素之 CSS 選擇器（例如「#notificationIcon」）。若要顯示置中訊息步"
+"驟，請留空。"
 
 msgid "Align"
 msgstr "對齊"
@@ -14850,7 +15153,8 @@ msgstr "步驟頁面"
 msgid ""
 "Optional: for multi-page tours, the URL name this step lives on. Leave blank "
 "to use the tour's page."
-msgstr "選填：適用於多頁導覽，此步驟所在頁面的URL名稱。留空則使用導覽本身所在的頁面。"
+msgstr ""
+"選填：適用於多頁導覽，此步驟所在頁面的URL名稱。留空則使用導覽本身所在的頁面。"
 
 msgid "Tour step"
 msgstr "導覽步驟"
@@ -14982,6 +15286,24 @@ msgstr "清除分組"
 
 msgid "Save filter"
 msgstr "保存過濾器"
+
+msgid "No Records found"
+msgstr "未找到記錄"
+
+#, fuzzy
+#| msgid "Groups"
+msgid "groups"
+msgstr "群組"
+
+#, fuzzy, python-format
+#| msgid "No Files found."
+msgid "No %(label)s found"
+msgstr "未發現任何處罰。"
+
+#, fuzzy, python-format
+#| msgid "There are no attendance records to display."
+msgid "There are no %(label)s to display."
+msgstr "沒有可顯示的出勤記錄。"
 
 msgid "library outline"
 msgstr ""
@@ -15132,6 +15454,11 @@ msgstr "建立休假分配請求"
 msgid "Leave allocation request updated"
 msgstr "休假分配請求"
 
+#, fuzzy, python-format
+#| msgid "Leave allocation request updated"
+msgid "Leave allocation request updated for %(employee)s."
+msgstr "休假分配請求"
+
 msgid "New leave allocation request created"
 msgstr "已建立新的休假分配請求"
 
@@ -15151,7 +15478,7 @@ msgstr "請假申請已成功更新。"
 msgid "Leave request created successfully"
 msgstr "休假申請已成功建立.."
 
-msgid "Closed Due To"
+msgid "Clashed Due To"
 msgstr "衝突原因"
 
 msgid "Deducted FromCFD"
@@ -15341,7 +15668,9 @@ msgid ""
 "The requested days for this leave type is zero. Please check the selected "
 "dates, breakdown and the leave type's holiday/company leave exclusion "
 "settings."
-msgstr "此假別申請天數為零。請檢查所選日期、分段方式，以及此假別的假日／公司假期排除設定。"
+msgstr ""
+"此假別申請天數為零。請檢查所選日期、分段方式，以及此假別的假日／公司假期排除"
+"設定。"
 
 msgid "Does not have sufficient leave balance for the requested dates."
 msgstr "在要求的日期進行了面試。"
@@ -15725,7 +16054,10 @@ msgid_plural ""
 "\n"
 "                The selected dates include company holidays: %(names)s.\n"
 "            "
-msgstr[0] "\n                所選日期包含公司假日：%(names)s。\n            "
+msgstr[0] ""
+"\n"
+"                所選日期包含公司假日：%(names)s。\n"
+"            "
 
 msgid "Select All Requests"
 msgstr "選擇所有請求"
@@ -15735,9 +16067,6 @@ msgstr "取消選擇所有請求"
 
 msgid "Export Requests"
 msgstr "匯出請求"
-
-msgid "Clashed Due To"
-msgstr "衝突原因"
 
 msgid "No clashed requests available for cancelled or rejected leaves."
 msgstr "對於已取消或拒絕的休假，不存在衝突的請求。"
@@ -15977,6 +16306,11 @@ msgstr "未找到休假請求"
 msgid "Leave request rejected successfully.."
 msgstr "休假請求被成功拒絕.."
 
+#, fuzzy
+#| msgid "Work type request has been rejected."
+msgid "Your leave request has been rejected."
+msgstr "工作類型請求已被拒絕。"
+
 msgid "Leave request already rejected."
 msgstr "休假請求已被拒絕。"
 
@@ -16013,6 +16347,11 @@ msgstr "某些休假類型已指派給 {} 名員工。"
 
 msgid "Available leaves updated successfully..."
 msgstr "可用休假更新成功..."
+
+#, fuzzy, python-format
+#| msgid "No leave types have been created yet."
+msgid "Your %(leave_type)s leave type updated."
+msgstr "尚未建立休假類型。"
 
 msgid "Assigned leave successfully deleted."
 msgstr "已指派的休假已成功刪除。"
@@ -16103,11 +16442,21 @@ msgstr "您無法更新此請求..."
 msgid "Leave allocation request approved successfully"
 msgstr "休假分配請求已成功批准"
 
+#, fuzzy
+#| msgid "Your Leave request has been approved"
+msgid "Your leave allocation request has been approved"
+msgstr "您的休假申請已獲批准"
+
 msgid "The leave allocation request can't be approved"
 msgstr "休假分配請求無法批准"
 
 msgid "Leave allocation request rejected successfully"
 msgstr "休假分配請求被成功拒絕"
+
+#, fuzzy
+#| msgid "The leave allocation request can't be rejected"
+msgid "Your leave allocation request has been rejected"
+msgstr "休假分配請求不能被拒絕"
 
 msgid "The leave allocation request can't be rejected"
 msgstr "休假分配請求不能被拒絕"
@@ -16143,6 +16492,25 @@ msgstr "請假請求已刪除。"
 msgid "You cannot delete leave request with status {}."
 msgstr "您無法刪除狀態為 {} 的休假申請。"
 
+#, python-format
+msgid "%(employee)s's leave request has received a comment."
+msgstr ""
+
+#, fuzzy
+#| msgid "Your Leave request has been approved"
+msgid "Your leave request has received a comment."
+msgstr "您的休假申請已獲批准"
+
+#, fuzzy, python-format
+#| msgid "There are no leave allocation requests at the moment."
+msgid "%(employee)s's leave allocation request has received a comment."
+msgstr "目前沒有休假分配請求。"
+
+#, fuzzy
+#| msgid "There are no leave allocation requests at the moment."
+msgid "Your leave allocation request has received a comment."
+msgstr "目前沒有休假分配請求。"
+
 msgid "No comment found matching the query."
 msgstr "找不到符合查詢條件的留言。"
 
@@ -16170,14 +16538,39 @@ msgstr "補假申請已刪除。"
 msgid "Compensatory leave request approved."
 msgstr "補假申請已獲批准。"
 
+#, fuzzy
+#| msgid "Your Leave request has been approved"
+msgid "Your compensatory leave request has been approved"
+msgstr "您的休假申請已獲批准"
+
 msgid "The compensatory leave request is not in the 'requested' status."
 msgstr "補假申請未處於「已申請」狀態。"
 
 msgid "Compensatory Leave request rejected."
 msgstr "補假請求被拒絕。"
 
+#, fuzzy
+#| msgid "Compensatory Leave request rejected."
+msgid "Your compensatory leave request has been rejected"
+msgstr "補假請求被拒絕。"
+
 msgid "Compensatory leave request not found."
 msgstr "找不到補休申請。"
+
+#, fuzzy, python-format
+#| msgid "There are no compensatory leave requests at the moment."
+msgid "%(employee)s's Compensatory leave request has received a comment."
+msgstr "目前沒有補假請求。"
+
+#, fuzzy
+#| msgid "There are no compensatory leave requests at the moment."
+msgid "Your compensatory leave request has received a comment."
+msgstr "目前沒有補假請求。"
+
+#, fuzzy, python-format
+#| msgid "There are no compensatory leave requests at the moment."
+msgid "%(employee)s's compensatory leave request has received a comment."
+msgstr "目前沒有補假請求。"
 
 msgid "No interview found matching the query."
 msgstr "找不到符合查詢條件的面試。"
@@ -16214,6 +16607,10 @@ msgstr "更新員工標籤"
 
 msgid "Added Employee"
 msgstr "新增員工"
+
+#, python-format
+msgid "You have been added to the %(stage)s of %(offboarding_id)s"
+msgstr ""
 
 msgid "Create Offboarding"
 msgstr "離職"
@@ -16259,6 +16656,9 @@ msgstr "管理階段順序"
 
 msgid "Stages"
 msgstr "階段"
+
+msgid "Pipeline"
+msgstr "管道"
 
 #, python-format
 msgid ""
@@ -16317,6 +16717,10 @@ msgstr "任務"
 msgid "You cannot edit a request that has been rejected/approved"
 msgstr "您無法編輯已被拒絕/批准的請求"
 
+#, python-format
+msgid "%(get_full_name)s requested for resignation."
+msgstr ""
+
 msgid "Ongoing"
 msgstr "正在進行"
 
@@ -16357,6 +16761,11 @@ msgstr "待辦事項"
 
 msgid "Stuck"
 msgstr "卡住"
+
+#, fuzzy, python-format
+#| msgid "No rotating shift has been assigned."
+msgid "Offboarding task \"%(title)s\" has been assigned"
+msgstr "尚未分配輪班。"
 
 msgid "Offboarding"
 msgstr "離職"
@@ -16562,11 +16971,21 @@ msgstr "您確定要刪除這個階段嗎？"
 msgid "Do you want to delete task?"
 msgstr "您要刪除此資產嗎？"
 
+#, fuzzy
+#| msgid "You are chosen as onboarding task manager"
+msgid "You are chosen as an offboarding manager"
+msgstr "您被選為入職任務經理"
+
 msgid "Offboarding deleted"
 msgstr "已刪除下線"
 
 msgid "Stage saved"
 msgstr "已保存階段"
+
+#, fuzzy
+#| msgid "You are chosen as onboarding stage manager"
+msgid "You are chosen as offboarding stage manager"
+msgstr "您被選為入職階段經理"
 
 msgid "Sequence Updated Successfully"
 msgstr "序列更新成功"
@@ -16579,6 +16998,11 @@ msgstr "員工獲救"
 
 msgid "Offboarding employee deleted"
 msgstr "離職員工被刪除"
+
+#, fuzzy
+#| msgid "Employee has been successfully removed from the meeting."
+msgid "You have been removed from the offboarding"
+msgstr "員工已成功退出會議。"
 
 msgid "Employees not found"
 msgstr "未找到員工"
@@ -16594,6 +17018,11 @@ msgstr "請先完成以下必要任務，才能進入下一階段：%(details)s"
 
 msgid "Cannot Change Stage"
 msgstr "無法變更階段"
+
+#, fuzzy
+#| msgid "Onboarding stage manager"
+msgid "Offboarding stage has been changed"
+msgstr "入職舞台經理"
 
 msgid "stage changed successfully."
 msgstr "階段更改成功。"
@@ -16612,6 +17041,11 @@ msgstr "缺少必需的參數。"
 
 msgid "Task status updated successfully..."
 msgstr "任務更新成功.."
+
+#, fuzzy
+#| msgid "Status has been updated"
+msgid "Offboarding Task status has been updated"
+msgstr "狀態已更新"
 
 msgid "Task status changed successfully."
 msgstr "任務狀態變更成功。"
@@ -16646,6 +17080,11 @@ msgstr "%(name)s 的辭職信已被拒絕，無法修改。"
 
 #, python-format
 msgid "Resignation request has been %(status)s"
+msgstr "辭職申請已%(status)s"
+
+#, fuzzy, python-format
+#| msgid "Resignation request has been %(status)s"
+msgid "Resignation request has been %(get_status_display)s"
 msgstr "辭職申請已%(status)s"
 
 #, python-brace-format
@@ -16700,6 +17139,11 @@ msgstr "新階段已成功建立.."
 msgid "New Task Created Successfully"
 msgstr "新任務創建成功..."
 
+#, fuzzy
+#| msgid "You are chosen as onboarding task manager"
+msgid "You are chosen as an onboarding task manager"
+msgstr "您被選為入職任務經理"
+
 msgid "Task updated successfully.."
 msgstr "任務更新成功.."
 
@@ -16720,6 +17164,11 @@ msgstr "您尚未登入。"
 
 msgid "No stage found matching the query."
 msgstr "找不到符合查詢條件的階段。"
+
+#, fuzzy
+#| msgid "stage"
+msgid "stages"
+msgstr "階段"
 
 msgid "Stage Updated"
 msgstr "階段已更新。"
@@ -16829,6 +17278,22 @@ msgstr "發送入口網站/開始入職"
 
 msgid "Send Portal Link"
 msgstr "傳送入口網站連結"
+
+#, fuzzy
+#| msgid "Probation From"
+msgid "Probation End From"
+msgstr "緩刑期"
+
+#, fuzzy
+#| msgid "Probation Till"
+msgid "Probation End Till"
+msgstr "緩刑期"
+
+msgid "Scheduled From"
+msgstr "預定從"
+
+msgid "Scheduled Till"
+msgstr "預定截止日期"
 
 msgid "Is closed"
 msgstr "已關閉"
@@ -16967,7 +17432,9 @@ msgid ""
 "Your dedication is valued, and we wish you continued success. If you have "
 "questions or need assistance, feel free to ask. Best wishes for your "
 "journey! Kindly complete your profile when convenient."
-msgstr "我們珍視您的付出，並祝您持續獲得成功。如有任何問題或需要協助，歡迎隨時提出。祝您一路順利！也請於方便時完成您的個人檔案。"
+msgstr ""
+"我們珍視您的付出，並祝您持續獲得成功。如有任何問題或需要協助，歡迎隨時提出。"
+"祝您一路順利！也請於方便時完成您的個人檔案。"
 
 msgid "Bulk stage change"
 msgstr "批次變更階段"
@@ -17108,11 +17575,22 @@ msgstr "找不到入職入口網站。"
 msgid "Employee bank details created successfully.."
 msgstr "員工銀行詳細資料已成功建立.."
 
+#, python-format
+msgid ""
+"The task %(onboarding_task_id)s of %(candidate_id)s was updated to "
+"%(status)s."
+msgstr ""
+
 msgid "Candidate onboarding task updated"
 msgstr "應徵者入職任務已更新"
 
 msgid "Object not found."
 msgstr "找不到物件。"
+
+#, fuzzy, python-format
+#| msgid "%(candidate)s added to onboarding"
+msgid "The stage of %(candidate_id)s was updated to %(onboarding_stage_id)s."
+msgstr "%(candidate)s 已加入新進員工引導"
 
 msgid "Candidate onboarding stage updated"
 msgstr "應徵者入職階段已更新"
@@ -17367,6 +17845,11 @@ msgstr "創建薪資單"
 msgid "Payslip Saved"
 msgstr "薪資單已保存"
 
+#, fuzzy
+#| msgid "No Payslips have been generated."
+msgid "Payslip has been generated for you."
+msgstr "尚未產生工資單。"
+
 msgid "Payroll"
 msgstr "薪資單"
 
@@ -17520,6 +18003,11 @@ msgstr "沒有足夠的結轉天數來兌換"
 
 msgid "Not enough available days to redeem"
 msgstr "可用天數不足，無法兌換"
+
+#, fuzzy, python-format
+#| msgid "Redeem request created for"
+msgid "You have a new reimbursement request to approve for %(employee)s."
+msgstr "已建立贖回請求"
 
 msgid "Tax code is empty."
 msgstr "稅碼為空。"
@@ -18123,7 +18611,11 @@ msgid ""
 "                                                deduction — "
 "%(partial_pay_days)s day(s) on a partially paid leave\n"
 "                                                type"
-msgstr "部分\n                                                給薪休假類型中，有 %(partial_pay_days)s 天需部分\n                                                扣款"
+msgstr ""
+"部分\n"
+"                                                給薪休假類型中，有 "
+"%(partial_pay_days)s 天需部分\n"
+"                                                扣款"
 
 msgid "Gross earning - Total Deduction"
 msgstr "總收入-總扣除額"
@@ -18266,8 +18758,23 @@ msgstr "退款已成功保存"
 msgid "Please check the data you provided."
 msgstr "請檢查您提供的數據。"
 
+#, fuzzy
+#| msgid "Work type request has been rejected."
+msgid "Your reimbursement request has been rejected."
+msgstr "工作類型請求已被拒絕。"
+
+#, fuzzy
+#| msgid "Your shift request has been approved."
+msgid "Your reimbursement request has been approved."
+msgstr "您的輪班請求已獲批准。"
+
 msgid "Reimbursements deleted"
 msgstr "報銷已刪除"
+
+#, fuzzy
+#| msgid "Your shift request has been deleted."
+msgid "Your reimbursement request has been deleted."
+msgstr "您的輪班請求已被刪除。"
 
 msgid "Reimbursement request not found."
 msgstr "找不到報銷申請。"
@@ -18382,6 +18889,16 @@ msgstr "{name} 已刪除。"
 msgid "You cannot delete {contract}"
 msgstr "您無法刪除 {contract}"
 
+#, fuzzy, python-format
+#| msgid "There are no compensatory leave requests at the moment."
+msgid "%(employee)s's reimbursement request has received a comment."
+msgstr "目前沒有補假請求。"
+
+#, fuzzy
+#| msgid "Your Leave request has been approved"
+msgid "Your reimbursement request has received a comment."
+msgstr "您的休假申請已獲批准"
+
 msgid "No file IDs provided for deletion."
 msgstr "未提供要刪除的檔案ID。"
 
@@ -18463,6 +18980,11 @@ msgstr "回饋更新成功！"
 msgid "Feedback Created Successfully"
 msgstr "反饋創建成功。"
 
+#, fuzzy
+#| msgid "You have received feedback!"
+msgid "You received anonymous feedback!"
+msgstr "您已收到回饋！"
+
 msgid "Update Feedback"
 msgstr "更新回饋"
 
@@ -18498,6 +19020,20 @@ msgstr "更新請求"
 
 msgid "Meeting added successfully"
 msgstr "會議新增成功"
+
+#, fuzzy, python-format
+#| msgid "You have been assigned as a manager in a feedback!"
+msgid "You have been added as a manager for the meeting %(title)s"
+msgstr "您已被指定為回饋中的經理！"
+
+#, fuzzy, python-format
+#| msgid "You are added to rotating shift"
+msgid "You have been added to the meeting %(title)s"
+msgstr "您已加入輪班"
+
+#, python-format
+msgid "You have been added as an answerable employee for the meeting %(title)s"
+msgstr ""
 
 msgid "Add Response"
 msgstr "回覆"
@@ -18550,6 +19086,11 @@ msgstr "目標已成功更新"
 msgid "Update Objective"
 msgstr "更新目標"
 
+#, fuzzy
+#| msgid "You got an OKR!."
+msgid "You got an OKR!"
+msgstr "您獲得了 OKR！"
+
 msgid "Create Objective Template"
 msgstr "建立目標範本"
 
@@ -18577,8 +19118,18 @@ msgstr "找不到員工目標。"
 msgid "Key result updated sucessfully."
 msgstr "關鍵結果更新成功。"
 
+#, fuzzy
+#| msgid "Key result updated"
+msgid "Your Key Result updated."
+msgstr "主要結果已更新"
+
 msgid "Key result assigned sucessfully."
 msgstr "關鍵結果分配成功。"
+
+#, fuzzy
+#| msgid "You got an OKR!."
+msgid "You got a Key Result!"
+msgstr "您獲得了 OKR！"
 
 msgid "Are you sure you want to delete\tthis Key result?"
 msgstr "您確定要刪除此關鍵結果嗎？"
@@ -19285,6 +19836,13 @@ msgstr "您無法刪除此目標，相關條目已存在"
 msgid "Objective deleted successfully!."
 msgstr "目標刪除成功！"
 
+#, fuzzy, python-format
+#| msgid "You can't delete objective %(objective)s with status %(status)s"
+msgid ""
+"The status of the objective '%(objective_id)s' has been changed to "
+"%(status)s."
+msgstr "您無法刪除狀態為 %(status)s的目標 %(objective)s"
+
 msgid "The status of the objective is the same as selected."
 msgstr "目標的狀態與選定的相同。"
 
@@ -19299,6 +19857,11 @@ msgstr "創造的關鍵成果"
 
 msgid "Key result updated"
 msgstr "主要結果已更新"
+
+#, fuzzy
+#| msgid "You have received feedback!"
+msgid "You have been requested to provide feedback!"
+msgstr "您已收到回饋！"
 
 msgid "Feedback created successfully."
 msgstr "反饋創建成功。"
@@ -19786,6 +20349,12 @@ msgstr "工時表詳情"
 msgid "Project updated"
 msgstr "個人資料已更新。"
 
+#, python-format
+msgid ""
+"The status of the project '%(project)s' has been changed to "
+"%(get_status_display)s."
+msgstr ""
+
 msgid "Invalid status or missing data."
 msgstr "開始日期格式無效。"
 
@@ -20005,6 +20574,12 @@ msgstr "面試時間"
 msgid "Is Interview Completed"
 msgstr "面試結束了嗎"
 
+#, python-format
+msgid ""
+"You are scheduled as an interviewer for an interview with %(name)s on "
+"%(interview_date)s at %(interview_time)s."
+msgstr ""
+
 msgid "Interview Updated Successfully"
 msgstr "請求更新成功"
 
@@ -20022,9 +20597,6 @@ msgstr "找不到符合查詢條件的招募。"
 
 msgid "Reject Candidate"
 msgstr "編輯被拒絕的應徵者"
-
-msgid "Pipeline"
-msgstr "管道"
 
 msgid "Survey Questions"
 msgstr "隱藏問題"
@@ -20133,6 +20705,12 @@ msgstr "階段已更新。"
 
 msgid "Stage added"
 msgstr "已新增階段。"
+
+#, python-format
+msgid ""
+"Stage %(stage_obj)s is updated on recruitment %(recruitment_id)s. You are "
+"chosen as one of the managers."
+msgstr ""
 
 msgid "LinkedIn Accounts"
 msgstr "罰款金額"
@@ -20263,6 +20841,14 @@ msgstr "內部軟體"
 
 msgid "Converted"
 msgstr "已轉換"
+
+msgid "Not sent"
+msgstr "未寄送"
+
+#, fuzzy
+#| msgid "Onboarding portal stage"
+msgid "Onboarding not started yet"
+msgstr "入職入口網站階段"
 
 msgid "Employee is uniques for candidate"
 msgstr "員工身分對應應徵者身分是唯一的。"
@@ -20473,7 +21059,9 @@ msgstr "您的"
 msgid ""
 "application for <span class=\"font-semibold text-dark-200\">%(title)s</span> "
 "has been received."
-msgstr "已收到<span class=\"font-semibold text-dark-200\">%(title)s</span>的應徵申請。"
+msgstr ""
+"已收到<span class=\"font-semibold text-dark-200\">%(title)s</span>的應徵申"
+"請。"
 
 msgid "application has been received."
 msgstr "應徵申請已收到。"
@@ -20609,6 +21197,11 @@ msgstr "選擇所有應徵者"
 
 msgid "Congrats..."
 msgstr "恭喜..."
+
+#, fuzzy
+#| msgid "Unable to load"
+msgid "Unable to load preview"
+msgstr "無法載入"
 
 msgid "Example: Candidate asked to reschedule interview to Friday."
 msgstr "範例：候選人要求將面試改期至週五。"
@@ -20791,13 +21384,17 @@ msgid ""
 ". As a part of our employee policy, we provide free accommodation to all our "
 "employees, and hence you as part of your organization are also eligible for "
 "the same."
-msgstr "。作為我們員工政策的一部分，我們為所有員工提供免費住宿，因此身為本組織一員的您也享有相同資格。"
+msgstr ""
+"。作為我們員工政策的一部分，我們為所有員工提供免費住宿，因此身為本組織一員的"
+"您也享有相同資格。"
 
 msgid ""
 "Attached hereto is the employment contract with all the required details, "
 "your offer letter, and accommodation details. Should you accept this offer, "
 "we expect you to revert back to this email within two days upon receipt."
-msgstr "隨函附上包含所有必要詳細資料的聘僱合約、您的錄取通知書及住宿詳情。若您接受此錄取通知，我們期望您在收到後兩天內回覆此電子郵件。"
+msgstr ""
+"隨函附上包含所有必要詳細資料的聘僱合約、您的錄取通知書及住宿詳情。若您接受此"
+"錄取通知，我們期望您在收到後兩天內回覆此電子郵件。"
 
 msgid "Welcome aboard! We look forward to having you on our team."
 msgstr "歡迎加入！我們期待與您一同共事。"
@@ -20915,8 +21512,18 @@ msgstr "新增招募。"
 msgid "Recruitment manager removed successfully."
 msgstr "招聘經理已成功移除。"
 
+#, fuzzy, python-format
+#| msgid "You are chosen as one of recruitment manager"
+msgid "You are removed from recruitment manager from %(recruitment_obj)s"
+msgstr "您被選為招聘經理之一"
+
 msgid "Recruitment Updated."
 msgstr "招聘已更新。"
+
+#, fuzzy, python-format
+#| msgid "You are chosen as one of recruitment manager"
+msgid "%(recruitment_obj)s is updated. You are chosen as one of the managers."
+msgstr "您被選為招聘經理之一"
 
 msgid "Recruitment deleted successfully."
 msgstr "招聘刪除成功。"
@@ -20924,17 +21531,40 @@ msgstr "招聘刪除成功。"
 msgid "You cannot delete this recruitment"
 msgstr "您無法刪除此招聘訊息"
 
+#, fuzzy, python-format
+#| msgid "You are chosen as one of recruitment manager"
+msgid ""
+"You are chosen as recruitment manager for the recruitment %(recruitment_obj)s"
+msgstr "您被選為招聘經理之一"
+
+#, fuzzy, python-format
+#| msgid "Candidates · stage %(s)s"
+msgid "New candidate arrived on stage %(stage)s"
+msgstr "候選人 · 階段 %(s)s"
+
 msgid "Candidate added."
 msgstr "已新增應徵者。"
 
 msgid "Stage added."
 msgstr "已新增階段。"
 
+#, python-format
+msgid ""
+"You are chosen as a stage manager on the stage %(stage)s in recruitment "
+"%(recruitment_id)s"
+msgstr ""
+
 msgid "You don't have access"
 msgstr "您無權訪問"
 
 msgid "Stage updated."
 msgstr "階段已更新。"
+
+#, python-format
+msgid ""
+"%(stage)s stage in recruitment %(recruitment_id)s is updated. You are chosen "
+"as one of the managers."
+msgstr ""
 
 msgid "Recruitment updated."
 msgstr "招聘資訊已更新。"
@@ -20959,6 +21589,10 @@ msgstr "註釋已刪除"
 
 msgid "You cannot delete this note."
 msgstr "您不能刪除此註釋。"
+
+#, python-format
+msgid "You are removed from stage managers from stage %(stage_obj)s"
+msgstr ""
 
 msgid "Stage manager removed successfully."
 msgstr "階段經理移除成功。"
@@ -21272,6 +21906,10 @@ msgstr "技能創建成功"
 msgid "%(title)s is deleted."
 msgstr "%(title)s 被刪除。"
 
+#, python-format
+msgid "%(label)s has added a note on the candidate %(candidate)s"
+msgstr ""
+
 msgid "Candidate rejection deleted successfully"
 msgstr "候選人拒絕成功刪除"
 
@@ -21291,7 +21929,11 @@ msgid ""
 "\n"
 "Report: %(name)s\n"
 "Format: %(fmt)s"
-msgstr "您要求的匯出檔案已附上。\n\n報表：%(name)s\n格式：%(fmt)s"
+msgstr ""
+"您要求的匯出檔案已附上。\n"
+"\n"
+"報表：%(name)s\n"
+"格式：%(fmt)s"
 
 #, python-format
 msgid "Horilla report export failed: %(name)s"
@@ -21304,7 +21946,12 @@ msgid ""
 "Report: %(name)s\n"
 "\n"
 "Please try again, or narrow the filters if the report is very large."
-msgstr "無法產生您所要求的匯出檔案。\n\n報表：%(name)s\n\n請再試一次，若報表資料量過大，請縮小篩選範圍。"
+msgstr ""
+"無法產生您所要求的匯出檔案。\n"
+"\n"
+"報表：%(name)s\n"
+"\n"
+"請再試一次，若報表資料量過大，請縮小篩選範圍。"
 
 msgid "Report Audit"
 msgstr "報表稽核"
@@ -21457,9 +22104,6 @@ msgstr "應徵"
 
 msgid "Software"
 msgstr "軟體"
-
-msgid "Not sent"
-msgstr "未寄送"
 
 msgid "Review ongoing"
 msgstr "審核進行中"
@@ -21652,7 +22296,9 @@ msgstr "多元性快照"
 msgid ""
 "DEI / representation — gender and age bands plus leadership mix. Authorized "
 "roles only; marital status excluded from default view."
-msgstr "多元共融 / 代表性 — 性別與年齡層加上領導階層組成。僅限授權角色檢視；預設檢視不含婚姻狀況。"
+msgstr ""
+"多元共融 / 代表性 — 性別與年齡層加上領導階層組成。僅限授權角色檢視；預設檢視"
+"不含婚姻狀況。"
 
 msgid "Tenure & Longevity"
 msgstr "年資與久任程度"
@@ -21666,7 +22312,9 @@ msgstr "離職率（所有離職）"
 msgid ""
 "Hires vs all exits (offboarding / resignation / inactive fallback), period "
 "turnover rate, and first-year exit proxy — no voluntary split."
-msgstr "錄用與所有離職（離職手續／辭職／停用備援）的對比、期間離職率，以及第一年離職代理值——未區分自願離職。"
+msgstr ""
+"錄用與所有離職（離職手續／辭職／停用備援）的對比、期間離職率，以及第一年離職"
+"代理值——未區分自願離職。"
 
 msgid "Joiners & Leavers"
 msgstr "到職與離職人數"
@@ -21685,7 +22333,8 @@ msgstr "出勤天數、遲到、加班及各部門明細。"
 msgid ""
 "Unscheduled absence vs calendar expected days (holidays/company leaves "
 "subtracted; approved leave excluded from absence)."
-msgstr "非排定缺勤與日曆預期天數比較（已扣除假日／公司假期；已核准請假不計入缺勤）。"
+msgstr ""
+"非排定缺勤與日曆預期天數比較（已扣除假日／公司假期；已核准請假不計入缺勤）。"
 
 msgid "Overtime Analysis"
 msgstr "加班分析"
@@ -21693,7 +22342,9 @@ msgstr "加班分析"
 msgid ""
 "OT hours by department (default). Named employee rows require ?"
 "include_names=1 and attendance.change_attendance."
-msgstr "各部門加班時數（預設）。顯示具名員工資料列需要 ?include_names=1 及 attendance.change_attendance 權限。"
+msgstr ""
+"各部門加班時數（預設）。顯示具名員工資料列需要 ?include_names=1 及 "
+"attendance.change_attendance 權限。"
 
 msgid "Leave Planning (Used vs Entitlement)"
 msgstr "請假規劃（已用與可用額度對比）"
@@ -21701,7 +22352,9 @@ msgstr "請假規劃（已用與可用額度對比）"
 msgid ""
 "Planner ratio of period-approved leave days to the current entitlement "
 "snapshot — not an employee consumption nudge."
-msgstr "規劃比率：期間內已核准休假天數與目前應得額度快照之比值——並非在提醒員工休假消耗量。"
+msgstr ""
+"規劃比率：期間內已核准休假天數與目前應得額度快照之比值——並非在提醒員工休假消"
+"耗量。"
 
 msgid "Open Leave Balance (Days)"
 msgstr "開放休假餘額（天）"
@@ -21709,7 +22362,8 @@ msgstr "開放休假餘額（天）"
 msgid ""
 "Open leave balances in days (available + carry forward) by type/dept — not a "
 "currency liability."
-msgstr "依類型／部門呈現的開放休假餘額天數（可用天數+結轉天數）——並非金額負債。"
+msgstr ""
+"依類型／部門呈現的開放休假餘額天數（可用天數+結轉天數）——並非金額負債。"
 
 msgid "Labor Cost Summary"
 msgstr "人力成本摘要"
@@ -21725,7 +22379,9 @@ msgstr "成本組成"
 msgid ""
 "Allowance and deduction component mix from payslip heads (falls back to "
 "unsplit gross with an explicit hint)."
-msgstr "來自薪資單項目的津貼與扣款組成比例（若無法拆分，會回退為未拆分的總額並附加明確提示）。"
+msgstr ""
+"來自薪資單項目的津貼與扣款組成比例（若無法拆分，會回退為未拆分的總額並附加明"
+"確提示）。"
 
 msgid "Payroll Headcount Cost"
 msgstr "薪資人力成本"
@@ -21741,7 +22397,9 @@ msgstr "薪資單登記"
 msgid ""
 "Confidential payslip register for the selected period. Export requires "
 "export permission (matrix can_export); treat named pay rows as ops-only."
-msgstr "所選期間的機密薪資單登錄冊。匯出需具備匯出權限（矩陣 can_export）；具名薪資列僅供營運人員使用。"
+msgstr ""
+"所選期間的機密薪資單登錄冊。匯出需具備匯出權限（矩陣 can_export）；具名薪資列"
+"僅供營運人員使用。"
 
 msgid "Recruitment Funnel"
 msgstr "招募漏斗"
@@ -21771,7 +22429,9 @@ msgstr "入職進度"
 msgid ""
 "Onboarding stage and task completion for candidates who started onboarding "
 "in the selected period (tasks scoped to those candidates)."
-msgstr "所選期間內開始入職的候選人之入職階段與任務完成情況（任務範圍限定於這些候選人）。"
+msgstr ""
+"所選期間內開始入職的候選人之入職階段與任務完成情況（任務範圍限定於這些候選"
+"人）。"
 
 msgid "Objective & KR Health"
 msgstr "目標與關鍵成果健康度"
@@ -21783,7 +22443,9 @@ msgstr "目標／關鍵成果狀態與進度區間——並非績效評等曲線
 msgid ""
 "Global audit log volume by action and model (not company-scoped). Prefer "
 "ReportAccess matrix for production tenants."
-msgstr "依動作與模型分類的全域稽核紀錄數量（不限定公司範圍）。正式租戶請優先使用 ReportAccess 矩陣。"
+msgstr ""
+"依動作與模型分類的全域稽核紀錄數量（不限定公司範圍）。正式租戶請優先使用 "
+"ReportAccess 矩陣。"
 
 msgid "Span of Control"
 msgstr "管理幅度"
@@ -21797,7 +22459,9 @@ msgstr "流程停滯天數"
 msgid ""
 "Age of open candidates since application (created_at) by stage — not stage-"
 "entry age unless audit history is wired later."
-msgstr "依階段計算未結案候選人自申請（created_at）以來的天數 — 並非階段進入天數，除非日後串接稽核歷史。"
+msgstr ""
+"依階段計算未結案候選人自申請（created_at）以來的天數 — 並非階段進入天數，除非"
+"日後串接稽核歷史。"
 
 msgid "Source Quality"
 msgstr "來源品質"
@@ -21825,7 +22489,8 @@ msgstr "離職分析"
 msgid ""
 "Exits by source, department, and tenure at exit — no voluntary/involuntary "
 "split until reason fields exist."
-msgstr "依來源、部門與離職時年資的離職人數 — 在原因欄位建立前不區分自願／非自願離職。"
+msgstr ""
+"依來源、部門與離職時年資的離職人數 — 在原因欄位建立前不區分自願／非自願離職。"
 
 msgid "New-Hire 90-Day Attrition"
 msgstr "新進員工90天流失率"
@@ -21844,7 +22509,9 @@ msgstr "考量行事曆的未排班缺勤（已扣除假日／公司假期；不
 msgid ""
 "Employment contracts ending and documents with expiry_date. Visa-like "
 "classification is title-based only — not a legal visa register."
-msgstr "即將結束的僱傭合約與具有到期日的文件。類簽證分類僅依標題判斷 — 並非法定簽證登錄冊。"
+msgstr ""
+"即將結束的僱傭合約與具有到期日的文件。類簽證分類僅依標題判斷 — 並非法定簽證登"
+"錄冊。"
 
 msgid "Quality of Hire (90-day retention)"
 msgstr "招募品質（90天留任率）"
@@ -21860,7 +22527,8 @@ msgstr "薪資準備度"
 msgid ""
 "Active employees who cannot be paid: missing bank details or no active "
 "contract. An exception report -- empty is good."
-msgstr "無法支薪的在職員工：缺少銀行資料或無有效合約。此為例外報表 — 空白即表示正常。"
+msgstr ""
+"無法支薪的在職員工：缺少銀行資料或無有效合約。此為例外報表 — 空白即表示正常。"
 
 msgid "Loan & Advance Ledger"
 msgstr "貸款與預支帳目"
@@ -21881,7 +22549,8 @@ msgstr "依類型與狀態呈現的報銷與兌現申請，包含薪資結算前
 msgid ""
 "Asset inventory by status, and how long each assigned asset has been held -- "
 "the offboarding recovery control."
-msgstr "依狀態分類的資產庫存，以及每項已分配資產已持有的時長 — 用於離職資產回收控管。"
+msgstr ""
+"依狀態分類的資產庫存，以及每項已分配資產已持有的時長 — 用於離職資產回收控管。"
 
 msgid "With ≥1 report"
 msgstr "含至少1筆報表"
@@ -22690,7 +23359,9 @@ msgstr "近 6 個月滾動統計"
 msgid ""
 "Fixed rolling 6-month window — this report ignores the selected start date "
 "so the turnover rate stays comparable between runs."
-msgstr "固定滾動 6 個月區間 — 此報表會忽略所選開始日期，以確保流動率在各次執行之間可互相比較。"
+msgstr ""
+"固定滾動 6 個月區間 — 此報表會忽略所選開始日期，以確保流動率在各次執行之間可"
+"互相比較。"
 
 msgid "Turnover rate (6m)"
 msgstr "離職率（近6個月）"
@@ -23531,7 +24202,10 @@ msgid ""
 "webhook calls. Without it Horilla cannot tell a real delivery from a forged "
 "one, so unsigned payloads are rejected. Find it under App Settings > Basic "
 "in the Meta developer console."
-msgstr "Meta 應用程式密鑰，用於驗證傳入 Webhook 呼叫的 X-Hub-Signature-256 標頭。若無此密鑰，Horilla 無法分辨傳送內容是否遭偽造，因此未簽署的資料將被拒絕。可於 Meta 開發者主控台的「應用程式設定 > 基本」中找到。"
+msgstr ""
+"Meta 應用程式密鑰，用於驗證傳入 Webhook 呼叫的 X-Hub-Signature-256 標頭。若無"
+"此密鑰，Horilla 無法分辨傳送內容是否遭偽造，因此未簽署的資料將被拒絕。可於 "
+"Meta 開發者主控台的「應用程式設定 > 基本」中找到。"
 
 msgid "WhatsApp Integration"
 msgstr "WhatsApp 整合"
@@ -23555,6 +24229,9 @@ msgstr "帳號"
 
 msgid "Message templates and flows created successfully."
 msgstr "訊息模板和流創建成功。"
+
+#~ msgid "Closed Due To"
+#~ msgstr "衝突原因"
 
 #, fuzzy
 #~| msgid "Candidate Name"
@@ -24060,12 +24737,6 @@ msgstr "訊息模板和流創建成功。"
 
 #~ msgid "To Skill zone"
 #~ msgstr "前往技能區"
-
-#~ msgid "Scheduled From"
-#~ msgstr "預定從"
-
-#~ msgid "Scheduled Till"
-#~ msgstr "預定截止日期"
 
 #~ msgid "Interview Date From"
 #~ msgstr "面試日期"

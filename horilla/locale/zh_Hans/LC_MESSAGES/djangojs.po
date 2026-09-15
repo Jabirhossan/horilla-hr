@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Horilla\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-18 13:57+0530\n"
+"POT-Creation-Date: 2026-09-14 12:00+0530\n"
 "PO-Revision-Date: 2026-08-02 00:00+0000\n"
 "Last-Translator: Horilla Localization Team\n"
 "Language-Team: Simplified Chinese\n"
@@ -47,17 +47,104 @@ msgstr "在验证此考勤记录前，已有用于更新该记录的考勤申请
 msgid "View Request"
 msgstr "查看申请"
 
-msgid "Some selected requests have already been approved."
-msgstr "部分已选申请已获批准。"
+#, fuzzy
+#| msgid "Imported Successfully!"
+msgid "Employees Imported Successfully"
+msgstr "导入成功！"
 
-msgid "Some selected requests have already been rejected."
-msgstr "部分已选申请已被拒绝。"
+msgid "You have"
+msgstr ""
+
+#, fuzzy
+#| msgid "Do you want to download the template?"
+msgid "errors. Do you want to download the error list?"
+msgstr "要下载模板吗？"
+
+msgid "Download error list & Skip Import"
+msgstr ""
+
+msgid "Download error list & Continue Import"
+msgstr ""
+
+msgid "Invalid File"
+msgstr ""
+
+msgid "Please upload a valid XLSX file."
+msgstr ""
+
+msgid "Stage updated"
+msgstr "阶段已更新"
+
+msgid "Failed to update sequence: "
+msgstr ""
+
+#, fuzzy
+#| msgid "Stage updated"
+msgid "Sequence updated"
+msgstr "阶段已更新"
+
+msgid "Confirm Stage Change"
+msgstr "确认阶段变更"
+
+msgid ""
+"The candidate is being moved from %(from)s to the %(to)s stage. Do you want "
+"to proceed?"
+msgstr "候选人正在从%(from)s阶段移动到%(to)s阶段。您想继续吗？"
+
+msgid "Don't show this again in this session"
+msgstr "本次会话中不再显示此内容"
+
+msgid "Cannot Change Stage"
+msgstr "无法改变阶段"
+
+msgid "This move is not allowed."
+msgstr "这种举动是不允许的。"
+
+#, fuzzy
+#| msgid "Name of Employees"
+msgid "Employees"
+msgstr "员工姓名"
+
+msgid "Number of days"
+msgstr ""
+
+msgid "Draft"
+msgstr ""
+
+msgid "Review Ongoing"
+msgstr ""
+
+#, fuzzy
+#| msgid "Confirm"
+msgid "Confirmed"
+msgstr "确认"
+
+msgid "Paid"
+msgstr ""
+
+msgid "Leave count"
+msgstr ""
 
 msgid "Do you wish to create a Leave Report?"
 msgstr "要创建请假报表吗？"
 
 msgid "Do you want to reject the selected leave requests?"
 msgstr "要拒绝已选请假申请吗？"
+
+#, fuzzy
+#| msgid "Candidate"
+msgid "Onboarding Candidates"
+msgstr "候选人"
+
+#, fuzzy
+#| msgid "Candidate record"
+msgid "Candidates per Stage"
+msgstr "候选人记录"
+
+#, fuzzy
+#| msgid "Candidate"
+msgid "Number of Candidates"
+msgstr "候选人"
 
 msgid "Do you want to send the payslip by mail?"
 msgstr "要通过电子邮件发送工资单吗？"
@@ -68,6 +155,15 @@ msgstr "员工姓名"
 msgid "Amount"
 msgstr "金额"
 
+msgid "Objective"
+msgstr ""
+
+msgid "Key Result"
+msgstr ""
+
+msgid "Feedback"
+msgstr ""
+
 msgid "Upload Completed!"
 msgstr "上传完成！"
 
@@ -76,6 +172,178 @@ msgstr "导入成功！"
 
 msgid "Please upload a file with the .xlsx extension only."
 msgstr "请仅上传扩展名为 .xlsx 的文件。"
+
+#, fuzzy
+#| msgid "Candidate"
+msgid "Hired Candidates"
+msgstr "候选人"
+
+#, fuzzy
+#| msgid "Stage updated"
+msgid "Stage sequence updated"
+msgstr "阶段已更新"
+
+msgid "Dashboard"
+msgstr "仪表板"
+
+msgid "Horilla dashboard section"
+msgstr "Horilla 仪表板区域"
+
+msgid "Mark Attendance"
+msgstr "标记出勤"
+
+msgid "Used to mark your attendance"
+msgstr "用于标记您的出勤"
+
+msgid "Settings"
+msgstr "设置"
+
+msgid "Settings configurations"
+msgstr "设置配置"
+
+msgid "Notification"
+msgstr "通知"
+
+msgid "Notifications section"
+msgstr "通知区域"
+
+msgid "Language"
+msgstr "语言"
+
+msgid "Multi-Language options"
+msgstr "多语言选项"
+
+msgid "Multi-Company"
+msgstr "多公司"
+
+msgid "Multi-Company options"
+msgstr "多公司选项"
+
+msgid "Profile"
+msgstr "个人资料"
+
+msgid "Profile and change password options"
+msgstr "个人资料和修改密码选项"
+
+msgid "Dashboard Tiles"
+msgstr "仪表板磁贴"
+
+msgid "Horilla Dashboard Tiles"
+msgstr "Horilla 仪表板磁贴"
+
+msgid "Dashboard Actions"
+msgstr "仪表板操作"
+
+msgid "Approve or Reject Options"
+msgstr "批准或拒绝选项"
+
+msgid "Add announcement"
+msgstr "添加公告"
+
+msgid "Create announcement from dashboard"
+msgstr "从仪表板创建公告"
+
+msgid "Quick Actions"
+msgstr "快捷操作"
+
+msgid "Create Quick Requests"
+msgstr "创建快速请求"
+
+msgid "Company"
+msgstr "公司"
+
+msgid "Your current company access"
+msgstr "您当前的公司访问权限"
+
+msgid "App"
+msgstr "应用"
+
+msgid "Horilla Hr Apps. eg Dashboard"
+msgstr "Horilla HR 应用，例如仪表板"
+
+msgid "Pipeline"
+msgstr "招聘流程"
+
+msgid "Recruitment pipeline management"
+msgstr "招聘流程管理"
+
+msgid "New Recruitment"
+msgstr "新招聘"
+
+msgid "Add new recruitment"
+msgstr "添加新招聘"
+
+msgid "Filter"
+msgstr "筛选"
+
+msgid "Pipeline filter option"
+msgstr "招聘流程筛选选项"
+
+msgid "Toggle View"
+msgstr "切换视图"
+
+msgid "Toggle view type"
+msgstr "切换视图类型"
+
+msgid "Search"
+msgstr "搜索"
+
+msgid "Search in candidate, recruitment and stage"
+msgstr "在候选人、招聘和阶段中搜索"
+
+msgid "Filter Tag"
+msgstr "筛选标签"
+
+msgid "Filter tag option"
+msgstr "筛选标签选项"
+
+msgid "Quick Filters"
+msgstr "快速筛选"
+
+msgid "Recruitment"
+msgstr "招聘"
+
+msgid "Add Stage"
+msgstr "添加阶段"
+
+msgid "Add new stage to recruitment"
+msgstr "向招聘添加新阶段"
+
+msgid "Stage"
+msgstr "阶段"
+
+msgid "Recruitment stage"
+msgstr "招聘阶段"
+
+msgid "Add candidate"
+msgstr "添加候选人"
+
+msgid "Add candidate to stage option"
+msgstr "将候选人添加到阶段的选项"
+
+msgid "Candidate"
+msgstr "候选人"
+
+msgid "Candidate record"
+msgstr "候选人记录"
+
+msgid "Rating"
+msgstr "评分"
+
+msgid "Candidate rating option"
+msgstr "候选人评分选项"
+
+msgid "Change Stage"
+msgstr "更改阶段"
+
+msgid "Candidate change stage option"
+msgstr "候选人更改阶段选项"
+
+msgid "Options"
+msgstr "选项"
+
+msgid "Candidate management options"
+msgstr "候选人管理选项"
 
 msgid "visible"
 msgstr ""
@@ -143,6 +411,39 @@ msgstr ""
 msgid "customdata"
 msgstr ""
 
+msgid "All your company and base configurations"
+msgstr "所有公司和基础配置"
+
+msgid "Settings Options"
+msgstr "设置选项"
+
+msgid "Settings menu bar"
+msgstr "设置菜单栏"
+
+msgid "Settings View"
+msgstr "设置视图"
+
+msgid "Selected settings view"
+msgstr "所选设置视图"
+
+msgid "Project: "
+msgstr ""
+
+msgid "watchFile"
+msgstr ""
+
+msgid "watchDirectory"
+msgstr ""
+
+msgid "getCompletionsAtPosition: getCompletionEntriesFromSymbols: "
+msgstr ""
+
+msgid "placeOpenBraceOnNewLineForControlBlocks"
+msgstr ""
+
+msgid "placeOpenBraceOnNewLineForFunctions"
+msgstr ""
+
 msgid "punc"
 msgstr ""
 
@@ -156,6 +457,66 @@ msgid "arrow"
 msgstr ""
 
 msgid "operator"
+msgstr ""
+
+msgid "Expected "
+msgstr ""
+
+msgid "I"
+msgstr ""
+
+msgid "E"
+msgstr ""
+
+msgid "X"
+msgstr ""
+
+msgid "B"
+msgstr ""
+
+msgid "Invalid generatedCharacter found"
+msgstr ""
+
+msgid "Invalid sourceIndex found"
+msgstr ""
+
+msgid "Unsupported Format: No entries after sourceIndex"
+msgstr ""
+
+msgid "Invalid sourceLine found"
+msgstr ""
+
+msgid "Unsupported Format: No entries after sourceLine"
+msgstr ""
+
+msgid "Invalid sourceCharacter found"
+msgstr ""
+
+msgid "Invalid nameIndex found"
+msgstr ""
+
+msgid "Unsupported Error Format: Entries after nameIndex"
+msgstr ""
+
+msgid "collectAutoImports"
+msgstr ""
+
+msgid "continuePreviousIncompleteResponse"
+msgstr ""
+
+msgid "TypeRoots version has changed; provide new program"
+msgstr ""
+
+msgid "getIndentationAtPosition: getCurrentSourceFile: "
+msgstr ""
+
+msgid "getIndentationAtPosition: computeIndentation  : "
+msgstr ""
+
+msgid "Program"
+msgstr ""
+
+msgid "BlockStatement"
 msgstr ""
 
 msgid "close"
@@ -179,6 +540,9 @@ msgstr "正在上传..."
 msgid "No Records found"
 msgstr "未找到记录"
 
+msgid "Ok"
+msgstr "好的"
+
 msgid "Do you want to download the excel file?"
 msgstr "要下载 Excel 文件吗？"
 
@@ -200,156 +564,36 @@ msgstr "确定要批准所有已选申请吗？"
 msgid "Do you really want to unarchive all the selected records?"
 msgstr "确定要取消归档所有已选记录吗？"
 
-msgid "Ok"
-msgstr "好的"
-
 msgid "Total vacancy is %(vacancy)s."
 msgstr "总空位为%(vacancy)s。"
 
-msgid "Are you sure to change the candidate from %(from)s stage to %(to)s stage"
+msgid ""
+"Are you sure to change the candidate from %(from)s stage to %(to)s stage"
 msgstr "您确定将候选人从%(from)s阶段更改为%(to)s阶段吗"
 
-msgid "Stage updated"
-msgstr "阶段已更新"
+msgid "Retry"
+msgstr ""
 
-msgid "Confirm Stage Change"
-msgstr "确认阶段变更"
+msgid "Something went wrong while loading this data."
+msgstr ""
 
-msgid "The candidate is being moved from %(from)s to the %(to)s stage. Do you want to proceed?"
-msgstr "候选人正在从%(from)s阶段移动到%(to)s阶段。您想继续吗？"
+msgid "Request failed (status %(status)s)."
+msgstr ""
 
-msgid "Don't show this again in this session"
-msgstr "本次会话中不再显示此内容"
+msgid "The request took too long to respond."
+msgstr ""
 
-msgid "Cannot Change Stage"
-msgstr "无法改变阶段"
+#~ msgid "Some selected requests have already been approved."
+#~ msgstr "部分已选申请已获批准。"
 
-msgid "This move is not allowed."
-msgstr "这种举动是不允许的。"
+#~ msgid "Some selected requests have already been rejected."
+#~ msgstr "部分已选申请已被拒绝。"
 
-msgid "Do you really want to delete all the selected attendances?"
-msgstr "您确实要删除所有选定的出席吗？"
-msgid "Do you really want to delete this employee?"
-msgstr "您真的要删除该员工吗？"
-msgid "No rows are selected for deleting attendances."
-msgstr "未选择任何行来删除出勤。"
+#~ msgid "Do you really want to delete all the selected attendances?"
+#~ msgstr "您确实要删除所有选定的出席吗？"
 
+#~ msgid "Do you really want to delete this employee?"
+#~ msgstr "您真的要删除该员工吗？"
 
-msgid "Add Stage"
-msgstr "添加阶段"
-msgid "Add announcement"
-msgstr "添加公告"
-msgid "Add candidate"
-msgstr "添加候选人"
-msgid "Add candidate to stage option"
-msgstr "将候选人添加到阶段的选项"
-msgid "Add new recruitment"
-msgstr "添加新招聘"
-msgid "Add new stage to recruitment"
-msgstr "向招聘添加新阶段"
-msgid "All your company and base configurations"
-msgstr "所有公司和基础配置"
-msgid "App"
-msgstr "应用"
-msgid "Approve or Reject Options"
-msgstr "批准或拒绝选项"
-msgid "Candidate"
-msgstr "候选人"
-msgid "Candidate change stage option"
-msgstr "候选人更改阶段选项"
-msgid "Candidate management options"
-msgstr "候选人管理选项"
-msgid "Candidate rating option"
-msgstr "候选人评分选项"
-msgid "Candidate record"
-msgstr "候选人记录"
-msgid "Change Stage"
-msgstr "更改阶段"
-msgid "Company"
-msgstr "公司"
-msgid "Create Quick Requests"
-msgstr "创建快速请求"
-msgid "Create announcement from dashboard"
-msgstr "从仪表板创建公告"
-msgid "Dashboard"
-msgstr "仪表板"
-msgid "Dashboard Actions"
-msgstr "仪表板操作"
-msgid "Dashboard Tiles"
-msgstr "仪表板磁贴"
-msgid "Filter"
-msgstr "筛选"
-msgid "Filter Tag"
-msgstr "筛选标签"
-msgid "Filter tag option"
-msgstr "筛选标签选项"
-msgid "Horilla Dashboard Tiles"
-msgstr "Horilla 仪表板磁贴"
-msgid "Horilla Hr Apps. eg Dashboard"
-msgstr "Horilla HR 应用，例如仪表板"
-msgid "Horilla dashboard section"
-msgstr "Horilla 仪表板区域"
-msgid "Language"
-msgstr "语言"
-msgid "Mark Attendance"
-msgstr "标记出勤"
-msgid "Multi-Company"
-msgstr "多公司"
-msgid "Multi-Company options"
-msgstr "多公司选项"
-msgid "Multi-Language options"
-msgstr "多语言选项"
-msgid "New Recruitment"
-msgstr "新招聘"
-msgid "Notification"
-msgstr "通知"
-msgid "Notifications section"
-msgstr "通知区域"
-msgid "Options"
-msgstr "选项"
-msgid "Pipeline"
-msgstr "招聘流程"
-msgid "Pipeline filter option"
-msgstr "招聘流程筛选选项"
-msgid "Profile"
-msgstr "个人资料"
-msgid "Profile and change password options"
-msgstr "个人资料和修改密码选项"
-msgid "Quick Actions"
-msgstr "快捷操作"
-msgid "Quick Filters"
-msgstr "快速筛选"
-msgid "Rating"
-msgstr "评分"
-msgid "Recruitment"
-msgstr "招聘"
-msgid "Recruitment pipeline management"
-msgstr "招聘流程管理"
-msgid "Recruitment stage"
-msgstr "招聘阶段"
-msgid "Search"
-msgstr "搜索"
-msgid "Search in candidate, recruitment and stage"
-msgstr "在候选人、招聘和阶段中搜索"
-msgid "Selected settings view"
-msgstr "所选设置视图"
-msgid "Settings"
-msgstr "设置"
-msgid "Settings Options"
-msgstr "设置选项"
-msgid "Settings View"
-msgstr "设置视图"
-msgid "Settings configurations"
-msgstr "设置配置"
-msgid "Settings menu bar"
-msgstr "设置菜单栏"
-msgid "Stage"
-msgstr "阶段"
-msgid "Toggle View"
-msgstr "切换视图"
-msgid "Toggle view type"
-msgstr "切换视图类型"
-msgid "Used to mark your attendance"
-msgstr "用于标记您的出勤"
-msgid "Your current company access"
-msgstr "您当前的公司访问权限"
+#~ msgid "No rows are selected for deleting attendances."
+#~ msgstr "未选择任何行来删除出勤。"

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Horilla\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-10 10:51+0530\n"
+"POT-Creation-Date: 2026-09-14 15:26+0530\n"
 "PO-Revision-Date: 2026-08-14 12:00+0300\n"
 "Last-Translator: SCG seed pipeline\n"
 "Language-Team: Ukrainian\n"
@@ -325,6 +325,9 @@ msgstr "Заявку на актив не знайдено."
 msgid "Asset request approved successfully!."
 msgstr "Запит на актив успішно затверджено!"
 
+msgid "Your asset request approved!"
+msgstr "Ваш запит на актив схвалено!"
+
 msgid "Days Left"
 msgstr "Залишилось днів"
 
@@ -501,6 +504,16 @@ msgstr "Користувач, що запитує"
 
 msgid "Asset Requests"
 msgstr "Запити на активи"
+
+#, python-format
+msgid "The Asset '%(asset_name)s' expires in %(notify_before)s days"
+msgstr ""
+"Термін дії активу '%(asset_name)s' закінчується через %(notify_before)s дн."
+
+#, python-format
+msgid "The document ' %(title)s ' expires in %(notify_before)s days"
+msgstr ""
+"Термін дії документа ' %(title)s ' закінчується через %(notify_before)s дн."
 
 msgid "Dashboard"
 msgstr "Панель"
@@ -979,6 +992,9 @@ msgstr "Сталася помилка: "
 msgid "Asset request has been rejected."
 msgstr "Запит на актив відхилено."
 
+msgid "Your asset request rejected!"
+msgstr "Ваш запит на актив відхилено!"
+
 msgid "Asset allocated successfully!."
 msgstr "Актив успішно розподілено!."
 
@@ -988,6 +1004,12 @@ msgstr "Призначення активу не знайдено."
 #, python-brace-format
 msgid "Return request for {} initiated."
 msgstr "Запит на повернення для {} ініційовано."
+
+#, python-format
+msgid ""
+"Return request for %(asset_id)s initiated from %(assigned_to_employee_id)s"
+msgstr ""
+"Запит на повернення %(asset_id)s ініційовано %(assigned_to_employee_id)s"
 
 msgid "Asset Returned Successfully..."
 msgstr "Актив успішно повернено..."
@@ -1147,6 +1169,12 @@ msgstr "Нову заявку на відвідування оновлено"
 
 msgid "Attendance update request created."
 msgstr "Запит на оновлення відвідуваності створено."
+
+#, python-format
+msgid ""
+"%(employee_name)s's attendance update request for %(attendance_date)s is "
+"created"
+msgstr "Створено заявку на оновлення відвідуваності %(employee_name)s за %(attendance_date)s"
 
 msgid "Validate Attendances"
 msgstr "Перевірити відвідуваність"
@@ -2480,7 +2508,9 @@ msgid "OT"
 msgstr "Понаднормово"
 
 msgid "Hours beyond the OT cap — not counted as regular or overtime"
-msgstr "Години понад ліміт понаднормових — не враховуються як звичайні або понаднормові"
+msgstr ""
+"Години понад ліміт понаднормових — не враховуються як звичайні або "
+"понаднормові"
 
 msgid "total"
 msgstr "Усього"
@@ -2909,15 +2939,6 @@ msgstr "Перевірити запити відвідуваності"
 msgid "View"
 msgstr "Перегляд"
 
-msgid "Options"
-msgstr "Опції"
-
-msgid "No Records found"
-msgstr "Записів не знайдено"
-
-msgid "No records found."
-msgstr "Записів не знайдено."
-
 msgid "Add / View Comment"
 msgstr "Додати / Переглянути коментар"
 
@@ -3073,11 +3094,24 @@ msgstr "Записів відвідуваності за цим запитом �
 msgid "Attendance request has been approved"
 msgstr "Запит на відвідуваність затверджено"
 
+#, python-format
+msgid "Your attendance request for %(attendance_date)s is validated"
+msgstr "Вашу заявку на відвідуваність за %(attendance_date)s підтверджено"
+
+#, python-format
+msgid ""
+"%(employee_name)s's attendance request for %(attendance_date)s is validated"
+msgstr "Заявку на відвідуваність %(employee_name)s за %(attendance_date)s підтверджено"
+
 msgid "The requested attendance is removed."
 msgstr "Запитувану відвідуваність видалено."
 
 msgid "Attendance request has been rejected"
 msgstr "Запит на відвідуваність відхилено"
+
+#, python-format
+msgid "Your attendance request for %(attendance_date)s is rejected"
+msgstr "Вашу заявку на відвідуваність за %(attendance_date)s відхилено"
 
 msgid "Attendance request not found"
 msgstr "Запит на відвідуваність не знайдено"
@@ -3209,6 +3243,10 @@ msgstr "Недійсний ID відвідуваності"
 msgid "Pending attendance update request for {}'s attendance on {}!"
 msgstr "Очікує запит на оновлення відвідуваності для {} на {}!"
 
+#, python-format
+msgid "Your attendance for the date %(attendance_date)s is validated"
+msgstr "Вашу відвідуваність за %(attendance_date)s підтверджено"
+
 #, python-brace-format
 msgid "{} Attendances validated."
 msgstr "{} відвідуваностей перевірено."
@@ -3220,12 +3258,26 @@ msgstr "Ви не можете перевірити власне відвіду�
 msgid "%(employee)s %(date)s Attendance validated."
 msgstr "%(employee)s %(date)s Відвідування підтверджено."
 
+#, python-format
+msgid "%(employee)s requested revalidation for %(attendance_date)s attendance"
+msgstr ""
+"%(employee)s подав запит на повторну перевірку відвідуваності за "
+"%(attendance_date)s"
+
 msgid "You cannot approve your own overtime."
 msgstr "Ви не можете затвердити власні понаднормові."
 
 #, python-format
 msgid "%(employee)s's %(date)s overtime approved"
 msgstr "Понаднормові %(employee)s за %(date)s затверджено"
+
+#, python-format
+msgid "Your %(attendance_date)s's attendance overtime approved."
+msgstr "Ваші понаднормові за %(attendance_date)s підтверджено."
+
+#, python-format
+msgid "Overtime approved for %(attendance_date)s's attendance"
+msgstr "Понаднормові за %(attendance_date)s підтверджено"
 
 #, python-brace-format
 msgid " {} Overtime approved"
@@ -3275,6 +3327,13 @@ msgstr "Щось пішло не так ."
 
 msgid "Comment added successfully!"
 msgstr "Коментар успішно додано!"
+
+#, python-format
+msgid "%(employee)s's attendance request has received a comment."
+msgstr "Заявка на відвідуваність %(employee)s отримала коментар."
+
+msgid "Your attendance request has received a comment."
+msgstr "Ваша заявка на відвідуваність отримала коментар."
 
 msgid "No Comment found matching the query."
 msgstr "Коментарів за цим запитом не знайдено."
@@ -3349,6 +3408,12 @@ msgstr "Вас згадано в оголошенні."
 msgid "Announcement created successfully."
 msgstr "Оголошення успішно створено."
 
+msgid "Your department was mentioned in a post."
+msgstr "Ваш відділ згадано в публікації."
+
+msgid "Your job position was mentioned in a post."
+msgstr "Вашу посаду згадано в публікації."
+
 msgid "Announcement deleted successfully."
 msgstr "Оголошення успішно видалено."
 
@@ -3360,6 +3425,10 @@ msgstr "Файл успішно видалено."
 
 msgid "You commented a post."
 msgstr "Ви прокоментували публікацію."
+
+#, python-format
+msgid "Comment under the announcement %(title)s."
+msgstr "Коментар під оголошенням %(title)s."
 
 msgid "Announcement not found."
 msgstr "Оголошення не знайдено."
@@ -3734,6 +3803,9 @@ msgstr "Призначення змінної зміни успішно онов
 msgid "Rotating Shift Assign Created Successfully"
 msgstr "Призначення змінної зміни успішно створено"
 
+msgid "You are added to rotating shift"
+msgstr "Вас додано до ротаційної зміни"
+
 msgid "Rotating Work Type"
 msgstr "Змінний тип роботи"
 
@@ -3754,6 +3826,9 @@ msgstr "Призначення змінного типу роботи успіш
 
 msgid "Rotating Work Assigned"
 msgstr "Змінний тип роботи призначено"
+
+msgid "You are added to rotating work type"
+msgstr "Вас додано до ротаційного типу роботи"
 
 msgid "Rotating Work Assign Created"
 msgstr "Призначення змінного типу роботи створено"
@@ -3833,8 +3908,21 @@ msgstr "Заявку на зміну успішно оновлено"
 msgid "Shift request added Successfully"
 msgstr "Заявку на зміну успішно додано"
 
+#, python-format
+msgid "You have new shift request to approve for %(employee)s"
+msgstr "У вас новий запит на зміну для затвердження від %(employee)s"
+
 msgid "Shift Swap Request"
 msgstr "Запит на обмін змінами"
+
+#, python-format
+msgid "You have a new shift reallocation request to approve for %(employee)s."
+msgstr ""
+"У вас новий запит на перерозподіл зміни для затвердження від %(employee)s."
+
+#, python-format
+msgid "You have a new shift reallocation request from %(employee)s."
+msgstr "У вас новий запит на перерозподіл зміни від %(employee)s."
 
 msgid "Work type request"
 msgstr "Запит на тип роботи"
@@ -3883,6 +3971,10 @@ msgstr "Запит успішно оновлено"
 
 msgid "Work type Request Created"
 msgstr "Заявку на тип роботи створено"
+
+#, python-format
+msgid "You have new work type request to validate for %(employee)s"
+msgstr "У вас новий запит на тип роботи для перевірки від %(employee)s"
 
 msgid "You do not have access to that company."
 msgstr "У вас немає доступу до цієї компанії."
@@ -4569,6 +4661,24 @@ msgstr "Тип відпустки є обов'язковим"
 msgid "Penalty Accounts"
 msgstr "Рахунки штрафів"
 
+msgid "Your Work Type has been changed."
+msgstr "Ваш тип роботи змінено."
+
+msgid "Your shift has been changed."
+msgstr "Вашу зміну змінено."
+
+msgid "Shift Changes notification"
+msgstr "Сповіщення про зміни у зміні"
+
+msgid "Shift changes notification, Requested date expired."
+msgstr "Сповіщення про зміни у зміні, запитану дату прострочено."
+
+msgid "Work Type Changes notification"
+msgstr "Сповіщення про зміни типу роботи"
+
+msgid "Work type changes notification, Requested date expired."
+msgstr "Сповіщення про зміни типу роботи, запитану дату прострочено."
+
 msgid "General"
 msgstr "Загальне"
 
@@ -4579,13 +4689,16 @@ msgid "Default Expire Days"
 msgstr "Кількість днів дії за замовчуванням"
 
 msgid "Auto-expiry days for announcements, configurable per company"
-msgstr "Кількість днів до автоматичного закінчення терміну оголошень, налаштовується для кожної компанії"
+msgstr ""
+"Кількість днів до автоматичного закінчення терміну оголошень, налаштовується "
+"для кожної компанії"
 
 msgid "Default Records Per Page"
 msgstr "Кількість записів на сторінці за замовчуванням"
 
 msgid "Your personal rows-per-page preference for the selected company"
-msgstr "Ваше особисте налаштування кількості рядків на сторінку для обраної компанії"
+msgstr ""
+"Ваше особисте налаштування кількості рядків на сторінку для обраної компанії"
 
 msgid "Badge ID Prefix"
 msgstr "Префікс ID значка"
@@ -4637,7 +4750,9 @@ msgstr "Відстеження робочої інформації"
 msgid ""
 "Enable tracking of changes to employee work information fields for the "
 "selected company"
-msgstr "Увімкнути відстеження змін полів робочої інформації співробітників для обраної компанії"
+msgstr ""
+"Увімкнути відстеження змін полів робочої інформації співробітників для "
+"обраної компанії"
 
 msgid "Tracking Fields"
 msgstr "Поля відстеження"
@@ -5191,7 +5306,9 @@ msgstr "Відстеження історії співробітника"
 msgid ""
 "Employee history will be stored during updation of the fields that selected "
 "here. Leave empty to track all work information fields."
-msgstr "Історія співробітника зберігатиметься під час оновлення обраних тут полів. Залиште порожнім, щоб відстежувати всі поля робочої інформації."
+msgstr ""
+"Історія співробітника зберігатиметься під час оновлення обраних тут полів. "
+"Залиште порожнім, щоб відстежувати всі поля робочої інформації."
 
 msgid "Assign to Companies"
 msgstr "Призначити компаніям"
@@ -5199,7 +5316,9 @@ msgstr "Призначити компаніям"
 msgid ""
 "Select the companies that should receive these tracking settings. The All "
 "Companies default is always saved as well."
-msgstr "Виберіть компанії, які отримають ці налаштування відстеження. Значення за замовчуванням «Усі компанії» також завжди зберігається."
+msgstr ""
+"Виберіть компанії, які отримають ці налаштування відстеження. Значення за "
+"замовчуванням «Усі компанії» також завжди зберігається."
 
 msgid "Choose which companies these settings should be applied to."
 msgstr "Виберіть компанії, до яких застосовуватимуться ці налаштування."
@@ -5210,12 +5329,16 @@ msgstr "Зберегти та призначити"
 msgid ""
 "Configure the default, then choose which companies should receive these "
 "settings."
-msgstr "Налаштуйте типові значення, а потім виберіть, які компанії отримають ці налаштування."
+msgstr ""
+"Налаштуйте типові значення, а потім виберіть, які компанії отримають ці "
+"налаштування."
 
 msgid ""
 "By enabling this feature, you can save the history of employee work "
 "information during updates for the currently selected company."
-msgstr "Увімкнувши цю функцію, ви зможете зберігати історію робочої інформації співробітників під час оновлень для поточно обраної компанії."
+msgstr ""
+"Увімкнувши цю функцію, ви зможете зберігати історію робочої інформації "
+"співробітників під час оновлень для поточно обраної компанії."
 
 msgid "First Name"
 msgstr "Ім'я"
@@ -5273,7 +5396,9 @@ msgstr "Наразі немає жодної групи співробітник
 msgid ""
 "Editing members of \"%(name)s\". Unchecking an employee removes them from "
 "this role, and unchecking a company removes that assignment."
-msgstr "Редагування учасників «%(name)s». Зняття позначки зі співробітника вилучає його з цієї ролі, а зняття позначки з компанії скасовує це призначення."
+msgstr ""
+"Редагування учасників «%(name)s». Зняття позначки зі співробітника вилучає "
+"його з цієї ролі, а зняття позначки з компанії скасовує це призначення."
 
 #, python-format
 msgid ""
@@ -5871,12 +5996,16 @@ msgstr "Увімкнені мови"
 msgid ""
 "Choose which languages employees of this company can switch to. Leave empty "
 "to allow every language."
-msgstr "Виберіть мови, на які можуть перемикатися співробітники цієї компанії. Залиште порожнім, щоб дозволити всі мови."
+msgstr ""
+"Виберіть мови, на які можуть перемикатися співробітники цієї компанії. "
+"Залиште порожнім, щоб дозволити всі мови."
 
 msgid ""
 "Selected languages will appear in the language switcher for employees of "
 "this company. Leave empty to enable every language."
-msgstr "Обрані мови з'являться в перемикачі мов для співробітників цієї компанії. Залиште порожнім, щоб увімкнути всі мови."
+msgstr ""
+"Обрані мови з'являться в перемикачі мов для співробітників цієї компанії. "
+"Залиште порожнім, щоб увімкнути всі мови."
 
 msgid "Select languages…"
 msgstr "Виберіть мови…"
@@ -6294,12 +6423,6 @@ msgstr "Ваш запит на актив затверджено!."
 
 msgid "Your asset request rejected!."
 msgstr "Ваш запит на актив відхилено!."
-
-msgid "You are added to rotating work type"
-msgstr "Вас додано до ротаційного типу роботи"
-
-msgid "You are added to rotating shift"
-msgstr "Вас додано до ротаційної зміни"
 
 msgid "Your work type request has been canceled."
 msgstr "Ваш запит на тип роботи скасовано."
@@ -7672,6 +7795,9 @@ msgstr "У вас немає прав доступу"
 msgid "Work type request has been rejected."
 msgstr "Запит на зміну типу роботи відхилено."
 
+msgid "Your work type request has been rejected."
+msgstr "Вашу заявку на тип роботи відхилено."
+
 msgid "No worktype request found matching the query."
 msgstr "Заявок на тип роботи за цим запитом не знайдено."
 
@@ -7718,6 +7844,9 @@ msgstr "Неможливо редагувати схвалений запит н
 msgid "Shift request rejected"
 msgstr "Запит на зміну відхилено"
 
+msgid "Your shift request has been rejected."
+msgstr "Вашу заявку на зміну відхилено."
+
 msgid "No shift request found matching the query."
 msgstr "Заявок на зміну за цим запитом не знайдено."
 
@@ -7729,6 +7858,10 @@ msgstr "Зміну схвалено."
 
 msgid "You are available for shift reallocation."
 msgstr "Ви доступні для перерозподілу зміни."
+
+#, python-format
+msgid "%(employee_get)s is available for shift reallocation."
+msgstr "%(employee_get)s доступний(а) для перерозподілу зміни."
 
 msgid "Shifts have been approved."
 msgstr "Зміни схвалено."
@@ -7839,11 +7972,25 @@ msgstr "MultipleApprovalCondition за цим запитом не існує."
 msgid "Multiple approval condition deleted successfully"
 msgstr "Умову багаторівневого затвердження успішно видалено"
 
+#, python-format
+msgid "%(employee)s's shift request has received a comment."
+msgstr "Заявка на зміну %(employee)s отримала коментар."
+
+msgid "Your shift request has received a comment."
+msgstr "Ваша заявка на зміну отримала коментар."
+
 msgid "Invalid Request"
 msgstr "Недійсний запит"
 
 msgid "Comment not found."
 msgstr "Коментар не знайдено."
+
+#, python-format
+msgid "%(employee)s's work type request has received a comment."
+msgstr "Заявка на тип роботи %(employee)s отримала коментар."
+
+msgid "Your work type request has received a comment."
+msgstr "Ваша заявка на тип роботи отримала коментар."
 
 msgid "Default pagination updated."
 msgstr "Пагінацію за замовчуванням оновлено."
@@ -7869,13 +8016,17 @@ msgstr "Дію успішно видалено!"
 msgid ""
 "Chart preferences are managed via Customize on the modern dashboard. Legacy "
 "Dashboard Charts was not applied."
-msgstr "Налаштування діаграм керуються через «Налаштувати» в сучасному дашборді. Застарілі діаграми дашборду не застосовано."
+msgstr ""
+"Налаштування діаграм керуються через «Налаштувати» в сучасному дашборді. "
+"Застарілі діаграми дашборду не застосовано."
 
 msgid "Dashboard charts updated successfully"
 msgstr "Діаграми дашборду успішно оновлено"
 
 msgid "Use Customize on the modern dashboard to reorder charts."
-msgstr "Використовуйте «Налаштувати» в сучасному дашборді, щоб змінити порядок діаграм."
+msgstr ""
+"Використовуйте «Налаштувати» в сучасному дашборді, щоб змінити порядок "
+"діаграм."
 
 msgid "The biometric attendance feature has been activated successfully."
 msgstr "Функцію біометричного обліку відвідуваності успішно активовано."
@@ -8556,6 +8707,9 @@ msgstr "Вжити захід"
 msgid "Disciplinary action updated Successfully"
 msgstr "Дисциплінарну дію успішно оновлено"
 
+msgid "Disciplinary action is taken on you."
+msgstr "Щодо вас застосовано дисциплінарний захід."
+
 msgid "Disciplinary action created Successfully"
 msgstr "Дисциплінарну дію успішно створено"
 
@@ -8570,6 +8724,10 @@ msgstr "Запит документа успішно оновлено"
 
 msgid "Document request created successfully"
 msgstr "Запит на документ успішно створено"
+
+#, python-format
+msgid "%(employee_get)s requested a document."
+msgstr "%(employee_get)s запросив(ла) документ."
 
 #, python-format
 msgid "File type %(ext)s is not allowed."
@@ -8592,6 +8750,10 @@ msgstr "Завантажити файл"
 
 msgid "Document uploaded successfully"
 msgstr "Документ успішно завантажено"
+
+#, python-format
+msgid "%(employee_get)s uploaded a document"
+msgstr "%(employee_get)s завантажив(ла) документ"
 
 msgid "Bulk Approve Requests"
 msgstr "Масово затвердити запити"
@@ -9893,6 +10055,9 @@ msgstr "{employee} є суперкористувачем і не може бут
 msgid "Employee personal information updated."
 msgstr "Особисту інформацію працівника оновлено."
 
+msgid "Your work details have been updated."
+msgstr "Ваші робочі дані оновлено."
+
 msgid "Employee work information updated."
 msgstr "Робочу інформацію працівника оновлено."
 
@@ -10205,6 +10370,9 @@ msgstr "Оновити заявку"
 msgid "The Ticket created successfully."
 msgstr "Заявку успішно створено."
 
+msgid "You have been assigned to a new Ticket"
+msgstr "Вас призначено на новий тікет"
+
 msgid "The Ticket updated successfully."
 msgstr "Заявку успішно оновлено."
 
@@ -10303,6 +10471,9 @@ msgstr "Створіть теги для класифікації заявок �
 
 msgid "Define categories of helpdesk tickets."
 msgstr "Визначте категорії заявок служби підтримки."
+
+msgid "No records found."
+msgstr "Записів не знайдено."
 
 msgid "Claim Requests"
 msgstr "Запити на компенсацію"
@@ -10594,11 +10765,18 @@ msgstr "Заявку успішно заархівовано."
 msgid "Invalid request method."
 msgstr "Невірний метод запиту."
 
+#, python-format
+msgid "The status of the ticket has been changed to %(status)s."
+msgstr "Статус тікета змінено на %(status)s."
+
 msgid "The Ticket status updated successfully."
 msgstr "Статус заявки успішно оновлено."
 
 msgid "You Don't have the permission."
 msgstr "У вас немає прав доступу."
+
+msgid "The ticket has been deleted."
+msgstr "Тікет видалено."
 
 #, python-brace-format
 msgid "The Ticket \"{}\" has been deleted successfully."
@@ -10660,8 +10838,20 @@ msgstr "Коментар користувача {} успішно видален
 msgid "Claim request approved successfully."
 msgstr "Заявку на компенсацію успішно затверджено."
 
+#, python-format
+msgid "You have been assigned to a new Ticket-%(ticket)s."
+msgstr "Вас призначено на новий Тікет-%(ticket)s."
+
+#, python-format
+msgid "%(employee)s assigned to your ticket - %(ticket)s."
+msgstr "%(employee)s призначено до вашого тікета - %(ticket)s."
+
 msgid "Claim request rejected successfully."
 msgstr "Заявку на компенсацію відхилено."
+
+#, python-format
+msgid "Your claim request is rejected for Ticket-%(ticket)s"
+msgstr "Вашу заявку на компенсацію за Тікет-%(ticket)s відхилено"
 
 msgid "No Department Manager found matching the query."
 msgstr "Керівників відділів за цим запитом не знайдено."
@@ -10679,7 +10869,9 @@ msgid "Ticket type can not delete"
 msgstr "Тип заявки не можна видалити"
 
 msgid "Default FAQs could not be loaded. Please contact support."
-msgstr "Не вдалося завантажити стандартні поширені запитання. Зверніться до служби підтримки."
+msgstr ""
+"Не вдалося завантажити стандартні поширені запитання. Зверніться до служби "
+"підтримки."
 
 #, python-format
 msgid "Automation '%(faq_obj_question)s' created successfully."
@@ -10769,7 +10961,8 @@ msgid "Already Returned"
 msgstr "Вже повернувся"
 
 msgid "Attendance for this employee on the current date already exists."
-msgstr "Запис відвідуваності для цього співробітника на поточну дату вже існує."
+msgstr ""
+"Запис відвідуваності для цього співробітника на поточну дату вже існує."
 
 msgid "Old password is incorrect."
 msgstr "Старий пароль неправильний."
@@ -10981,6 +11174,21 @@ msgstr "Заявку на компенсацію не знайдено"
 
 msgid "DepartmentManager not found"
 msgstr "Керівника відділу не знайдено"
+
+#, python-format
+msgid "New leave allocation request created for %(employee)s."
+msgstr "Створено нову заявку на розподіл відпустки для %(employee)s."
+
+#, python-format
+msgid "New leave request created for %(employee)s."
+msgstr "Створено нову заявку на відпустку для %(employee)s."
+
+#, python-format
+msgid "Leave request updated for %(employee)s."
+msgstr "Заявку на відпустку для %(employee)s оновлено."
+
+msgid "Your Leave request has been rejected"
+msgstr "Вашу заявку на відпустку відхилено"
 
 msgid "Nothing to reject."
 msgstr "Нічого відхилити."
@@ -11415,7 +11623,9 @@ msgid "Trigger"
 msgstr "Тригер"
 
 msgid "Default mail automations could not be loaded. Please contact support."
-msgstr "Не вдалося завантажити стандартну автоматизацію листів. Зверніться до служби підтримки."
+msgstr ""
+"Не вдалося завантажити стандартну автоматизацію листів. Зверніться до служби "
+"підтримки."
 
 #, python-format
 msgid "Automation '%(automation_obj_title)s' added successfully."
@@ -12109,29 +12319,41 @@ msgstr "Заборонити співробітникам редагувати �
 msgid ""
 "Configure default tracking settings, then assign them to one or more "
 "companies below."
-msgstr "Налаштуйте параметри відстеження за замовчуванням, а потім призначте їх одній або кільком компаніям нижче."
+msgstr ""
+"Налаштуйте параметри відстеження за замовчуванням, а потім призначте їх "
+"одній або кільком компаніям нижче."
 
 msgid ""
 "Save a history record whenever an employee's work information is updated. "
 "Applies to the currently selected company."
-msgstr "Зберігати запис історії щоразу, коли оновлюється робоча інформація співробітника. Застосовується до поточно обраної компанії."
+msgstr ""
+"Зберігати запис історії щоразу, коли оновлюється робоча інформація "
+"співробітника. Застосовується до поточно обраної компанії."
 
 msgid ""
 "Selected fields will be recorded in employee history whenever they are "
 "updated. Leave empty to track all work information fields."
-msgstr "Обрані поля записуватимуться в історію співробітника щоразу, коли вони оновлюються. Залиште порожнім, щоб відстежувати всі поля робочої інформації."
+msgstr ""
+"Обрані поля записуватимуться в історію співробітника щоразу, коли вони "
+"оновлюються. Залиште порожнім, щоб відстежувати всі поля робочої інформації."
 
 msgid ""
 "Select the companies that should receive these tracking settings. All "
 "companies are selected by default. Company-specific field selections are "
 "preserved; new fields from All Companies are merged in."
-msgstr "Виберіть компанії, які отримають ці налаштування відстеження. За замовчуванням вибрано всі компанії. Специфічний для компанії вибір полів зберігається; нові поля з «Усі компанії» додаються до нього."
+msgstr ""
+"Виберіть компанії, які отримають ці налаштування відстеження. За "
+"замовчуванням вибрано всі компанії. Специфічний для компанії вибір полів "
+"зберігається; нові поля з «Усі компанії» додаються до нього."
 
 msgid ""
 "Choose which companies these settings should be applied to. All companies "
 "are selected by default. Existing company-specific fields are kept; new "
 "fields are added to them."
-msgstr "Виберіть компанії, до яких застосовуватимуться ці налаштування. За замовчуванням вибрано всі компанії. Наявні поля, специфічні для компанії, зберігаються; до них додаються нові поля."
+msgstr ""
+"Виберіть компанії, до яких застосовуватимуться ці налаштування. За "
+"замовчуванням вибрано всі компанії. Наявні поля, специфічні для компанії, "
+"зберігаються; до них додаються нові поля."
 
 msgid "Select companies…"
 msgstr "Виберіть компанії…"
@@ -12263,12 +12485,17 @@ msgstr "Додати учасників до \"%(name)s\""
 msgid ""
 "Update which companies %(name)s gets this role's permissions in. Other "
 "members of this role are not affected."
-msgstr "Оновіть, у яких компаніях %(name)s отримує дозволи цієї ролі. На інших учасників цієї ролі це не впливає."
+msgstr ""
+"Оновіть, у яких компаніях %(name)s отримує дозволи цієї ролі. На інших "
+"учасників цієї ролі це не впливає."
 
 msgid ""
 "Update employees or companies for this role. Unchecking an employee removes "
 "them from the role; the selected companies apply to everyone selected."
-msgstr "Оновіть співробітників або компанії для цієї ролі. Зняття позначки зі співробітника вилучає його з ролі; обрані компанії застосовуються до всіх обраних."
+msgstr ""
+"Оновіть співробітників або компанії для цієї ролі. Зняття позначки зі "
+"співробітника вилучає його з ролі; обрані компанії застосовуються до всіх "
+"обраних."
 
 msgid ""
 "Search and pick employees below. Saving adds the selected employees to this "
@@ -12522,6 +12749,9 @@ msgstr "Ви бажаєте видалити це утримання?"
 msgid "Are you sure you want to delete this assigned leave request?"
 msgstr "Ви впевнені, що хочете видалити цю призначену відпустку?"
 
+msgid "Options"
+msgstr "Опції"
+
 msgid "Do you want to approve this attendance request?"
 msgstr "Ви бажаєте затвердити цю заявку на відвідування?"
 
@@ -12708,8 +12938,11 @@ msgstr "з"
 msgid "Sl No."
 msgstr "№"
 
-msgid "Add Candidate"
-msgstr "Додати кандидата"
+msgid "No stages found"
+msgstr "Етапів не знайдено"
+
+msgid "This recruitment has no stages yet."
+msgstr "Цей підбір персоналу ще не має етапів."
 
 msgid "Do you want to delete this project?"
 msgstr "Бажаєте видалити цей проєкт?"
@@ -14080,7 +14313,9 @@ msgstr "Самостійне відстеження кандидатом"
 msgid ""
 "Let candidates track their application progress, view interview schedules, "
 "upload requested documents and see their overall rating."
-msgstr "Дозвольте кандидатам відстежувати хід розгляду заявки, переглядати розклад співбесід, завантажувати запитані документи та бачити загальну оцінку."
+msgstr ""
+"Дозвольте кандидатам відстежувати хід розгляду заявки, переглядати розклад "
+"співбесід, завантажувати запитані документи та бачити загальну оцінку."
 
 msgid "Application Tracking"
 msgstr "Відстеження заявки"
@@ -14241,7 +14476,9 @@ msgstr "Звіти по співробітниках"
 msgid ""
 "Ad-hoc pivots per module. Use Standard Reports for curated KPIs, charts, and "
 "export."
-msgstr "Довільні зведені таблиці по кожному модулю. Для готових KPI, діаграм та експорту використовуйте Стандартні звіти."
+msgstr ""
+"Довільні зведені таблиці по кожному модулю. Для готових KPI, діаграм та "
+"експорту використовуйте Стандартні звіти."
 
 msgid "Standard Reports"
 msgstr "Стандартні звіти"
@@ -14635,7 +14872,9 @@ msgstr "Підписатися на цей звіт"
 msgid ""
 "Email the current filters on a schedule. Recipients can be any comma-"
 "separated addresses."
-msgstr "Надсилати поточні фільтри електронною поштою за розкладом. Отримувачами можуть бути будь-які адреси через кому."
+msgstr ""
+"Надсилати поточні фільтри електронною поштою за розкладом. Отримувачами "
+"можуть бути будь-які адреси через кому."
 
 msgid "Attachment"
 msgstr "Вкладення"
@@ -14750,7 +14989,9 @@ msgstr "Немає даних за обраний період."
 msgid ""
 "Showing the first %(shown_rows)s of %(total_rows)s rows. Narrow the filters "
 "or export to CSV for the complete data set."
-msgstr "Показано перші %(shown_rows)s із %(total_rows)s рядків. Звузьте фільтри або експортуйте в CSV для отримання повного набору даних."
+msgstr ""
+"Показано перші %(shown_rows)s із %(total_rows)s рядків. Звузьте фільтри або "
+"експортуйте в CSV для отримання повного набору даних."
 
 msgid "No rows"
 msgstr "Немає рядків"
@@ -14767,7 +15008,9 @@ msgstr "Друкувати %(name)s"
 
 #, python-format
 msgid "PDF shows the first %(limit)s rows. Use Excel for a fuller extract."
-msgstr "У PDF показано перші %(limit)s рядків. Для повнішого вивантаження використовуйте Excel."
+msgstr ""
+"У PDF показано перші %(limit)s рядків. Для повнішого вивантаження "
+"використовуйте Excel."
 
 msgid "Print Excel"
 msgstr "Друкувати Excel"
@@ -14834,6 +15077,9 @@ msgstr ""
 "Префікс для кожного автоматично згенерованого ID бейджа працівника (напр. "
 "PEP0001).Префікс, доданий до ідентифікаторів бейджів співробітників, напр. "
 "EMP0001"
+
+msgid "Add Candidate"
+msgstr "Додати кандидата"
 
 msgid "Do you want to archive this talent pool?"
 msgstr "Бажаєте архівувати цей пул талантів?"
@@ -15252,6 +15498,20 @@ msgstr "Очистити групування"
 msgid "Save filter"
 msgstr "Зберегти фільтр"
 
+msgid "No Records found"
+msgstr "Записів не знайдено"
+
+msgid "groups"
+msgstr "Групи"
+
+#, python-format
+msgid "No %(label)s found"
+msgstr "%(label)s не знайдено"
+
+#, python-format
+msgid "There are no %(label)s to display."
+msgstr "Немає %(label)s для відображення."
+
 msgid "library outline"
 msgstr "library outline"
 
@@ -15403,6 +15663,10 @@ msgstr "Створити заявку на нарахування відпуст
 msgid "Leave allocation request updated"
 msgstr "Заявку на нарахування відпустки оновлено"
 
+#, python-format
+msgid "Leave allocation request updated for %(employee)s."
+msgstr "Заявку на розподіл відпустки для %(employee)s оновлено."
+
 msgid "New leave allocation request created"
 msgstr "Нову заявку на нарахування відпустки створено"
 
@@ -15422,8 +15686,8 @@ msgstr "Заявку на відпустку успішно оновлено.."
 msgid "Leave request created successfully"
 msgstr "Заявку на відпустку успішно створено.."
 
-msgid "Closed Due To"
-msgstr "Закрито через"
+msgid "Clashed Due To"
+msgstr "Причина конфлікту"
 
 msgid "Deducted FromCFD"
 msgstr "Утримано з перенесених"
@@ -16026,9 +16290,18 @@ msgid_plural ""
 "\n"
 "                The selected dates include company holidays: %(names)s.\n"
 "            "
-msgstr[0] "\n                Обрані дати включають святковий день компанії: %(names)s.\n            "
-msgstr[1] "\n                Обрані дати включають святкові дні компанії: %(names)s.\n            "
-msgstr[2] "\n                Обрані дати включають святкові дні компанії: %(names)s.\n            "
+msgstr[0] ""
+"\n"
+"                Обрані дати включають святковий день компанії: %(names)s.\n"
+"            "
+msgstr[1] ""
+"\n"
+"                Обрані дати включають святкові дні компанії: %(names)s.\n"
+"            "
+msgstr[2] ""
+"\n"
+"                Обрані дати включають святкові дні компанії: %(names)s.\n"
+"            "
 
 msgid "Select All Requests"
 msgstr "Обрати всі запити"
@@ -16038,9 +16311,6 @@ msgstr "Скасувати вибір усіх запитів"
 
 msgid "Export Requests"
 msgstr "Експортувати запити"
-
-msgid "Clashed Due To"
-msgstr "Причина конфлікту"
 
 msgid "No clashed requests available for cancelled or rejected leaves."
 msgstr "Немає конфліктних запитів для скасованих або відхилених відпусток."
@@ -16288,6 +16558,9 @@ msgstr "Заявку на відпустку не знайдено"
 msgid "Leave request rejected successfully.."
 msgstr "Заявку на відпустку успішно відхилено.."
 
+msgid "Your leave request has been rejected."
+msgstr "Вашу заявку на відпустку відхилено."
+
 msgid "Leave request already rejected."
 msgstr "Заявку на відпустку вже відхилено."
 
@@ -16324,6 +16597,10 @@ msgstr "Деякі типи відпусток вже було призначе�
 
 msgid "Available leaves updated successfully..."
 msgstr "Доступні відпустки успішно оновлено..."
+
+#, python-format
+msgid "Your %(leave_type)s leave type updated."
+msgstr "Ваш тип відпустки %(leave_type)s оновлено."
 
 msgid "Assigned leave successfully deleted."
 msgstr "Призначену відпустку успішно видалено."
@@ -16416,11 +16693,17 @@ msgstr "Ви не можете оновити цей запит..."
 msgid "Leave allocation request approved successfully"
 msgstr "Запит на розподіл відпустки успішно погоджено"
 
+msgid "Your leave allocation request has been approved"
+msgstr "Вашу заявку на розподіл відпустки схвалено"
+
 msgid "The leave allocation request can't be approved"
 msgstr "Запит на розподіл відпустки не може бути погоджений"
 
 msgid "Leave allocation request rejected successfully"
 msgstr "Запит на розподіл відпустки успішно відхилено"
+
+msgid "Your leave allocation request has been rejected"
+msgstr "Вашу заявку на розподіл відпустки відхилено"
 
 msgid "The leave allocation request can't be rejected"
 msgstr "Запит на розподіл відпустки не може бути відхилений"
@@ -16456,6 +16739,21 @@ msgstr "Заявку на відпустку видалено."
 msgid "You cannot delete leave request with status {}."
 msgstr "Не можна видалити заявку на відпустку зі статусом {}."
 
+#, python-format
+msgid "%(employee)s's leave request has received a comment."
+msgstr "Заявка на відпустку співробітника %(employee)s отримала коментар."
+
+msgid "Your leave request has received a comment."
+msgstr "Ваша заявка на відпустку отримала коментар."
+
+#, python-format
+msgid "%(employee)s's leave allocation request has received a comment."
+msgstr ""
+"Заявка на розподіл відпустки співробітника %(employee)s отримала коментар."
+
+msgid "Your leave allocation request has received a comment."
+msgstr "Ваша заявка на розподіл відпустки отримала коментар."
+
 msgid "No comment found matching the query."
 msgstr "Коментарів за цим запитом не знайдено."
 
@@ -16483,14 +16781,35 @@ msgstr "Заявку на компенсаційну відпустку вида
 msgid "Compensatory leave request approved."
 msgstr "Заявку на компенсаційну відпустку затверджено."
 
+msgid "Your compensatory leave request has been approved"
+msgstr "Вашу заявку на компенсаційну відпустку схвалено"
+
 msgid "The compensatory leave request is not in the 'requested' status."
 msgstr "Заявка на компенсаційну відпустку не має статусу «запитано»."
 
 msgid "Compensatory Leave request rejected."
 msgstr "Заявку на компенсаційну відпустку відхилено."
 
+msgid "Your compensatory leave request has been rejected"
+msgstr "Вашу заявку на компенсаційну відпустку відхилено"
+
 msgid "Compensatory leave request not found."
 msgstr "Заявку на компенсаційну відпустку не знайдено."
+
+#, python-format
+msgid "%(employee)s's Compensatory leave request has received a comment."
+msgstr ""
+"Заявка на компенсаційну відпустку співробітника %(employee)s отримала "
+"коментар."
+
+msgid "Your compensatory leave request has received a comment."
+msgstr "Ваша заявка на компенсаційну відпустку отримала коментар."
+
+#, python-format
+msgid "%(employee)s's compensatory leave request has received a comment."
+msgstr ""
+"Заявка на компенсаційну відпустку співробітника %(employee)s отримала "
+"коментар."
 
 msgid "No interview found matching the query."
 msgstr "Співбесід за цим запитом не знайдено."
@@ -16527,6 +16846,10 @@ msgstr "Співробітника оновлено"
 
 msgid "Added Employee"
 msgstr "Співробітника додано"
+
+#, python-format
+msgid "You have been added to the %(stage)s of %(offboarding_id)s"
+msgstr "Вас додано до %(stage)s %(offboarding_id)s"
 
 msgid "Create Offboarding"
 msgstr "Створити звільнення"
@@ -16572,6 +16895,9 @@ msgstr "Керувати порядком етапів"
 
 msgid "Stages"
 msgstr "Етапи"
+
+msgid "Pipeline"
+msgstr "воронка підбору"
 
 #, python-format
 msgid ""
@@ -16632,6 +16958,10 @@ msgstr "Завдання для"
 msgid "You cannot edit a request that has been rejected/approved"
 msgstr "Ви не можете редагувати запит, який було відхилено/схвалено"
 
+#, python-format
+msgid "%(get_full_name)s requested for resignation."
+msgstr "%(get_full_name)s подав(ла) заяву на звільнення."
+
 msgid "Ongoing"
 msgstr "Триває"
 
@@ -16674,6 +17004,10 @@ msgstr "До виконання"
 
 msgid "Stuck"
 msgstr "Затримано"
+
+#, python-format
+msgid "Offboarding task \"%(title)s\" has been assigned"
+msgstr "Завдання звільнення \"%(title)s\" призначено"
 
 msgid "Offboarding"
 msgstr "Звільнення"
@@ -16884,11 +17218,17 @@ msgstr "Ви впевнені, що хочете видалити цей ета�
 msgid "Do you want to delete task?"
 msgstr "Ви бажаєте видалити завдання?"
 
+msgid "You are chosen as an offboarding manager"
+msgstr "Вас обрано менеджером звільнення"
+
 msgid "Offboarding deleted"
 msgstr "Звільнення видалено"
 
 msgid "Stage saved"
 msgstr "Етап збережено"
+
+msgid "You are chosen as offboarding stage manager"
+msgstr "Вас обрано менеджером етапу звільнення"
 
 msgid "Sequence Updated Successfully"
 msgstr "Послідовність успішно оновлено"
@@ -16901,6 +17241,9 @@ msgstr "Співробітника збережено"
 
 msgid "Offboarding employee deleted"
 msgstr "Співробітника, що звільняється, видалено"
+
+msgid "You have been removed from the offboarding"
+msgstr "Вас видалено зі звільнення"
 
 msgid "Employees not found"
 msgstr "Співробітників не знайдено"
@@ -16919,6 +17262,9 @@ msgstr ""
 msgid "Cannot Change Stage"
 msgstr "Не можна змінити етап"
 
+msgid "Offboarding stage has been changed"
+msgstr "Етап звільнення змінено"
+
 msgid "stage changed successfully."
 msgstr "Етап успішно змінено."
 
@@ -16936,6 +17282,9 @@ msgstr "Відсутні необхідні параметри."
 
 msgid "Task status updated successfully..."
 msgstr "Статус завдання успішно оновлено..."
+
+msgid "Offboarding Task status has been updated"
+msgstr "Статус завдання звільнення оновлено"
 
 msgid "Task status changed successfully."
 msgstr "Статус завдання успішно змінено."
@@ -16972,6 +17321,10 @@ msgstr "Заява на звільнення %(name)s вже відхилена 
 #, python-format
 msgid "Resignation request has been %(status)s"
 msgstr "Запит на відставку надіслано %(status)s"
+
+#, python-format
+msgid "Resignation request has been %(get_status_display)s"
+msgstr "Заяву на звільнення за власним бажанням %(get_status_display)s"
 
 #, python-brace-format
 msgid "Resignation Request setting has been {} successfully."
@@ -17025,6 +17378,9 @@ msgstr "Новий етап успішно створено.."
 msgid "New Task Created Successfully"
 msgstr "Нове завдання успішно створено..."
 
+msgid "You are chosen as an onboarding task manager"
+msgstr "Вас обрано менеджером завдань адаптації"
+
 msgid "Task updated successfully.."
 msgstr "Завдання успішно оновлено.."
 
@@ -17045,6 +17401,9 @@ msgstr "Ви не увійшли в систему."
 
 msgid "No stage found matching the query."
 msgstr "Етапів за цим запитом не знайдено."
+
+msgid "stages"
+msgstr "етап"
 
 msgid "Stage Updated"
 msgstr "Етап оновлено."
@@ -17156,6 +17515,18 @@ msgstr "Надіслати посилання на портал / запусти
 
 msgid "Send Portal Link"
 msgstr "Надіслати посилання на портал"
+
+msgid "Probation End From"
+msgstr "Закінчення випробувального терміну від"
+
+msgid "Probation End Till"
+msgstr "Закінчення випробувального терміну до"
+
+msgid "Scheduled From"
+msgstr "Заплановано з"
+
+msgid "Scheduled Till"
+msgstr "Заплановано до"
 
 msgid "Is closed"
 msgstr "Закрито"
@@ -17442,11 +17813,23 @@ msgstr "Портал адаптації не знайдено."
 msgid "Employee bank details created successfully.."
 msgstr "Банківські реквізити співробітника успішно створено.."
 
+#, python-format
+msgid ""
+"The task %(onboarding_task_id)s of %(candidate_id)s was updated to "
+"%(status)s."
+msgstr ""
+"Завдання %(onboarding_task_id)s кандидата %(candidate_id)s оновлено до "
+"%(status)s."
+
 msgid "Candidate onboarding task updated"
 msgstr "Завдання адаптації кандидата оновлено"
 
 msgid "Object not found."
 msgstr "Об'єкт не знайдено."
+
+#, python-format
+msgid "The stage of %(candidate_id)s was updated to %(onboarding_stage_id)s."
+msgstr "Етап %(candidate_id)s оновлено до %(onboarding_stage_id)s."
 
 msgid "Candidate onboarding stage updated"
 msgstr "Етап адаптації кандидата оновлено"
@@ -17701,6 +18084,9 @@ msgstr "Створити розрахунковий листок"
 msgid "Payslip Saved"
 msgstr "Розрахунковий лист збережено"
 
+msgid "Payslip has been generated for you."
+msgstr "Ваш розрахунковий листок сформовано."
+
 msgid "Payroll"
 msgstr "Заробітна плата"
 
@@ -17825,7 +18211,9 @@ msgstr "Пакет розрахункових листків"
 msgid ""
 "These employees have no active contract, so a salary structure can't be "
 "assigned to them: %(names)s"
-msgstr "Ці співробітники не мають активного контракту, тому їм не можна призначити структуру заробітної плати: %(names)s"
+msgstr ""
+"Ці співробітники не мають активного контракту, тому їм не можна призначити "
+"структуру заробітної плати: %(names)s"
 
 msgid "Rate must be greater than 0"
 msgstr "Ставка має бути більшою за 0"
@@ -17857,6 +18245,10 @@ msgstr "Недостатньо перенесених днів для викор
 
 msgid "Not enough available days to redeem"
 msgstr "Недостатньо доступних днів для використання"
+
+#, python-format
+msgid "You have a new reimbursement request to approve for %(employee)s."
+msgstr "У вас новий запит на відшкодування для затвердження від %(employee)s."
 
 msgid "Tax code is empty."
 msgstr "Податковий код порожній."
@@ -18631,8 +19023,17 @@ msgstr "Відшкодування успішно збережено"
 msgid "Please check the data you provided."
 msgstr "Перевірте надані дані."
 
+msgid "Your reimbursement request has been rejected."
+msgstr "Вашу заявку на відшкодування відхилено."
+
+msgid "Your reimbursement request has been approved."
+msgstr "Вашу заявку на відшкодування схвалено."
+
 msgid "Reimbursements deleted"
 msgstr "Відшкодування видалено"
+
+msgid "Your reimbursement request has been deleted."
+msgstr "Вашу заявку на відшкодування видалено."
 
 msgid "Reimbursement request not found."
 msgstr "Заявку на компенсацію не знайдено."
@@ -18748,6 +19149,13 @@ msgstr "{name} видалено."
 msgid "You cannot delete {contract}"
 msgstr "Ви не можете видалити {contract}"
 
+#, python-format
+msgid "%(employee)s's reimbursement request has received a comment."
+msgstr "Заявка на відшкодування %(employee)s отримала коментар."
+
+msgid "Your reimbursement request has received a comment."
+msgstr "Ваша заявка на відшкодування отримала коментар."
+
 msgid "No file IDs provided for deletion."
 msgstr "Не надано ID файлів для видалення."
 
@@ -18830,6 +19238,9 @@ msgstr "Відгук успішно оновлено!."
 msgid "Feedback Created Successfully"
 msgstr "Відгук успішно створено."
 
+msgid "You received anonymous feedback!"
+msgstr "Ви отримали анонімний відгук!"
+
 msgid "Update Feedback"
 msgstr "Оновити відгук"
 
@@ -18865,6 +19276,18 @@ msgstr "Оновити зустріч"
 
 msgid "Meeting added successfully"
 msgstr "Зустріч успішно додано"
+
+#, python-format
+msgid "You have been added as a manager for the meeting %(title)s"
+msgstr "Вас додано як менеджера зустрічі %(title)s"
+
+#, python-format
+msgid "You have been added to the meeting %(title)s"
+msgstr "Вас додано до зустрічі %(title)s"
+
+#, python-format
+msgid "You have been added as an answerable employee for the meeting %(title)s"
+msgstr "Вас додано як відповідального співробітника зустрічі %(title)s"
 
 msgid "Add Response"
 msgstr "Додати відповідь"
@@ -18917,6 +19340,9 @@ msgstr "Ціль успішно оновлено"
 msgid "Update Objective"
 msgstr "Оновити ціль"
 
+msgid "You got an OKR!"
+msgstr "Ви отримали OKR!"
+
 msgid "Create Objective Template"
 msgstr "Створити шаблон цілі"
 
@@ -18944,8 +19370,14 @@ msgstr "Ціль співробітника не знайдено."
 msgid "Key result updated sucessfully."
 msgstr "Ключовий результат успішно оновлено."
 
+msgid "Your Key Result updated."
+msgstr "Ваш Ключовий результат оновлено."
+
 msgid "Key result assigned sucessfully."
 msgstr "Ключовий результат успішно призначено."
+
+msgid "You got a Key Result!"
+msgstr "Ви отримали Ключовий результат!"
 
 msgid "Are you sure you want to delete\tthis Key result?"
 msgstr "Ви впевнені, що хочете видалити цей ключовий результат?"
@@ -19663,6 +20095,12 @@ msgstr "Неможливо видалити цю ціль, існують пов
 msgid "Objective deleted successfully!."
 msgstr "Ціль успішно видалено!."
 
+#, python-format
+msgid ""
+"The status of the objective '%(objective_id)s' has been changed to "
+"%(status)s."
+msgstr "Статус цілі '%(objective_id)s' змінено на %(status)s."
+
 msgid "The status of the objective is the same as selected."
 msgstr "Статус цілі збігається з обраним."
 
@@ -19677,6 +20115,9 @@ msgstr "Ключові результати створено"
 
 msgid "Key result updated"
 msgstr "Ключовий результат оновлено"
+
+msgid "You have been requested to provide feedback!"
+msgstr "Вас попросили надати відгук!"
 
 msgid "Feedback created successfully."
 msgstr "Відгук успішно створено."
@@ -20166,6 +20607,12 @@ msgstr "Деталі табеля"
 msgid "Project updated"
 msgstr "Проєкт оновлено"
 
+#, python-format
+msgid ""
+"The status of the project '%(project)s' has been changed to "
+"%(get_status_display)s."
+msgstr "Статус проєкту '%(project)s' змінено на %(get_status_display)s."
+
 msgid "Invalid status or missing data."
 msgstr "Недійсний статус або відсутні дані."
 
@@ -20385,6 +20832,14 @@ msgstr "Час співбесіди"
 msgid "Is Interview Completed"
 msgstr "Співбесіда завершена"
 
+#, python-format
+msgid ""
+"You are scheduled as an interviewer for an interview with %(name)s on "
+"%(interview_date)s at %(interview_time)s."
+msgstr ""
+"Вас заплановано як інтерв'юера для співбесіди з %(name)s %(interview_date)s "
+"о %(interview_time)s."
+
 msgid "Interview Updated Successfully"
 msgstr "Інтерв'ю успішно оновлено."
 
@@ -20402,9 +20857,6 @@ msgstr "За запитом набору персоналу не знайден�
 
 msgid "Reject Candidate"
 msgstr "Відхилити кандидата"
-
-msgid "Pipeline"
-msgstr "воронка підбору"
 
 msgid "Survey Questions"
 msgstr "Питання опитування"
@@ -20513,6 +20965,14 @@ msgstr "Етап оновлено."
 
 msgid "Stage added"
 msgstr "Етап додано."
+
+#, python-format
+msgid ""
+"Stage %(stage_obj)s is updated on recruitment %(recruitment_id)s. You are "
+"chosen as one of the managers."
+msgstr ""
+"Етап %(stage_obj)s у підборі персоналу %(recruitment_id)s оновлено. Вас "
+"обрано одним із менеджерів."
 
 msgid "LinkedIn Accounts"
 msgstr "Облікові записи LinkedIn"
@@ -20651,6 +21111,12 @@ msgstr "Внутрішнє програмне забезпечення"
 
 msgid "Converted"
 msgstr "Конвертовано"
+
+msgid "Not sent"
+msgstr "Не надіслано"
+
+msgid "Onboarding not started yet"
+msgstr "Адаптацію ще не розпочато"
 
 msgid "Employee is uniques for candidate"
 msgstr "Співробітник унікальний для кандидата"
@@ -20861,13 +21327,16 @@ msgstr "Ваш(а)"
 msgid ""
 "application for <span class=\"font-semibold text-dark-200\">%(title)s</span> "
 "has been received."
-msgstr "заявку на <span class=\"font-semibold text-dark-200\">%(title)s</span> отримано."
+msgstr ""
+"заявку на <span class=\"font-semibold text-dark-200\">%(title)s</span> "
+"отримано."
 
 msgid "application has been received."
 msgstr "заявку отримано."
 
 msgid "We'll be in touch if there's a match. Feel free to close this window."
-msgstr "Ми зв'яжемося з вами, якщо буде відповідність. Можете закрити це вікно."
+msgstr ""
+"Ми зв'яжемося з вами, якщо буде відповідність. Можете закрити це вікно."
 
 msgid "View more open positions"
 msgstr "Переглянути більше відкритих вакансій"
@@ -20997,6 +21466,9 @@ msgstr "Надіслати лист кільком кандидатам"
 
 msgid "Congrats..."
 msgstr "Вітаємо..."
+
+msgid "Unable to load preview"
+msgstr "Не вдалося завантажити попередній перегляд"
 
 msgid "Example: Candidate asked to reschedule interview to Friday."
 msgstr "Приклад: кандидат попросив перенести співбесіду на п'ятницю."
@@ -21312,8 +21784,16 @@ msgstr "Набір додано."
 msgid "Recruitment manager removed successfully."
 msgstr "Менеджера набору успішно видалено."
 
+#, python-format
+msgid "You are removed from recruitment manager from %(recruitment_obj)s"
+msgstr "Вас видалено з менеджерів підбору персоналу %(recruitment_obj)s"
+
 msgid "Recruitment Updated."
 msgstr "Набір оновлено."
+
+#, python-format
+msgid "%(recruitment_obj)s is updated. You are chosen as one of the managers."
+msgstr "%(recruitment_obj)s оновлено. Вас обрано одним із менеджерів."
 
 msgid "Recruitment deleted successfully."
 msgstr "Набір успішно видалено."
@@ -21321,17 +21801,41 @@ msgstr "Набір успішно видалено."
 msgid "You cannot delete this recruitment"
 msgstr "Ви не можете видалити цей набір"
 
+#, python-format
+msgid ""
+"You are chosen as recruitment manager for the recruitment %(recruitment_obj)s"
+msgstr "Вас обрано менеджером підбору персоналу для набору %(recruitment_obj)s"
+
+#, python-format
+msgid "New candidate arrived on stage %(stage)s"
+msgstr "Новий кандидат прибув на етап %(stage)s"
+
 msgid "Candidate added."
 msgstr "Кандидата додано."
 
 msgid "Stage added."
 msgstr "Етап додано."
 
+#, python-format
+msgid ""
+"You are chosen as a stage manager on the stage %(stage)s in recruitment "
+"%(recruitment_id)s"
+msgstr ""
+"Вас обрано менеджером етапу %(stage)s у підборі персоналу %(recruitment_id)s"
+
 msgid "You don't have access"
 msgstr "У вас немає доступу"
 
 msgid "Stage updated."
 msgstr "Етап оновлено."
+
+#, python-format
+msgid ""
+"%(stage)s stage in recruitment %(recruitment_id)s is updated. You are chosen "
+"as one of the managers."
+msgstr ""
+"Етап %(stage)s у підборі персоналу %(recruitment_id)s оновлено. Вас обрано "
+"одним із менеджерів."
 
 msgid "Recruitment updated."
 msgstr "Набір оновлено."
@@ -21356,6 +21860,10 @@ msgstr "Нотатку видалено"
 
 msgid "You cannot delete this note."
 msgstr "Ви не можете видалити цю нотатку."
+
+#, python-format
+msgid "You are removed from stage managers from stage %(stage_obj)s"
+msgstr "Вас видалено з менеджерів етапу %(stage_obj)s"
 
 msgid "Stage manager removed successfully."
 msgstr "Менеджера етапу успішно видалено."
@@ -21670,6 +22178,10 @@ msgstr "Навички створено успішно"
 msgid "%(title)s is deleted."
 msgstr "%(title)s видалено."
 
+#, python-format
+msgid "%(label)s has added a note on the candidate %(candidate)s"
+msgstr "%(label)s додав(ла) примітку до кандидата %(candidate)s"
+
 msgid "Candidate rejection deleted successfully"
 msgstr "Відхилення кандидата успішно видалено"
 
@@ -21689,7 +22201,11 @@ msgid ""
 "\n"
 "Report: %(name)s\n"
 "Format: %(fmt)s"
-msgstr "Запитаний вами експорт додано у вкладенні.\n\nЗвіт: %(name)s\nФормат: %(fmt)s"
+msgstr ""
+"Запитаний вами експорт додано у вкладенні.\n"
+"\n"
+"Звіт: %(name)s\n"
+"Формат: %(fmt)s"
 
 #, python-format
 msgid "Horilla report export failed: %(name)s"
@@ -21702,7 +22218,12 @@ msgid ""
 "Report: %(name)s\n"
 "\n"
 "Please try again, or narrow the filters if the report is very large."
-msgstr "Не вдалося згенерувати запитаний вами експорт.\n\nЗвіт: %(name)s\n\nСпробуйте ще раз або звузьте фільтри, якщо звіт дуже великий."
+msgstr ""
+"Не вдалося згенерувати запитаний вами експорт.\n"
+"\n"
+"Звіт: %(name)s\n"
+"\n"
+"Спробуйте ще раз або звузьте фільтри, якщо звіт дуже великий."
 
 msgid "Report Audit"
 msgstr "Аудит звітів"
@@ -21856,9 +22377,6 @@ msgstr "Заявка"
 msgid "Software"
 msgstr "Програмне забезпечення"
 
-msgid "Not sent"
-msgstr "Не надіслано"
-
 msgid "Review ongoing"
 msgstr "Огляд триває"
 
@@ -21952,7 +22470,8 @@ msgid "Contracts & Document Expiry"
 msgstr "Закінчення терміну контрактів і документів"
 
 msgid "No contracts or documents with expiry in the selected window."
-msgstr "Немає контрактів чи документів із закінченням терміну в обраному вікні."
+msgstr ""
+"Немає контрактів чи документів із закінченням терміну в обраному вікні."
 
 msgid "Contracts ending"
 msgstr "Контракти, що завершуються"
@@ -22042,7 +22561,9 @@ msgid "Workforce Composition"
 msgstr "Склад персоналу"
 
 msgid "Headcount, FTE proxy, and distribution by dept/type/job/location."
-msgstr "Чисельність персоналу, приблизний ЕПЗ та розподіл за відділом/типом/посадою/місцем."
+msgstr ""
+"Чисельність персоналу, приблизний ЕПЗ та розподіл за відділом/типом/посадою/"
+"місцем."
 
 msgid "Diversity Snapshot"
 msgstr "Знімок різноманітності"
@@ -22050,7 +22571,9 @@ msgstr "Знімок різноманітності"
 msgid ""
 "DEI / representation — gender and age bands plus leadership mix. Authorized "
 "roles only; marital status excluded from default view."
-msgstr "DEI / представленість — стать і вікові групи та розподіл керівництва. Лише для авторизованих ролей; сімейний стан виключено зі стандартного перегляду."
+msgstr ""
+"DEI / представленість — стать і вікові групи та розподіл керівництва. Лише "
+"для авторизованих ролей; сімейний стан виключено зі стандартного перегляду."
 
 msgid "Tenure & Longevity"
 msgstr "Стаж і тривалість роботи"
@@ -22064,7 +22587,10 @@ msgstr "Плинність (усі звільнення)"
 msgid ""
 "Hires vs all exits (offboarding / resignation / inactive fallback), period "
 "turnover rate, and first-year exit proxy — no voluntary split."
-msgstr "Найм проти всіх звільнень (звільнення / за власним бажанням / резервно — неактивні), показник плинності за період і приблизна частка звільнень протягом першого року — без поділу на добровільні."
+msgstr ""
+"Найм проти всіх звільнень (звільнення / за власним бажанням / резервно — "
+"неактивні), показник плинності за період і приблизна частка звільнень "
+"протягом першого року — без поділу на добровільні."
 
 msgid "Joiners & Leavers"
 msgstr "Прийняті та звільнені"
@@ -22072,7 +22598,9 @@ msgstr "Прийняті та звільнені"
 msgid ""
 "Period joiners and leavers (with exit source), net change, and approximate "
 "month-end headcount trend."
-msgstr "Нові та звільнені співробітники за період (з причиною звільнення), чиста зміна та приблизна тенденція чисельності на кінець місяця."
+msgstr ""
+"Нові та звільнені співробітники за період (з причиною звільнення), чиста "
+"зміна та приблизна тенденція чисельності на кінець місяця."
 
 msgid "Attendance Summary"
 msgstr "Зведення відвідуваності"
@@ -22083,7 +22611,10 @@ msgstr "Дні присутності, запізнення, понаднорм�
 msgid ""
 "Unscheduled absence vs calendar expected days (holidays/company leaves "
 "subtracted; approved leave excluded from absence)."
-msgstr "Незапланована відсутність порівняно з очікуваними днями за календарем (свята/відпустки компанії віднято; затверджена відпустка не враховується як відсутність)."
+msgstr ""
+"Незапланована відсутність порівняно з очікуваними днями за календарем (свята/"
+"відпустки компанії віднято; затверджена відпустка не враховується як "
+"відсутність)."
 
 msgid "Overtime Analysis"
 msgstr "Аналіз понаднормових"
@@ -22091,7 +22622,9 @@ msgstr "Аналіз понаднормових"
 msgid ""
 "OT hours by department (default). Named employee rows require ?"
 "include_names=1 and attendance.change_attendance."
-msgstr "Понаднормові години за відділами (за замовчуванням). Іменні рядки співробітників потребують ?include_names=1 та attendance.change_attendance."
+msgstr ""
+"Понаднормові години за відділами (за замовчуванням). Іменні рядки "
+"співробітників потребують ?include_names=1 та attendance.change_attendance."
 
 msgid "Leave Planning (Used vs Entitlement)"
 msgstr "Планування відпусток (використано / нараховано)"
@@ -22099,7 +22632,10 @@ msgstr "Планування відпусток (використано / нар
 msgid ""
 "Planner ratio of period-approved leave days to the current entitlement "
 "snapshot — not an employee consumption nudge."
-msgstr "Плановий коефіцієнт затверджених за період днів відпустки до поточного знімка нарахованих прав — не є нагадуванням про використання відпустки для співробітника."
+msgstr ""
+"Плановий коефіцієнт затверджених за період днів відпустки до поточного "
+"знімка нарахованих прав — не є нагадуванням про використання відпустки для "
+"співробітника."
 
 msgid "Open Leave Balance (Days)"
 msgstr "Відкритий залишок відпустки (днів)"
@@ -22107,7 +22643,9 @@ msgstr "Відкритий залишок відпустки (днів)"
 msgid ""
 "Open leave balances in days (available + carry forward) by type/dept — not a "
 "currency liability."
-msgstr "Відкриті залишки відпустки в днях (доступно + перенесено) за типом/відділом — не є грошовим зобов'язанням."
+msgstr ""
+"Відкриті залишки відпустки в днях (доступно + перенесено) за типом/відділом "
+"— не є грошовим зобов'язанням."
 
 msgid "Labor Cost Summary"
 msgstr "Зведення витрат на персонал"
@@ -22115,7 +22653,9 @@ msgstr "Зведення витрат на персонал"
 msgid ""
 "Gross, net, deductions by department. Employer cost shown as gross proxy "
 "until contribution components exist."
-msgstr "Валовий, чистий дохід та відрахування за відділами. Витрати роботодавця показано як валовий дохід, доки не з'являться компоненти внесків."
+msgstr ""
+"Валовий, чистий дохід та відрахування за відділами. Витрати роботодавця "
+"показано як валовий дохід, доки не з'являться компоненти внесків."
 
 msgid "Cost Composition"
 msgstr "Структура витрат"
@@ -22123,7 +22663,10 @@ msgstr "Структура витрат"
 msgid ""
 "Allowance and deduction component mix from payslip heads (falls back to "
 "unsplit gross with an explicit hint)."
-msgstr "Розподіл складових надбавок і відрахувань за статтями розрахункового листка (за відсутності — повертається неподілений валовий дохід із явним поясненням)."
+msgstr ""
+"Розподіл складових надбавок і відрахувань за статтями розрахункового листка "
+"(за відсутності — повертається неподілений валовий дохід із явним "
+"поясненням)."
 
 msgid "Payroll Headcount Cost"
 msgstr "Витрати на персонал (зарплата)"
@@ -22131,7 +22674,9 @@ msgstr "Витрати на персонал (зарплата)"
 msgid ""
 "Gross cost per active headcount and average pay by department (not hours-"
 "based FTE)."
-msgstr "Валові витрати на активного співробітника та середня оплата за відділами (не погодинний ЕПЗ)."
+msgstr ""
+"Валові витрати на активного співробітника та середня оплата за відділами (не "
+"погодинний ЕПЗ)."
 
 msgid "Payslip Register"
 msgstr "Реєстр розрахункових листків"
@@ -22139,7 +22684,10 @@ msgstr "Реєстр розрахункових листків"
 msgid ""
 "Confidential payslip register for the selected period. Export requires "
 "export permission (matrix can_export); treat named pay rows as ops-only."
-msgstr "Конфіденційний реєстр розрахункових листків за обраний період. Для експорту потрібен дозвіл на експорт (матриця can_export); іменні рядки виплат призначено лише для операційного використання."
+msgstr ""
+"Конфіденційний реєстр розрахункових листків за обраний період. Для експорту "
+"потрібен дозвіл на експорт (матриця can_export); іменні рядки виплат "
+"призначено лише для операційного використання."
 
 msgid "Recruitment Funnel"
 msgstr "Воронка підбору"
@@ -22147,7 +22695,9 @@ msgstr "Воронка підбору"
 msgid ""
 "Stage snapshot of candidates in period (not sequential conversion), plus "
 "mutually exclusive source mix."
-msgstr "Знімок кандидатів за етапами за період (не послідовна конверсія), а також взаємовиключний розподіл за джерелами."
+msgstr ""
+"Знімок кандидатів за етапами за період (не послідовна конверсія), а також "
+"взаємовиключний розподіл за джерелами."
 
 msgid "Time to Hire / Fill"
 msgstr "Час до найму / закриття вакансії"
@@ -22155,7 +22705,9 @@ msgstr "Час до найму / закриття вакансії"
 msgid ""
 "Average and median days from application (created_at) to joining_date; open "
 "requisition aging."
-msgstr "Середня та медіанна кількість днів від подання заявки (created_at) до дати прийняття на роботу; термін відкритих заявок на підбір."
+msgstr ""
+"Середня та медіанна кількість днів від подання заявки (created_at) до дати "
+"прийняття на роботу; термін відкритих заявок на підбір."
 
 msgid "Offer & Acceptance"
 msgstr "Пропозиція та прийняття"
@@ -22169,25 +22721,33 @@ msgstr "Прогрес адаптації"
 msgid ""
 "Onboarding stage and task completion for candidates who started onboarding "
 "in the selected period (tasks scoped to those candidates)."
-msgstr "Етап адаптації та виконання завдань для кандидатів, які розпочали адаптацію в обраному періоді (завдання обмежено цими кандидатами)."
+msgstr ""
+"Етап адаптації та виконання завдань для кандидатів, які розпочали адаптацію "
+"в обраному періоді (завдання обмежено цими кандидатами)."
 
 msgid "Objective & KR Health"
 msgstr "Стан цілей і ключових результатів"
 
 msgid ""
 "Objective/KR status and progress bands — not a performance rating curve."
-msgstr "Статус цілей/ключових результатів і групи прогресу — не є кривою рейтингу продуктивності."
+msgstr ""
+"Статус цілей/ключових результатів і групи прогресу — не є кривою рейтингу "
+"продуктивності."
 
 msgid ""
 "Global audit log volume by action and model (not company-scoped). Prefer "
 "ReportAccess matrix for production tenants."
-msgstr "Загальний обсяг журналу аудиту за діями та моделями (без прив'язки до компанії). Для робочих середовищ використовуйте матрицю ReportAccess."
+msgstr ""
+"Загальний обсяг журналу аудиту за діями та моделями (без прив'язки до "
+"компанії). Для робочих середовищ використовуйте матрицю ReportAccess."
 
 msgid "Span of Control"
 msgstr "Діапазон керування"
 
 msgid "Manager count, average span, and manager-to-headcount ratio."
-msgstr "Кількість керівників, середній діапазон керування та співвідношення керівників до загальної чисельності."
+msgstr ""
+"Кількість керівників, середній діапазон керування та співвідношення "
+"керівників до загальної чисельності."
 
 msgid "Pipeline Aging"
 msgstr "Термін перебування у воронці"
@@ -22195,7 +22755,9 @@ msgstr "Термін перебування у воронці"
 msgid ""
 "Age of open candidates since application (created_at) by stage — not stage-"
 "entry age unless audit history is wired later."
-msgstr "Вік відкритих кандидатур від моменту подання заявки (created_at) за етапами — не вік перебування на етапі, якщо не підключено історію аудиту."
+msgstr ""
+"Вік відкритих кандидатур від моменту подання заявки (created_at) за етапами "
+"— не вік перебування на етапі, якщо не підключено історію аудиту."
 
 msgid "Source Quality"
 msgstr "Якість джерела"
@@ -22203,19 +22765,25 @@ msgstr "Якість джерела"
 msgid ""
 "Hire conversion by mutually exclusive source buckets (referral first; no "
 "double-count)."
-msgstr "Конверсія найму за взаємовиключними групами джерел (пріоритет — реферали; без подвійного підрахунку)."
+msgstr ""
+"Конверсія найму за взаємовиключними групами джерел (пріоритет — реферали; "
+"без подвійного підрахунку)."
 
 msgid "Document Expiry Aging"
 msgstr "Термін до закінчення дії документа"
 
 msgid "Overdue and upcoming horilla_documents expiry buckets (90-day horizon)."
-msgstr "Групи прострочених і майбутніх закінчень терміну horilla_documents (горизонт 90 днів)."
+msgstr ""
+"Групи прострочених і майбутніх закінчень терміну horilla_documents (горизонт "
+"90 днів)."
 
 msgid "Headcount Bridge"
 msgstr "Динаміка чисельності персоналу"
 
 msgid "Opening headcount + joiners − leavers = closing bridge for the period."
-msgstr "Чисельність на початок + прийняті − звільнені = чисельність на кінець періоду."
+msgstr ""
+"Чисельність на початок + прийняті − звільнені = чисельність на кінець "
+"періоду."
 
 msgid "Exit Analysis"
 msgstr "Аналіз звільнень"
@@ -22223,13 +22791,17 @@ msgstr "Аналіз звільнень"
 msgid ""
 "Exits by source, department, and tenure at exit — no voluntary/involuntary "
 "split until reason fields exist."
-msgstr "Звільнення за причиною, відділом і стажем на момент звільнення — без поділу на добровільні/примусові, доки не буде полів причини."
+msgstr ""
+"Звільнення за причиною, відділом і стажем на момент звільнення — без поділу "
+"на добровільні/примусові, доки не буде полів причини."
 
 msgid "New-Hire 90-Day Attrition"
 msgstr "90-денна плинність нових співробітників"
 
 msgid "Share of period joiners who exit within 90 days of joining."
-msgstr "Частка нових співробітників за період, які звільнилися протягом 90 днів після прийняття на роботу."
+msgstr ""
+"Частка нових співробітників за період, які звільнилися протягом 90 днів "
+"після прийняття на роботу."
 
 msgid "Unscheduled Absence"
 msgstr "Незапланована відсутність"
@@ -22237,12 +22809,16 @@ msgstr "Незапланована відсутність"
 msgid ""
 "Calendar-aware unscheduled absence for the selected period (holidays/company "
 "leave subtracted; approved leave excluded)."
-msgstr "Незапланована відсутність за обраний період з урахуванням календаря (свята/відпустки компанії віднято; затверджена відпустка не враховується)."
+msgstr ""
+"Незапланована відсутність за обраний період з урахуванням календаря (свята/"
+"відпустки компанії віднято; затверджена відпустка не враховується)."
 
 msgid ""
 "Employment contracts ending and documents with expiry_date. Visa-like "
 "classification is title-based only — not a legal visa register."
-msgstr "Трудові договори, що завершуються, та документи з expiry_date. Класифікація «візоподібних» ґрунтується лише на назві — це не офіційний реєстр віз."
+msgstr ""
+"Трудові договори, що завершуються, та документи з expiry_date. Класифікація "
+"«візоподібних» ґрунтується лише на назві — це не офіційний реєстр віз."
 
 msgid "Quality of Hire (90-day retention)"
 msgstr "Якість найму (утримання за 90 днів)"
@@ -22250,7 +22826,9 @@ msgstr "Якість найму (утримання за 90 днів)"
 msgid ""
 "90-day retention of hires with joining_date in period — not a performance "
 "quality score."
-msgstr "Утримання протягом 90 днів найнятих із joining_date у періоді — не є показником якості роботи."
+msgstr ""
+"Утримання протягом 90 днів найнятих із joining_date у періоді — не є "
+"показником якості роботи."
 
 msgid "Payroll Readiness"
 msgstr "Готовність до розрахунку зарплати"
@@ -22258,7 +22836,10 @@ msgstr "Готовність до розрахунку зарплати"
 msgid ""
 "Active employees who cannot be paid: missing bank details or no active "
 "contract. An exception report -- empty is good."
-msgstr "Активні співробітники, яким не можна виплатити зарплату: відсутні банківські реквізити або немає активного контракту. Звіт про винятки — порожній список є хорошим результатом."
+msgstr ""
+"Активні співробітники, яким не можна виплатити зарплату: відсутні банківські "
+"реквізити або немає активного контракту. Звіт про винятки — порожній список "
+"є хорошим результатом."
 
 msgid "Loan & Advance Ledger"
 msgstr "Реєстр позик і авансів"
@@ -22266,7 +22847,9 @@ msgstr "Реєстр позик і авансів"
 msgid ""
 "Outstanding employee loans and advances: principal, recovered installments "
 "and remaining balance."
-msgstr "Непогашені позики та аванси співробітників: основна сума, повернуті платежі та залишок."
+msgstr ""
+"Непогашені позики та аванси співробітників: основна сума, повернуті платежі "
+"та залишок."
 
 msgid "Reimbursement Register"
 msgstr "Реєстр компенсацій"
@@ -22274,12 +22857,16 @@ msgstr "Реєстр компенсацій"
 msgid ""
 "Reimbursement and encashment claims by type and status, with pending "
 "exposure before a payroll run closes."
-msgstr "Заявки на компенсацію та інкасацію за типом і статусом із сумою на розгляді до закриття розрахунку зарплати."
+msgstr ""
+"Заявки на компенсацію та інкасацію за типом і статусом із сумою на розгляді "
+"до закриття розрахунку зарплати."
 
 msgid ""
 "Asset inventory by status, and how long each assigned asset has been held -- "
 "the offboarding recovery control."
-msgstr "Інвентаризація активів за статусом і тривалістю утримання виданих активів — контроль повернення при звільненні."
+msgstr ""
+"Інвентаризація активів за статусом і тривалістю утримання виданих активів — "
+"контроль повернення при звільненні."
 
 msgid "With ≥1 report"
 msgstr "З ≥1 звітом"
@@ -22459,7 +23046,8 @@ msgid "Allowances total"
 msgstr "Разом надбавок"
 
 msgid "Unsplit gross — pay_head_data missing structured lists"
-msgstr "Неподілений валовий дохід — у pay_head_data відсутні структуровані списки"
+msgstr ""
+"Неподілений валовий дохід — у pay_head_data відсутні структуровані списки"
 
 msgid "From payslip heads"
 msgstr "За статтями розрахункового листка"
@@ -22637,7 +23225,9 @@ msgid "Total claimed"
 msgstr "Разом заявлено"
 
 msgid "Approval date not stored; ageing uses created date"
-msgstr "Дата затвердження не зберігається; для розрахунку терміну використовується дата створення"
+msgstr ""
+"Дата затвердження не зберігається; для розрахунку терміну використовується "
+"дата створення"
 
 msgid "Claim Amount by Status"
 msgstr "Сума заявки за статусом"
@@ -22874,7 +23464,9 @@ msgid "Period used / entitlement"
 msgstr "Використано за період / нараховано"
 
 msgid "Planner ratio — period approved days ÷ current entitlement snapshot"
-msgstr "Плановий коефіцієнт — затверджені дні за період ÷ поточний знімок нарахованих прав"
+msgstr ""
+"Плановий коефіцієнт — затверджені дні за період ÷ поточний знімок "
+"нарахованих прав"
 
 msgid "Days used (period)"
 msgstr "Використано днів (період)"
@@ -22966,7 +23558,9 @@ msgstr "Понаднормові · %(dept)s"
 msgid ""
 "Department totals only. Named rows require the overtime permission and ?"
 "include_names=1."
-msgstr "Лише підсумки за відділами. Іменні рядки потребують дозволу на понаднормові та параметра ?include_names=1."
+msgstr ""
+"Лише підсумки за відділами. Іменні рядки потребують дозволу на понаднормові "
+"та параметра ?include_names=1."
 
 msgid "Headcount"
 msgstr "Чисельність персоналу"
@@ -23088,7 +23682,9 @@ msgstr "Останні 6 місяців"
 msgid ""
 "Fixed rolling 6-month window — this report ignores the selected start date "
 "so the turnover rate stays comparable between runs."
-msgstr "Фіксоване ковзне 6-місячне вікно — цей звіт ігнорує обрану дату початку, щоб показник плинності залишався порівнянним між запусками."
+msgstr ""
+"Фіксоване ковзне 6-місячне вікно — цей звіт ігнорує обрану дату початку, щоб "
+"показник плинності залишався порівнянним між запусками."
 
 msgid "Turnover rate (6m)"
 msgstr "Показник плинності (6 міс)"
@@ -23310,7 +23906,8 @@ msgid "Subscription Name"
 msgstr "Назва підписки"
 
 msgid "Optional filter overrides (department_id, relative period)."
-msgstr "Необов'язкові перевизначення фільтрів (department_id, відносний період)."
+msgstr ""
+"Необов'язкові перевизначення фільтрів (department_id, відносний період)."
 
 msgid "Report Subscription"
 msgstr "Підписка на звіт"
@@ -23361,13 +23958,16 @@ msgid "workforce, time_leave, payroll, talent, compliance — or blank."
 msgstr "workforce, time_leave, payroll, talent, compliance — або порожньо."
 
 msgid "Blank = any authenticated user (still subject to permission)."
-msgstr "Порожньо = будь-який автентифікований користувач (з урахуванням прав доступу)."
+msgstr ""
+"Порожньо = будь-який автентифікований користувач (з урахуванням прав "
+"доступу)."
 
 msgid "Permission"
 msgstr "Дозвіл"
 
 msgid "Optional Django permission codename, e.g. employee.view_employee."
-msgstr "Необов'язкова кодова назва дозволу Django, наприклад employee.view_employee."
+msgstr ""
+"Необов'язкова кодова назва дозволу Django, наприклад employee.view_employee."
 
 msgid "Can subscribe"
 msgstr "Може підписуватися"
@@ -23427,15 +24027,19 @@ msgid "You do not have permission to view this report."
 msgstr "У вас немає дозволу переглядати цей звіт."
 
 msgid "Your account has no email address for async export."
-msgstr "У вашому обліковому записі немає електронної адреси для асинхронного експорту."
+msgstr ""
+"У вашому обліковому записі немає електронної адреси для асинхронного "
+"експорту."
 
 msgid ""
 "Too many exports are running right now. Please try again in a few minutes."
-msgstr "Зараз виконується забагато експортів. Спробуйте ще раз через кілька хвилин."
+msgstr ""
+"Зараз виконується забагато експортів. Спробуйте ще раз через кілька хвилин."
 
 #, python-format
 msgid "Export started. You will receive an email at %(email)s when ready."
-msgstr "Експорт розпочато. Ви отримаєте лист на %(email)s, коли він буде готовий."
+msgstr ""
+"Експорт розпочато. Ви отримаєте лист на %(email)s, коли він буде готовий."
 
 msgid "This report does not support drill-down."
 msgstr "Цей звіт не підтримує деталізацію."
@@ -23778,7 +24382,9 @@ msgstr "Доступ заборонено!"
 msgid ""
 "Your login credentials are currently blocked. Please contact HR "
 "administrators for assistance."
-msgstr "Ваші облікові дані для входу наразі заблоковано. Зверніться по допомогу до адміністраторів HR."
+msgstr ""
+"Ваші облікові дані для входу наразі заблоковано. Зверніться по допомогу до "
+"адміністраторів HR."
 
 msgid "Jan 03, 2023, at 11:13AM"
 msgstr "03 січ. 2023, 11:13"
@@ -23929,7 +24535,11 @@ msgid ""
 "webhook calls. Without it Horilla cannot tell a real delivery from a forged "
 "one, so unsigned payloads are rejected. Find it under App Settings > Basic "
 "in the Meta developer console."
-msgstr "Секрет застосунку Meta, який використовується для перевірки заголовка X-Hub-Signature-256 у вхідних викликах webhook. Без нього Horilla не може відрізнити справжню доставку від підробленої, тому непідписані запити відхиляються. Знайдіть його в App Settings > Basic консолі розробника Meta."
+msgstr ""
+"Секрет застосунку Meta, який використовується для перевірки заголовка X-Hub-"
+"Signature-256 у вхідних викликах webhook. Без нього Horilla не може "
+"відрізнити справжню доставку від підробленої, тому непідписані запити "
+"відхиляються. Знайдіть його в App Settings > Basic консолі розробника Meta."
 
 msgid "WhatsApp Integration"
 msgstr "Інтеграція з WhatsApp"
@@ -23955,6 +24565,9 @@ msgstr "Номер телефону"
 
 msgid "Message templates and flows created successfully."
 msgstr "Шаблони повідомлень і потоки успішно створено."
+
+#~ msgid "Closed Due To"
+#~ msgstr "Закрито через"
 
 #, python-brace-format
 #~ msgid "${emp.name}"
@@ -24483,12 +25096,6 @@ msgstr "Шаблони повідомлень і потоки успішно с�
 
 #~ msgid "To Skill zone"
 #~ msgstr "До зони навичок"
-
-#~ msgid "Scheduled From"
-#~ msgstr "Заплановано з"
-
-#~ msgid "Scheduled Till"
-#~ msgstr "Заплановано до"
 
 #~ msgid "Interview Date From"
 #~ msgstr "Дата співбесіди з"

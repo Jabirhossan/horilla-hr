@@ -361,7 +361,7 @@ msgid "minor"
 msgstr ""
 
 msgid "label"
-msgstr ""
+msgstr "Etichetta"
 
 msgid "arrowlen"
 msgstr ""
@@ -433,7 +433,7 @@ msgid "punc"
 msgstr ""
 
 msgid "name"
-msgstr ""
+msgstr "nome"
 
 msgid "keyword"
 msgstr ""
@@ -505,7 +505,7 @@ msgid "BlockStatement"
 msgstr ""
 
 msgid "close"
-msgstr ""
+msgstr "chiudi"
 
 msgid "Confirm"
 msgstr "Conferma"

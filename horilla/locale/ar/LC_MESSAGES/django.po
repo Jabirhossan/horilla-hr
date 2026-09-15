@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: horilla-hrms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-10 10:51+0530\n"
+"POT-Creation-Date: 2026-09-14 15:26+0530\n"
 "PO-Revision-Date: 2026-08-04 09:08+0000\n"
 "Last-Translator: \n"
 "Language-Team: Arabic\n"
@@ -330,6 +330,9 @@ msgstr "طلب الأصل غير موجود."
 msgid "Asset request approved successfully!."
 msgstr "تمت الموافقة على طلب الأصل بنجاح!"
 
+msgid "Your asset request approved!"
+msgstr "تمت الموافقة على طلب الأصل الخاص بك!"
+
 msgid "Days Left"
 msgstr "الأيام المتبقية"
 
@@ -506,6 +509,14 @@ msgstr "المستخدم الطالب"
 
 msgid "Asset Requests"
 msgstr "طلبات الأصول"
+
+#, python-format
+msgid "The Asset '%(asset_name)s' expires in %(notify_before)s days"
+msgstr "ينتهي الأصل '%(asset_name)s' خلال %(notify_before)s يومًا"
+
+#, python-format
+msgid "The document ' %(title)s ' expires in %(notify_before)s days"
+msgstr "ينتهي المستند ' %(title)s ' خلال %(notify_before)s يومًا"
 
 msgid "Dashboard"
 msgstr "لوحة التحكم"
@@ -984,6 +995,9 @@ msgstr "حدث خطأ: "
 msgid "Asset request has been rejected."
 msgstr "تم رفض طلب الأصل."
 
+msgid "Your asset request rejected!"
+msgstr "تم رفض طلب الأصل الخاص بك!"
+
 msgid "Asset allocated successfully!."
 msgstr "تم تخصيص الأصل بنجاح!"
 
@@ -993,6 +1007,11 @@ msgstr "تعيين الأصل غير موجود."
 #, python-brace-format
 msgid "Return request for {} initiated."
 msgstr "تم بدء طلب إرجاع {}."
+
+#, python-format
+msgid ""
+"Return request for %(asset_id)s initiated from %(assigned_to_employee_id)s"
+msgstr "تم بدء طلب إرجاع %(asset_id)s من %(assigned_to_employee_id)s"
 
 msgid "Asset Returned Successfully..."
 msgstr "تم إرجاع الأصل بنجاح..."
@@ -1152,6 +1171,12 @@ msgstr "تم تحديث طلب حضور جديد"
 
 msgid "Attendance update request created."
 msgstr "تم إنشاء طلب تحديث الحضور."
+
+#, python-format
+msgid ""
+"%(employee_name)s's attendance update request for %(attendance_date)s is "
+"created"
+msgstr "تم إنشاء طلب تحديث حضور %(employee_name)s لتاريخ %(attendance_date)s"
 
 msgid "Validate Attendances"
 msgstr "التحقق من سجلات الحضور"
@@ -2890,15 +2915,6 @@ msgstr "طلب التحقق من سجلات الحضور"
 msgid "View"
 msgstr "عرض"
 
-msgid "Options"
-msgstr "خيارات"
-
-msgid "No Records found"
-msgstr "لا توجد سجلات."
-
-msgid "No records found."
-msgstr "لا توجد سجلات."
-
 msgid "Add / View Comment"
 msgstr "إضافة / عرض تعليق"
 
@@ -3054,11 +3070,24 @@ msgstr "لم يتم العثور على حضور مطابق للاستعلام."
 msgid "Attendance request has been approved"
 msgstr "تمت الموافقة على طلب الحضور"
 
+#, python-format
+msgid "Your attendance request for %(attendance_date)s is validated"
+msgstr "تم التحقق من طلب حضورك بتاريخ %(attendance_date)s"
+
+#, python-format
+msgid ""
+"%(employee_name)s's attendance request for %(attendance_date)s is validated"
+msgstr "تم التحقق من طلب حضور %(employee_name)s لتاريخ %(attendance_date)s"
+
 msgid "The requested attendance is removed."
 msgstr "تم إزالة طلب الحضور."
 
 msgid "Attendance request has been rejected"
 msgstr "تم رفض طلب الحضور"
+
+#, python-format
+msgid "Your attendance request for %(attendance_date)s is rejected"
+msgstr "تم رفض طلب حضورك بتاريخ %(attendance_date)s"
 
 msgid "Attendance request not found"
 msgstr "طلب الحضور غير موجود"
@@ -3190,6 +3219,10 @@ msgstr "معرف حضور غير صالح"
 msgid "Pending attendance update request for {}'s attendance on {}!"
 msgstr "طلب تحديث حضور معلق لـ {} بتاريخ {}!"
 
+#, python-format
+msgid "Your attendance for the date %(attendance_date)s is validated"
+msgstr "تم التحقق من حضورك بتاريخ %(attendance_date)s"
+
 #, python-brace-format
 msgid "{} Attendances validated."
 msgstr "تم التحقق من حضور {}."
@@ -3201,12 +3234,24 @@ msgstr "لا يمكنك التحقق من حضورك الخاص."
 msgid "%(employee)s %(date)s Attendance validated."
 msgstr "%(employee)s %(date)s الحضور موثق."
 
+#, python-format
+msgid "%(employee)s requested revalidation for %(attendance_date)s attendance"
+msgstr "طلب %(employee)s إعادة التحقق من حضور تاريخ %(attendance_date)s"
+
 msgid "You cannot approve your own overtime."
 msgstr "لا يمكنك الموافقة على وقتك الإضافي الخاص."
 
 #, python-format
 msgid "%(employee)s's %(date)s overtime approved"
 msgstr "تم اعتماد العمل الإضافي لـ %(employee)s بتاريخ %(date)s"
+
+#, python-format
+msgid "Your %(attendance_date)s's attendance overtime approved."
+msgstr "تمت الموافقة على الوقت الإضافي لحضورك بتاريخ %(attendance_date)s."
+
+#, python-format
+msgid "Overtime approved for %(attendance_date)s's attendance"
+msgstr "تمت الموافقة على الوقت الإضافي لحضور %(attendance_date)s"
 
 #, python-brace-format
 msgid " {} Overtime approved"
@@ -3256,6 +3301,13 @@ msgstr "حدث خطأ ما."
 
 msgid "Comment added successfully!"
 msgstr "تم إضافة التعليق بنجاح!"
+
+#, python-format
+msgid "%(employee)s's attendance request has received a comment."
+msgstr "تلقى طلب حضور %(employee)s تعليقًا."
+
+msgid "Your attendance request has received a comment."
+msgstr "تلقى طلب حضورك تعليقًا."
 
 msgid "No Comment found matching the query."
 msgstr "لم يتم العثور على تعليق مطابق للاستعلام."
@@ -3330,6 +3382,12 @@ msgstr "تم ذكرك في إعلان."
 msgid "Announcement created successfully."
 msgstr "تم إنشاء الإعلان بنجاح."
 
+msgid "Your department was mentioned in a post."
+msgstr "تم ذكر قسمك في منشور."
+
+msgid "Your job position was mentioned in a post."
+msgstr "تم ذكر مسماك الوظيفي في منشور."
+
 msgid "Announcement deleted successfully."
 msgstr "تم حذف الإعلان بنجاح."
 
@@ -3341,6 +3399,10 @@ msgstr "تم حذف الملف بنجاح."
 
 msgid "You commented a post."
 msgstr "علقت على منشور."
+
+#, python-format
+msgid "Comment under the announcement %(title)s."
+msgstr "تعليق على الإعلان %(title)s."
 
 msgid "Announcement not found."
 msgstr "لم يتم العثور على الإعلان."
@@ -3714,6 +3776,9 @@ msgstr "تم تحديث تعيين الوردية الدوارة بنجاح"
 msgid "Rotating Shift Assign Created Successfully"
 msgstr "تم إنشاء تعيين الوردية الدوارة بنجاح"
 
+msgid "You are added to rotating shift"
+msgstr "تمت إضافتك إلى وردية دوارة"
+
 msgid "Rotating Work Type"
 msgstr "نوع العمل الدوار"
 
@@ -3734,6 +3799,9 @@ msgstr "تم تحديث تعيين العمل الدوار بنجاح"
 
 msgid "Rotating Work Assigned"
 msgstr "تم تعيين العمل الدوار"
+
+msgid "You are added to rotating work type"
+msgstr "تمت إضافتك إلى نوع عمل دوار"
 
 msgid "Rotating Work Assign Created"
 msgstr "تم إنشاء تعيين العمل الدوار بنجاح"
@@ -3813,8 +3881,20 @@ msgstr "تم تحديث طلب الوردية بنجاح"
 msgid "Shift request added Successfully"
 msgstr "تم إضافة طلب الوردية بنجاح"
 
+#, python-format
+msgid "You have new shift request to approve for %(employee)s"
+msgstr "لديك طلب وردية جديد للموافقة عليه لـ %(employee)s"
+
 msgid "Shift Swap Request"
 msgstr "طلب تبديل وردية"
+
+#, python-format
+msgid "You have a new shift reallocation request to approve for %(employee)s."
+msgstr "لديك طلب جديد لإعادة تخصيص الوردية للموافقة عليه لـ %(employee)s."
+
+#, python-format
+msgid "You have a new shift reallocation request from %(employee)s."
+msgstr "لديك طلب جديد لإعادة تخصيص الوردية من %(employee)s."
 
 msgid "Work type request"
 msgstr "طلب نوع عمل"
@@ -3863,6 +3943,10 @@ msgstr "تم تحديث الطلب بنجاح"
 
 msgid "Work type Request Created"
 msgstr "تم إنشاء طلب نوع العمل"
+
+#, python-format
+msgid "You have new work type request to validate for %(employee)s"
+msgstr "لديك طلب نوع عمل جديد للتحقق منه لـ %(employee)s"
 
 msgid "You do not have access to that company."
 msgstr "ليس لديك صلاحية الوصول إلى تلك الشركة."
@@ -4537,6 +4621,24 @@ msgstr "نوع الإجازة مطلوب"
 
 msgid "Penalty Accounts"
 msgstr "حسابات الغرامة"
+
+msgid "Your Work Type has been changed."
+msgstr "تم تغيير نوع عملك."
+
+msgid "Your shift has been changed."
+msgstr "تم تغيير ورديتك."
+
+msgid "Shift Changes notification"
+msgstr "إشعار تغييرات الوردية"
+
+msgid "Shift changes notification, Requested date expired."
+msgstr "إشعار تغييرات الوردية، انتهت صلاحية التاريخ المطلوب."
+
+msgid "Work Type Changes notification"
+msgstr "إشعار تغييرات نوع العمل"
+
+msgid "Work type changes notification, Requested date expired."
+msgstr "إشعار تغييرات نوع العمل، انتهت صلاحية التاريخ المطلوب."
 
 msgid "General"
 msgstr "عام"
@@ -6255,12 +6357,6 @@ msgstr "تمت الموافقة على طلب الأصل الخاص بك!"
 msgid "Your asset request rejected!."
 msgstr "تم رفض طلب الأصل الخاص بك!"
 
-msgid "You are added to rotating work type"
-msgstr "تمت إضافتك إلى نوع عمل دوار"
-
-msgid "You are added to rotating shift"
-msgstr "تمت إضافتك إلى وردية دوارة"
-
 msgid "Your work type request has been canceled."
 msgstr "تم إلغاء طلب نوع العمل الخاص بك."
 
@@ -7630,6 +7726,9 @@ msgstr "ليس لديك صلاحية"
 msgid "Work type request has been rejected."
 msgstr "تم رفض طلب نوع العمل."
 
+msgid "Your work type request has been rejected."
+msgstr "تم رفض طلب نوع عملك."
+
 msgid "No worktype request found matching the query."
 msgstr "لم يتم العثور على طلب نوع عمل مطابق للاستعلام."
 
@@ -7674,6 +7773,9 @@ msgstr "لا يمكن تعديل طلب وردية معتمد"
 msgid "Shift request rejected"
 msgstr "تم رفض طلب الوردية"
 
+msgid "Your shift request has been rejected."
+msgstr "تم رفض طلب ورديتك."
+
 msgid "No shift request found matching the query."
 msgstr "لم يتم العثور على طلب وردية مطابق للاستعلام."
 
@@ -7685,6 +7787,10 @@ msgstr "تمت الموافقة على الوردية."
 
 msgid "You are available for shift reallocation."
 msgstr "أنت متاح لإعادة تخصيص الوردية."
+
+#, python-format
+msgid "%(employee_get)s is available for shift reallocation."
+msgstr "%(employee_get)s متاح لإعادة تخصيص الوردية."
 
 msgid "Shifts have been approved."
 msgstr "تمت الموافقة على الورديات."
@@ -7794,11 +7900,25 @@ msgstr "لا توجد شروط موافقة متعددة مطابقة للاست
 msgid "Multiple approval condition deleted successfully"
 msgstr "تم حذف شرط الموافقة المتعدد بنجاح"
 
+#, python-format
+msgid "%(employee)s's shift request has received a comment."
+msgstr "تلقى طلب وردية %(employee)s تعليقًا."
+
+msgid "Your shift request has received a comment."
+msgstr "تلقى طلب ورديتك تعليقًا."
+
 msgid "Invalid Request"
 msgstr "طلب غير صالح"
 
 msgid "Comment not found."
 msgstr "لم يتم العثور على التعليق."
+
+#, python-format
+msgid "%(employee)s's work type request has received a comment."
+msgstr "تلقى طلب نوع عمل %(employee)s تعليقًا."
+
+msgid "Your work type request has received a comment."
+msgstr "تلقى طلب نوع عملك تعليقًا."
 
 msgid "Default pagination updated."
 msgstr "تم تحديث ترقيم الصفحات الافتراضي."
@@ -8507,6 +8627,9 @@ msgstr "اتخذ إجراءً"
 msgid "Disciplinary action updated Successfully"
 msgstr "تم تحديث الإجراء التأديبي بنجاح"
 
+msgid "Disciplinary action is taken on you."
+msgstr "تم اتخاذ إجراء تأديبي بحقك."
+
 msgid "Disciplinary action created Successfully"
 msgstr "تم إنشاء الإجراء التأديبي بنجاح"
 
@@ -8521,6 +8644,10 @@ msgstr "تم تحديث طلب المستند بنجاح"
 
 msgid "Document request created successfully"
 msgstr "تم إنشاء طلب مستند بنجاح"
+
+#, python-format
+msgid "%(employee_get)s requested a document."
+msgstr "طلب %(employee_get)s مستندًا."
 
 #, python-format
 msgid "File type %(ext)s is not allowed."
@@ -8543,6 +8670,10 @@ msgstr "رفع ملف"
 
 msgid "Document uploaded successfully"
 msgstr "تم تحميل المستند بنجاح"
+
+#, python-format
+msgid "%(employee_get)s uploaded a document"
+msgstr "قام %(employee_get)s برفع مستند"
 
 msgid "Bulk Approve Requests"
 msgstr "الموافقة الجماعية على الطلبات"
@@ -9831,6 +9962,9 @@ msgstr "{employee} هو مستخدم فائق ولا يمكن حظره."
 msgid "Employee personal information updated."
 msgstr "تم تحديث المعلومات الشخصية للموظف."
 
+msgid "Your work details have been updated."
+msgstr "تم تحديث تفاصيل عملك."
+
 msgid "Employee work information updated."
 msgstr "تم تحديث معلومات عمل الموظف."
 
@@ -10140,6 +10274,9 @@ msgstr "تحديث تذكرة"
 msgid "The Ticket created successfully."
 msgstr "تم إنشاء التذكرة بنجاح."
 
+msgid "You have been assigned to a new Ticket"
+msgstr "تم تعيينك لتذكرة جديدة"
+
 msgid "The Ticket updated successfully."
 msgstr "تم تحديث التذكرة بنجاح."
 
@@ -10237,6 +10374,9 @@ msgstr "أنشئ وسومًا لتصنيف تذاكر الدعم."
 
 msgid "Define categories of helpdesk tickets."
 msgstr "حدد فئات تذاكر الدعم."
+
+msgid "No records found."
+msgstr "لا توجد سجلات."
 
 msgid "Claim Requests"
 msgstr "طلبات المطالبة"
@@ -10528,11 +10668,18 @@ msgstr "تمت أرشفة التذكرة بنجاح."
 msgid "Invalid request method."
 msgstr "طريقة الطلب غير صالحة."
 
+#, python-format
+msgid "The status of the ticket has been changed to %(status)s."
+msgstr "تم تغيير حالة التذكرة إلى %(status)s."
+
 msgid "The Ticket status updated successfully."
 msgstr "تم تحديث حالة التذكرة بنجاح."
 
 msgid "You Don't have the permission."
 msgstr "ليس لديك الصلاحية."
+
+msgid "The ticket has been deleted."
+msgstr "تم حذف التذكرة."
 
 #, python-brace-format
 msgid "The Ticket \"{}\" has been deleted successfully."
@@ -10594,8 +10741,20 @@ msgstr "تم حذف تعليق {} بنجاح."
 msgid "Claim request approved successfully."
 msgstr "تمت الموافقة على طلب المطالبة بنجاح."
 
+#, python-format
+msgid "You have been assigned to a new Ticket-%(ticket)s."
+msgstr "تم تعيينك للتذكرة الجديدة-%(ticket)s."
+
+#, python-format
+msgid "%(employee)s assigned to your ticket - %(ticket)s."
+msgstr "تم تعيين %(employee)s لتذكرتك - %(ticket)s."
+
 msgid "Claim request rejected successfully."
 msgstr "تم رفض طلب المطالبة بنجاح."
+
+#, python-format
+msgid "Your claim request is rejected for Ticket-%(ticket)s"
+msgstr "تم رفض طلب مطالبتك للتذكرة-%(ticket)s"
 
 msgid "No Department Manager found matching the query."
 msgstr "لم يتم العثور على مدير قسم مطابق للاستعلام."
@@ -10914,6 +11073,21 @@ msgstr "لم يتم العثور على ClaimRequest"
 
 msgid "DepartmentManager not found"
 msgstr "لم يتم العثور على DepartmentManager"
+
+#, python-format
+msgid "New leave allocation request created for %(employee)s."
+msgstr "تم إنشاء طلب تخصيص إجازة جديد لـ %(employee)s."
+
+#, python-format
+msgid "New leave request created for %(employee)s."
+msgstr "تم إنشاء طلب إجازة جديد لـ %(employee)s."
+
+#, python-format
+msgid "Leave request updated for %(employee)s."
+msgstr "تم تحديث طلب الإجازة الخاص بـ %(employee)s."
+
+msgid "Your Leave request has been rejected"
+msgstr "تم رفض طلب إجازتك"
 
 msgid "Nothing to reject."
 msgstr "لا شيء لرفضه."
@@ -12469,6 +12643,9 @@ msgstr "هل تريد حذف هذا الخصم؟"
 msgid "Are you sure you want to delete this assigned leave request?"
 msgstr "هل تريد حذف طلب الإجازة المعين هذا؟"
 
+msgid "Options"
+msgstr "خيارات"
+
 msgid "Do you want to approve this attendance request?"
 msgstr "هل تريد اعتماد طلب الحضور هذا؟"
 
@@ -12655,8 +12832,11 @@ msgstr "مع"
 msgid "Sl No."
 msgstr "م.ت"
 
-msgid "Add Candidate"
-msgstr "إضافة مرشح"
+msgid "No stages found"
+msgstr "لم يتم العثور على أي مراحل"
+
+msgid "This recruitment has no stages yet."
+msgstr "لا توجد مراحل لعملية التوظيف هذه بعد."
 
 msgid "Do you want to delete this project?"
 msgstr "هل تريد حذف هذا المشروع؟"
@@ -14773,6 +14953,9 @@ msgstr "انشر الوظائف الشاغرة مباشرة على LinkedIn وأ
 msgid "Prefix added to every auto-generated employee badge ID (e.g. PEP0001)."
 msgstr "البادئة المضافة إلى كل معرّف شارة موظف يُنشأ تلقائيًا (مثل PEP0001)."
 
+msgid "Add Candidate"
+msgstr "إضافة مرشح"
+
 msgid "Do you want to archive this talent pool?"
 msgstr "هل تريد أرشفة مجموعة المواهب هذه؟"
 
@@ -15190,6 +15373,20 @@ msgstr "مسح التجميع"
 msgid "Save filter"
 msgstr "حفظ الفلتر"
 
+msgid "No Records found"
+msgstr "لا توجد سجلات."
+
+msgid "groups"
+msgstr "المجموعات"
+
+#, python-format
+msgid "No %(label)s found"
+msgstr "لم يتم العثور على %(label)s"
+
+#, python-format
+msgid "There are no %(label)s to display."
+msgstr "لا توجد %(label)s لعرضها."
+
 msgid "library outline"
 msgstr ""
 
@@ -15340,6 +15537,10 @@ msgstr "إنشاء طلب تخصيص إجازة"
 msgid "Leave allocation request updated"
 msgstr "تم تحديث طلب تخصيص الإجازة"
 
+#, python-format
+msgid "Leave allocation request updated for %(employee)s."
+msgstr "تم تحديث طلب تخصيص الإجازة الخاص بـ %(employee)s."
+
 msgid "New leave allocation request created"
 msgstr "تم إنشاء طلب تخصيص إجازة جديد"
 
@@ -15359,7 +15560,7 @@ msgstr "تم تحديث طلب الإجازة بنجاح"
 msgid "Leave request created successfully"
 msgstr "تم إنشاء طلب الإجازة بنجاح"
 
-msgid "Closed Due To"
+msgid "Clashed Due To"
 msgstr "التعارض بسبب"
 
 msgid "Deducted FromCFD"
@@ -15987,9 +16188,6 @@ msgstr "إلغاء تحديد جميع الطلبات"
 msgid "Export Requests"
 msgstr "تصدير الطلبات"
 
-msgid "Clashed Due To"
-msgstr "التعارض بسبب"
-
 msgid "No clashed requests available for cancelled or rejected leaves."
 msgstr "لا توجد طلبات متعارضة متاحة للإجازات الملغاة أو المرفوضة."
 
@@ -16233,6 +16431,9 @@ msgstr "طلب الإجازة غير موجود"
 msgid "Leave request rejected successfully.."
 msgstr "تم رفض طلب الإجازة بنجاح.."
 
+msgid "Your leave request has been rejected."
+msgstr "تم رفض طلب إجازتك."
+
 msgid "Leave request already rejected."
 msgstr "طلب الإجازة مرفوض بالفعل."
 
@@ -16269,6 +16470,10 @@ msgstr "بعض أنواع الإجازات كانت مُعينة بالفعل ل
 
 msgid "Available leaves updated successfully..."
 msgstr "تم تحديث الإجازات المتاحة بنجاح..."
+
+#, python-format
+msgid "Your %(leave_type)s leave type updated."
+msgstr "تم تحديث نوع الإجازة %(leave_type)s الخاص بك."
 
 msgid "Assigned leave successfully deleted."
 msgstr "تم حذف الإجازة المعينة بنجاح."
@@ -16359,11 +16564,17 @@ msgstr "لا يمكنك تحديث هذا الطلب..."
 msgid "Leave allocation request approved successfully"
 msgstr "تمت الموافقة على طلب تخصيص الإجازة بنجاح"
 
+msgid "Your leave allocation request has been approved"
+msgstr "تمت الموافقة على طلب تخصيص إجازتك"
+
 msgid "The leave allocation request can't be approved"
 msgstr "لا يمكن الموافقة على طلب تخصيص الإجازة"
 
 msgid "Leave allocation request rejected successfully"
 msgstr "تم رفض طلب تخصيص الإجازة بنجاح"
+
+msgid "Your leave allocation request has been rejected"
+msgstr "تم رفض طلب تخصيص إجازتك"
 
 msgid "The leave allocation request can't be rejected"
 msgstr "لا يمكن رفض طلب تخصيص الإجازة"
@@ -16399,6 +16610,20 @@ msgstr "تم حذف طلب الإجازة."
 msgid "You cannot delete leave request with status {}."
 msgstr "لا يمكنك حذف طلب إجازة بحالة {}."
 
+#, python-format
+msgid "%(employee)s's leave request has received a comment."
+msgstr "تلقى طلب إجازة %(employee)s تعليقًا."
+
+msgid "Your leave request has received a comment."
+msgstr "تلقى طلب إجازتك تعليقًا."
+
+#, python-format
+msgid "%(employee)s's leave allocation request has received a comment."
+msgstr "تلقى طلب تخصيص الإجازة الخاص بـ %(employee)s تعليقًا."
+
+msgid "Your leave allocation request has received a comment."
+msgstr "تلقى طلب تخصيص إجازتك تعليقًا."
+
 msgid "No comment found matching the query."
 msgstr "لم يتم العثور على تعليق مطابق للاستعلام."
 
@@ -16426,14 +16651,31 @@ msgstr "تم حذف طلب الإجازة التعويضية."
 msgid "Compensatory leave request approved."
 msgstr "تمت الموافقة على طلب الإجازة التعويضية."
 
+msgid "Your compensatory leave request has been approved"
+msgstr "تمت الموافقة على طلب إجازتك التعويضية"
+
 msgid "The compensatory leave request is not in the 'requested' status."
 msgstr "حالة طلب الإجازة التعويضية ليست \"مطلوب\"."
 
 msgid "Compensatory Leave request rejected."
 msgstr "تم رفض طلب الإجازة التعويضية."
 
+msgid "Your compensatory leave request has been rejected"
+msgstr "تم رفض طلب إجازتك التعويضية"
+
 msgid "Compensatory leave request not found."
 msgstr "لم يتم العثور على طلب الإجازة التعويضية."
+
+#, python-format
+msgid "%(employee)s's Compensatory leave request has received a comment."
+msgstr "تلقى طلب الإجازة التعويضية الخاص بـ %(employee)s تعليقًا."
+
+msgid "Your compensatory leave request has received a comment."
+msgstr "تلقى طلب إجازتك التعويضية تعليقًا."
+
+#, python-format
+msgid "%(employee)s's compensatory leave request has received a comment."
+msgstr "تلقى طلب الإجازة التعويضية الخاص بـ %(employee)s تعليقًا."
 
 msgid "No interview found matching the query."
 msgstr "لم يتم العثور على مقابلة مطابقة للاستعلام."
@@ -16470,6 +16712,10 @@ msgstr "تم تحديث الموظف"
 
 msgid "Added Employee"
 msgstr "تمت إضافة الموظف"
+
+#, python-format
+msgid "You have been added to the %(stage)s of %(offboarding_id)s"
+msgstr "تمت إضافتك إلى %(stage)s الخاصة بـ %(offboarding_id)s"
 
 msgid "Create Offboarding"
 msgstr "إنشاء إنهاء خدمة"
@@ -16515,6 +16761,9 @@ msgstr "إدارة ترتيب المراحل"
 
 msgid "Stages"
 msgstr "المراحل"
+
+msgid "Pipeline"
+msgstr "الخطة"
 
 #, python-format
 msgid ""
@@ -16574,6 +16823,10 @@ msgstr "المهمة إلى"
 msgid "You cannot edit a request that has been rejected/approved"
 msgstr "لا يمكنك تعديل طلب تم رفضه/الموافقة عليه"
 
+#, python-format
+msgid "%(get_full_name)s requested for resignation."
+msgstr "طلب %(get_full_name)s الاستقالة."
+
 msgid "Ongoing"
 msgstr "قيد التنفيذ"
 
@@ -16615,6 +16868,10 @@ msgstr "قيد التنفيذ"
 
 msgid "Stuck"
 msgstr "متوقف"
+
+#, python-format
+msgid "Offboarding task \"%(title)s\" has been assigned"
+msgstr "تم تعيين مهمة إنهاء الخدمة \"%(title)s\""
 
 msgid "Offboarding"
 msgstr "إنهاء الخدمة"
@@ -16822,11 +17079,17 @@ msgstr "هل تريد حذف هذه المرحلة؟"
 msgid "Do you want to delete task?"
 msgstr "هل تريد حذف هذه المهمة؟"
 
+msgid "You are chosen as an offboarding manager"
+msgstr "تم اختيارك كمدير لإنهاء الخدمة"
+
 msgid "Offboarding deleted"
 msgstr "تم حذف إنهاء الخدمة"
 
 msgid "Stage saved"
 msgstr "تم حفظ المرحلة"
+
+msgid "You are chosen as offboarding stage manager"
+msgstr "تم اختيارك كمدير مرحلة إنهاء الخدمة"
 
 msgid "Sequence Updated Successfully"
 msgstr "تم تحديث التسلسل بنجاح"
@@ -16839,6 +17102,9 @@ msgstr "تم حفظ الموظف"
 
 msgid "Offboarding employee deleted"
 msgstr "تم حذف موظف إنهاء الخدمة"
+
+msgid "You have been removed from the offboarding"
+msgstr "تمت إزالتك من إنهاء الخدمة"
 
 msgid "Employees not found"
 msgstr "الموظفون غير موجودين"
@@ -16855,6 +17121,9 @@ msgstr ""
 
 msgid "Cannot Change Stage"
 msgstr "لا يمكن تغيير المرحلة"
+
+msgid "Offboarding stage has been changed"
+msgstr "تم تغيير مرحلة إنهاء الخدمة"
 
 msgid "stage changed successfully."
 msgstr "تم تغيير المرحلة بنجاح."
@@ -16873,6 +17142,9 @@ msgstr "المعلمات المطلوبة مفقودة."
 
 msgid "Task status updated successfully..."
 msgstr "تم تحديث حالة المهمة بنجاح..."
+
+msgid "Offboarding Task status has been updated"
+msgstr "تم تحديث حالة مهمة إنهاء الخدمة"
 
 msgid "Task status changed successfully."
 msgstr "تم تغيير حالة المهمة بنجاح."
@@ -16908,6 +17180,10 @@ msgstr "خطاب استقالة %(name)s مرفوض بالفعل ولا يمكن
 #, python-format
 msgid "Resignation request has been %(status)s"
 msgstr "طلب الاستقالة كان %(status)s"
+
+#, python-format
+msgid "Resignation request has been %(get_status_display)s"
+msgstr "أصبح طلب الاستقالة %(get_status_display)s"
 
 #, python-brace-format
 msgid "Resignation Request setting has been {} successfully."
@@ -16961,6 +17237,9 @@ msgstr "تم إنشاء مرحلة جديدة بنجاح"
 msgid "New Task Created Successfully"
 msgstr "تم إنشاء مهمة جديدة بنجاح"
 
+msgid "You are chosen as an onboarding task manager"
+msgstr "تم اختيارك كمدير لمهمة التأهيل"
+
 msgid "Task updated successfully.."
 msgstr "تم تحديث المهمة بنجاح.."
 
@@ -16981,6 +17260,9 @@ msgstr "لم تقم بتسجيل الدخول."
 
 msgid "No stage found matching the query."
 msgstr "لم يتم العثور على مرحلة مطابقة للاستعلام."
+
+msgid "stages"
+msgstr "المرحلة"
 
 msgid "Stage Updated"
 msgstr "تم تحديث المرحلة"
@@ -17090,6 +17372,18 @@ msgstr "إرسال رابط البوابة / بدء الانضمام للعمل"
 
 msgid "Send Portal Link"
 msgstr "إرسال رابط البوابة"
+
+msgid "Probation End From"
+msgstr "نهاية فترة الاختبار من"
+
+msgid "Probation End Till"
+msgstr "نهاية فترة الاختبار إلى"
+
+msgid "Scheduled From"
+msgstr "مجدول من"
+
+msgid "Scheduled Till"
+msgstr "مجدول حتى"
 
 msgid "Is closed"
 msgstr "هل تم الإغلاق"
@@ -17373,11 +17667,23 @@ msgstr "لم يتم العثور على بوابة الإلحاق."
 msgid "Employee bank details created successfully.."
 msgstr "تم إنشاء تفاصيل بنك الموظف بنجاح.."
 
+#, python-format
+msgid ""
+"The task %(onboarding_task_id)s of %(candidate_id)s was updated to "
+"%(status)s."
+msgstr ""
+"تم تحديث مهمة %(onboarding_task_id)s الخاصة بـ %(candidate_id)s إلى "
+"%(status)s."
+
 msgid "Candidate onboarding task updated"
 msgstr "تم تحديث مهمة انضمام المرشح للعمل"
 
 msgid "Object not found."
 msgstr "لم يتم العثور على العنصر."
+
+#, python-format
+msgid "The stage of %(candidate_id)s was updated to %(onboarding_stage_id)s."
+msgstr "تم تحديث مرحلة %(candidate_id)s إلى %(onboarding_stage_id)s."
 
 msgid "Candidate onboarding stage updated"
 msgstr "تم تحديث مرحلة انضمام المرشح للعمل"
@@ -17632,6 +17938,9 @@ msgstr "إنشاء كشف راتب"
 msgid "Payslip Saved"
 msgstr "تم حفظ كشف الراتب"
 
+msgid "Payslip has been generated for you."
+msgstr "تم إنشاء كشف راتبك."
+
 msgid "Payroll"
 msgstr "كشوف المرتبات"
 
@@ -17786,6 +18095,10 @@ msgstr "لا توجد أيام رصيد محمول كافية للاستبدال
 
 msgid "Not enough available days to redeem"
 msgstr "لا توجد أيام إجازة متاحة كافية للاستبدال"
+
+#, python-format
+msgid "You have a new reimbursement request to approve for %(employee)s."
+msgstr "لديك طلب استرداد جديد للموافقة عليه لـ %(employee)s."
 
 msgid "Tax code is empty."
 msgstr "رمز الضريبة فارغ."
@@ -18325,7 +18638,7 @@ msgid "There are currently no loans to consider."
 msgstr "لا توجد قروض للنظر فيها حالياً."
 
 msgid "donation box"
-msgstr ""
+msgstr "صندوق التبرعات"
 
 msgid "View Payslips"
 msgstr "عرض قسائم الرواتب"
@@ -18539,8 +18852,17 @@ msgstr "تم حفظ السداد بنجاح"
 msgid "Please check the data you provided."
 msgstr "يرجى التحقق من البيانات التي قدمتها."
 
+msgid "Your reimbursement request has been rejected."
+msgstr "تم رفض طلب استردادك."
+
+msgid "Your reimbursement request has been approved."
+msgstr "تمت الموافقة على طلب استردادك."
+
 msgid "Reimbursements deleted"
 msgstr "تم حذف التعويضات"
+
+msgid "Your reimbursement request has been deleted."
+msgstr "تم حذف طلب استردادك."
 
 msgid "Reimbursement request not found."
 msgstr "لم يتم العثور على طلب المطالبة."
@@ -18655,6 +18977,13 @@ msgstr "تم حذف {name}."
 msgid "You cannot delete {contract}"
 msgstr "لا يمكنك حذف {contract}"
 
+#, python-format
+msgid "%(employee)s's reimbursement request has received a comment."
+msgstr "تلقى طلب استرداد %(employee)s تعليقًا."
+
+msgid "Your reimbursement request has received a comment."
+msgstr "تلقى طلب استردادك تعليقًا."
+
 msgid "No file IDs provided for deletion."
 msgstr "لم يتم تحديد معرّفات ملفات للحذف."
 
@@ -18736,6 +19065,9 @@ msgstr "تم تحديث التعليق (Feedback) بنجاح"
 msgid "Feedback Created Successfully"
 msgstr "تم إنشاء التعليق (Feedback) بنجاح"
 
+msgid "You received anonymous feedback!"
+msgstr "لقد تلقيت ملاحظات مجهولة المصدر!"
+
 msgid "Update Feedback"
 msgstr "تحديث التعليق (Feedback)"
 
@@ -18771,6 +19103,18 @@ msgstr "تحديث الاجتماع"
 
 msgid "Meeting added successfully"
 msgstr "تمت إضافة الاجتماع بنجاح"
+
+#, python-format
+msgid "You have been added as a manager for the meeting %(title)s"
+msgstr "تمت إضافتك كمدير للاجتماع %(title)s"
+
+#, python-format
+msgid "You have been added to the meeting %(title)s"
+msgstr "تمت إضافتك إلى الاجتماع %(title)s"
+
+#, python-format
+msgid "You have been added as an answerable employee for the meeting %(title)s"
+msgstr "تمت إضافتك كموظف مسؤول عن الاجتماع %(title)s"
 
 msgid "Add Response"
 msgstr "إضافة رد"
@@ -18823,6 +19167,9 @@ msgstr "تم تحديث الهدف بنجاح"
 msgid "Update Objective"
 msgstr "تحديث هدف"
 
+msgid "You got an OKR!"
+msgstr "لقد حصلت على هدف ونتيجة رئيسية (OKR)!"
+
 msgid "Create Objective Template"
 msgstr "إنشاء قالب هدف"
 
@@ -18850,8 +19197,14 @@ msgstr "لم يتم العثور على هدف الموظف."
 msgid "Key result updated sucessfully."
 msgstr "تم تحديث النتيجة الرئيسية بنجاح."
 
+msgid "Your Key Result updated."
+msgstr "تم تحديث نتيجتك الرئيسية."
+
 msgid "Key result assigned sucessfully."
 msgstr "تم تعيين النتيجة الرئيسية بنجاح."
+
+msgid "You got a Key Result!"
+msgstr "لقد حصلت على نتيجة رئيسية!"
 
 msgid "Are you sure you want to delete\tthis Key result?"
 msgstr "\"هل تريد حذف النتيجة الرئيسية هذه؟\""
@@ -19568,6 +19921,12 @@ msgstr "لا يمكنك حذف هذا الهدف، توجد مدخلات مرت�
 msgid "Objective deleted successfully!."
 msgstr "تم حذف الهدف بنجاح!"
 
+#, python-format
+msgid ""
+"The status of the objective '%(objective_id)s' has been changed to "
+"%(status)s."
+msgstr "تم تغيير حالة الهدف '%(objective_id)s' إلى %(status)s."
+
 msgid "The status of the objective is the same as selected."
 msgstr "حالة الهدف هي نفسها المختارة."
 
@@ -19582,6 +19941,9 @@ msgstr "تم إنشاء نتائج رئيسية"
 
 msgid "Key result updated"
 msgstr "تم تحديث نتيجة رئيسية"
+
+msgid "You have been requested to provide feedback!"
+msgstr "طُلب منك تقديم ملاحظات!"
 
 msgid "Feedback created successfully."
 msgstr "تم إنشاء التعليق (Feedback) بنجاح."
@@ -20069,6 +20431,12 @@ msgstr "تفاصيل سجل الوقت"
 msgid "Project updated"
 msgstr "تم تحديث المشروع"
 
+#, python-format
+msgid ""
+"The status of the project '%(project)s' has been changed to "
+"%(get_status_display)s."
+msgstr "تم تغيير حالة المشروع '%(project)s' إلى %(get_status_display)s."
+
 msgid "Invalid status or missing data."
 msgstr "حالة غير صالحة أو بيانات مفقودة."
 
@@ -20288,6 +20656,14 @@ msgstr "وقت المقابلة"
 msgid "Is Interview Completed"
 msgstr "هل تمت المقابلة؟"
 
+#, python-format
+msgid ""
+"You are scheduled as an interviewer for an interview with %(name)s on "
+"%(interview_date)s at %(interview_time)s."
+msgstr ""
+"تم جدولتك كمحاور لمقابلة مع %(name)s في %(interview_date)s الساعة "
+"%(interview_time)s."
+
 msgid "Interview Updated Successfully"
 msgstr "تم تحديث المقابلة بنجاح"
 
@@ -20305,9 +20681,6 @@ msgstr "لم يتم العثور على عملية توظيف مطابقة لل�
 
 msgid "Reject Candidate"
 msgstr "رفض مرشح"
-
-msgid "Pipeline"
-msgstr "الخطة"
 
 msgid "Survey Questions"
 msgstr "أسئلة الاستطلاع"
@@ -20416,6 +20789,14 @@ msgstr "تم تحديث المرحلة"
 
 msgid "Stage added"
 msgstr "تمت إضافة المرحلة"
+
+#, python-format
+msgid ""
+"Stage %(stage_obj)s is updated on recruitment %(recruitment_id)s. You are "
+"chosen as one of the managers."
+msgstr ""
+"تم تحديث المرحلة %(stage_obj)s في التوظيف %(recruitment_id)s. لقد تم اختيارك "
+"كأحد المديرين."
 
 msgid "LinkedIn Accounts"
 msgstr "حسابات لينكيدان"
@@ -20549,6 +20930,12 @@ msgstr "داخل البرمجيات"
 
 msgid "Converted"
 msgstr "تم التحويل"
+
+msgid "Not sent"
+msgstr "لم يُرسل"
+
+msgid "Onboarding not started yet"
+msgstr "لم يبدأ التأهيل بعد"
 
 msgid "Employee is uniques for candidate"
 msgstr "الموظف فريد للمرشح"
@@ -20898,6 +21285,9 @@ msgstr "إرسال بريد إلى عدة مرشحين"
 msgid "Congrats..."
 msgstr "تهانينا..."
 
+msgid "Unable to load preview"
+msgstr "تعذر تحميل المعاينة"
+
 msgid "Example: Candidate asked to reschedule interview to Friday."
 msgstr "مثال: طلب المرشح إعادة جدولة المقابلة إلى الجمعة."
 
@@ -21209,8 +21599,16 @@ msgstr "تمت إضافة التوظيف."
 msgid "Recruitment manager removed successfully."
 msgstr "تمت إزالة مدير التوظيف بنجاح."
 
+#, python-format
+msgid "You are removed from recruitment manager from %(recruitment_obj)s"
+msgstr "تمت إزالتك من مدير التوظيف لـ %(recruitment_obj)s"
+
 msgid "Recruitment Updated."
 msgstr "تم تحديث التوظيف."
+
+#, python-format
+msgid "%(recruitment_obj)s is updated. You are chosen as one of the managers."
+msgstr "تم تحديث %(recruitment_obj)s. لقد تم اختيارك كأحد المديرين."
 
 msgid "Recruitment deleted successfully."
 msgstr "تم حذف التوظيف بنجاح."
@@ -21218,17 +21616,41 @@ msgstr "تم حذف التوظيف بنجاح."
 msgid "You cannot delete this recruitment"
 msgstr "لا يمكنك حذف هذا التوظيف"
 
+#, python-format
+msgid ""
+"You are chosen as recruitment manager for the recruitment %(recruitment_obj)s"
+msgstr "تم اختيارك كمدير توظيف لعملية التوظيف %(recruitment_obj)s"
+
+#, python-format
+msgid "New candidate arrived on stage %(stage)s"
+msgstr "وصل مرشح جديد إلى مرحلة %(stage)s"
+
 msgid "Candidate added."
 msgstr "تمت إضافة المرشح."
 
 msgid "Stage added."
 msgstr "تمت إضافة المرحلة."
 
+#, python-format
+msgid ""
+"You are chosen as a stage manager on the stage %(stage)s in recruitment "
+"%(recruitment_id)s"
+msgstr ""
+"تم اختيارك كمدير مرحلة في مرحلة %(stage)s ضمن التوظيف %(recruitment_id)s"
+
 msgid "You don't have access"
 msgstr "ليس لديك صلاحية"
 
 msgid "Stage updated."
 msgstr "تم تحديث المرحلة."
+
+#, python-format
+msgid ""
+"%(stage)s stage in recruitment %(recruitment_id)s is updated. You are chosen "
+"as one of the managers."
+msgstr ""
+"تم تحديث مرحلة %(stage)s في التوظيف %(recruitment_id)s. لقد تم اختيارك كأحد "
+"المديرين."
 
 msgid "Recruitment updated."
 msgstr "تم تحديث التوظيف."
@@ -21253,6 +21675,10 @@ msgstr "تم حذف الملاحظة"
 
 msgid "You cannot delete this note."
 msgstr "لا يمكنك حذف هذه الملاحظة."
+
+#, python-format
+msgid "You are removed from stage managers from stage %(stage_obj)s"
+msgstr "تمت إزالتك من مديري المرحلة لمرحلة %(stage_obj)s"
 
 msgid "Stage manager removed successfully."
 msgstr "تمت إزالة مدير المرحلة بنجاح."
@@ -21566,6 +21992,10 @@ msgstr "تم إنشاء المهارة بنجاح"
 msgid "%(title)s is deleted."
 msgstr "%(title)s محذوف."
 
+#, python-format
+msgid "%(label)s has added a note on the candidate %(candidate)s"
+msgstr "أضاف %(label)s ملاحظة على المرشح %(candidate)s"
+
 msgid "Candidate rejection deleted successfully"
 msgstr "تم حذف رفض المرشح بنجاح"
 
@@ -21761,9 +22191,6 @@ msgstr "الطلب"
 
 msgid "Software"
 msgstr "البرمجيات"
-
-msgid "Not sent"
-msgstr "لم يُرسل"
 
 msgid "Review ongoing"
 msgstr "المراجعة جارية"
@@ -23929,6 +24356,9 @@ msgstr "رقم الهاتف"
 msgid "Message templates and flows created successfully."
 msgstr "تم إنشاء قوالب الرسائل وتدفقاتها بنجاح."
 
+#~ msgid "Closed Due To"
+#~ msgstr "التعارض بسبب"
+
 #~ msgid "Clear it"
 #~ msgstr "مسح"
 
@@ -24443,12 +24873,6 @@ msgstr "تم إنشاء قوالب الرسائل وتدفقاتها بنجاح.
 
 #~ msgid "To Skill zone"
 #~ msgstr "إلى منطقة المهارات"
-
-#~ msgid "Scheduled From"
-#~ msgstr "مجدول من"
-
-#~ msgid "Scheduled Till"
-#~ msgstr "مجدول حتى"
 
 #~ msgid "Interview Date From"
 #~ msgstr "تاريخ المقابلة من"

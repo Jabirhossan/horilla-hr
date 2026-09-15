@@ -357,7 +357,7 @@ msgid "minor"
 msgstr ""
 
 msgid "label"
-msgstr ""
+msgstr "Мітка"
 
 msgid "arrowlen"
 msgstr ""
@@ -429,7 +429,7 @@ msgid "punc"
 msgstr ""
 
 msgid "name"
-msgstr ""
+msgstr "ім'я"
 
 msgid "keyword"
 msgstr ""

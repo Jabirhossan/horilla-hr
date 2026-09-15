@@ -361,7 +361,7 @@ msgid "minor"
 msgstr ""
 
 msgid "label"
-msgstr ""
+msgstr "Etiqueta"
 
 msgid "arrowlen"
 msgstr ""
@@ -433,7 +433,7 @@ msgid "punc"
 msgstr ""
 
 msgid "name"
-msgstr ""
+msgstr "nombre"
 
 msgid "keyword"
 msgstr ""

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: horilla-hrms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-10 10:51+0530\n"
+"POT-Creation-Date: 2026-09-14 15:26+0530\n"
 "PO-Revision-Date: 2026-08-10 09:43+0000\n"
 "Last-Translator: \n"
 "Language-Team: Romanian\n"
@@ -325,6 +325,9 @@ msgstr "Cererea de bun nu a fost găsită."
 msgid "Asset request approved successfully!."
 msgstr "Cerere de bun aprobată cu succes!"
 
+msgid "Your asset request approved!"
+msgstr "Cererea dvs. de bun a fost aprobată!"
+
 msgid "Days Left"
 msgstr "Zile rămase"
 
@@ -501,6 +504,14 @@ msgstr "Utilizator solicitant"
 
 msgid "Asset Requests"
 msgstr "Cereri de bunuri"
+
+#, python-format
+msgid "The Asset '%(asset_name)s' expires in %(notify_before)s days"
+msgstr "Bunul '%(asset_name)s' expiră în %(notify_before)s zile"
+
+#, python-format
+msgid "The document ' %(title)s ' expires in %(notify_before)s days"
+msgstr "Documentul ' %(title)s ' expiră în %(notify_before)s zile"
 
 msgid "Dashboard"
 msgstr "Tablou de bord"
@@ -979,6 +990,9 @@ msgstr "A apărut o eroare: "
 msgid "Asset request has been rejected."
 msgstr "Cererea de bun a fost respinsă."
 
+msgid "Your asset request rejected!"
+msgstr "Cererea dvs. de bun a fost respinsă!"
+
 msgid "Asset allocated successfully!."
 msgstr "Bun alocat cu succes!"
 
@@ -988,6 +1002,13 @@ msgstr "Atribuirea bunului nu a fost găsită."
 #, python-brace-format
 msgid "Return request for {} initiated."
 msgstr "Cererea de returnare pentru {} a fost inițiată."
+
+#, python-format
+msgid ""
+"Return request for %(asset_id)s initiated from %(assigned_to_employee_id)s"
+msgstr ""
+"Cererea de returnare pentru %(asset_id)s a fost inițiată de "
+"%(assigned_to_employee_id)s"
 
 msgid "Asset Returned Successfully..."
 msgstr "Bun returnat cu succes..."
@@ -1147,6 +1168,12 @@ msgstr "Cerere nouă de pontaj actualizată"
 
 msgid "Attendance update request created."
 msgstr "Cerere de actualizare a pontajului creată."
+
+#, python-format
+msgid ""
+"%(employee_name)s's attendance update request for %(attendance_date)s is "
+"created"
+msgstr "Cererea de actualizare a prezenței lui %(employee_name)s pentru %(attendance_date)s a fost creată"
 
 msgid "Validate Attendances"
 msgstr "Validează pontajele"
@@ -1981,7 +2008,9 @@ msgstr "Cerere de actualizare a prezenței în așteptare!"
 msgid ""
 "An attendance request exists for updating this attendance prior to "
 "validation."
-msgstr "Există o cerere de prezență pentru actualizarea acestei prezențe înainte de validare."
+msgstr ""
+"Există o cerere de prezență pentru actualizarea acestei prezențe înainte de "
+"validare."
 
 msgid "View Request"
 msgstr "Vizualizare cerere"
@@ -2479,7 +2508,9 @@ msgid "OT"
 msgstr "Ore suplimentare"
 
 msgid "Hours beyond the OT cap — not counted as regular or overtime"
-msgstr "Ore peste plafonul de ore suplimentare — nu sunt contorizate ca ore normale sau suplimentare"
+msgstr ""
+"Ore peste plafonul de ore suplimentare — nu sunt contorizate ca ore normale "
+"sau suplimentare"
 
 msgid "total"
 msgstr "total"
@@ -2902,15 +2933,6 @@ msgstr "Validează cererea de pontaj"
 msgid "View"
 msgstr "Vizualizează"
 
-msgid "Options"
-msgstr "Opțiuni"
-
-msgid "No Records found"
-msgstr "Nu au fost găsite înregistrări"
-
-msgid "No records found."
-msgstr "Nu au fost găsite înregistrări."
-
 msgid "Add / View Comment"
 msgstr "Adaugă / Vezi comentariul"
 
@@ -3072,11 +3094,24 @@ msgstr "Nu a fost găsit niciun pontaj care să corespundă căutării."
 msgid "Attendance request has been approved"
 msgstr "Cererea de pontaj a fost aprobată"
 
+#, python-format
+msgid "Your attendance request for %(attendance_date)s is validated"
+msgstr "Cererea dvs. de prezență pentru %(attendance_date)s a fost validată"
+
+#, python-format
+msgid ""
+"%(employee_name)s's attendance request for %(attendance_date)s is validated"
+msgstr "Cererea de prezență a lui %(employee_name)s pentru %(attendance_date)s a fost validată"
+
 msgid "The requested attendance is removed."
 msgstr "Pontajul solicitat a fost eliminat."
 
 msgid "Attendance request has been rejected"
 msgstr "Cererea de pontaj a fost respinsă"
+
+#, python-format
+msgid "Your attendance request for %(attendance_date)s is rejected"
+msgstr "Cererea dvs. de prezență pentru %(attendance_date)s a fost respinsă"
 
 msgid "Attendance request not found"
 msgstr "Cererea de pontaj nu a fost găsită"
@@ -3210,6 +3245,10 @@ msgstr ""
 "Cerere de actualizare a pontajului în așteptare pentru pontajul lui {} din "
 "{}!"
 
+#, python-format
+msgid "Your attendance for the date %(attendance_date)s is validated"
+msgstr "Prezența dvs. din data %(attendance_date)s a fost validată"
+
 #, python-brace-format
 msgid "{} Attendances validated."
 msgstr "{} pontaje validate."
@@ -3221,12 +3260,25 @@ msgstr "Nu vă puteți valida propriul pontaj."
 msgid "%(employee)s %(date)s Attendance validated."
 msgstr "Pontajul lui %(employee)s din %(date)s a fost validat."
 
+#, python-format
+msgid "%(employee)s requested revalidation for %(attendance_date)s attendance"
+msgstr "%(employee)s a solicitat revalidarea prezenței din %(attendance_date)s"
+
 msgid "You cannot approve your own overtime."
 msgstr "Nu vă puteți aproba propriile ore suplimentare."
 
 #, python-format
 msgid "%(employee)s's %(date)s overtime approved"
 msgstr "Orele suplimentare din %(date)s pentru %(employee)s au fost aprobate"
+
+#, python-format
+msgid "Your %(attendance_date)s's attendance overtime approved."
+msgstr ""
+"Orele suplimentare pentru prezența din %(attendance_date)s au fost aprobate."
+
+#, python-format
+msgid "Overtime approved for %(attendance_date)s's attendance"
+msgstr "Ore suplimentare aprobate pentru prezența din %(attendance_date)s"
 
 #, python-brace-format
 msgid " {} Overtime approved"
@@ -3263,19 +3315,28 @@ msgid "Gracetime added to clock-in successfully."
 msgstr "Perioada de grație a fost adăugată la pontarea de intrare cu succes."
 
 msgid "Gracetime removed from clock-in successfully."
-msgstr "Perioada de grație a fost eliminată de la pontarea de intrare cu succes."
+msgstr ""
+"Perioada de grație a fost eliminată de la pontarea de intrare cu succes."
 
 msgid "Gracetime added to clock-out successfully."
 msgstr "Perioada de grație a fost adăugată la pontarea de ieșire cu succes."
 
 msgid "Gracetime removed from clock-out successfully."
-msgstr "Perioada de grație a fost eliminată de la pontarea de ieșire cu succes."
+msgstr ""
+"Perioada de grație a fost eliminată de la pontarea de ieșire cu succes."
 
 msgid "Something went wrong ."
 msgstr "Ceva nu a funcționat ."
 
 msgid "Comment added successfully!"
 msgstr "Comentariu adăugat cu succes!"
+
+#, python-format
+msgid "%(employee)s's attendance request has received a comment."
+msgstr "Cererea de prezență a lui %(employee)s a primit un comentariu."
+
+msgid "Your attendance request has received a comment."
+msgstr "Cererea dvs. de prezență a primit un comentariu."
 
 msgid "No Comment found matching the query."
 msgstr "Nu a fost găsit niciun comentariu care să corespundă căutării."
@@ -3350,6 +3411,12 @@ msgstr "Ați fost menționat într-un anunț."
 msgid "Announcement created successfully."
 msgstr "Anunț creat cu succes."
 
+msgid "Your department was mentioned in a post."
+msgstr "Departamentul dvs. a fost menționat într-o postare."
+
+msgid "Your job position was mentioned in a post."
+msgstr "Postul dvs. a fost menționat într-o postare."
+
 msgid "Announcement deleted successfully."
 msgstr "Anunț șters cu succes."
 
@@ -3361,6 +3428,10 @@ msgstr "Fișierul a fost șters cu succes."
 
 msgid "You commented a post."
 msgstr "Ați comentat o postare."
+
+#, python-format
+msgid "Comment under the announcement %(title)s."
+msgstr "Comentariu sub anunțul %(title)s."
 
 msgid "Announcement not found."
 msgstr "Anunțul nu a fost găsit."
@@ -3734,6 +3805,9 @@ msgstr "Atribuire de tură rotativă actualizată cu succes"
 msgid "Rotating Shift Assign Created Successfully"
 msgstr "Atribuire de tură rotativă creată cu succes"
 
+msgid "You are added to rotating shift"
+msgstr "Ați fost adăugat la o tură rotativă"
+
 msgid "Rotating Work Type"
 msgstr "Mod de lucru rotativ"
 
@@ -3754,6 +3828,9 @@ msgstr "Atribuire de muncă rotativă actualizată cu succes"
 
 msgid "Rotating Work Assigned"
 msgstr "Muncă rotativă atribuită"
+
+msgid "You are added to rotating work type"
+msgstr "Ați fost adăugat la un mod de lucru rotativ"
 
 msgid "Rotating Work Assign Created"
 msgstr "Atribuire de muncă rotativă creată"
@@ -3833,8 +3910,21 @@ msgstr "Cerere de tură actualizată cu succes"
 msgid "Shift request added Successfully"
 msgstr "Cerere de tură adăugată cu succes"
 
+#, python-format
+msgid "You have new shift request to approve for %(employee)s"
+msgstr "Aveți o nouă cerere de tură de aprobat pentru %(employee)s"
+
 msgid "Shift Swap Request"
 msgstr "Cerere de schimb de tură"
+
+#, python-format
+msgid "You have a new shift reallocation request to approve for %(employee)s."
+msgstr ""
+"Aveți o nouă cerere de realocare a turei de aprobat pentru %(employee)s."
+
+#, python-format
+msgid "You have a new shift reallocation request from %(employee)s."
+msgstr "Aveți o nouă cerere de realocare a turei de la %(employee)s."
 
 msgid "Work type request"
 msgstr "Cerere de mod de lucru"
@@ -3883,6 +3973,10 @@ msgstr "Cerere actualizată cu succes"
 
 msgid "Work type Request Created"
 msgstr "Cerere de mod de lucru creată"
+
+#, python-format
+msgid "You have new work type request to validate for %(employee)s"
+msgstr "Aveți o nouă cerere de mod de lucru de validat pentru %(employee)s"
 
 msgid "You do not have access to that company."
 msgstr "Nu aveți acces la această companie."
@@ -4578,6 +4672,25 @@ msgstr "Tipul de concediu este obligatoriu"
 msgid "Penalty Accounts"
 msgstr "Conturi de penalizare"
 
+msgid "Your Work Type has been changed."
+msgstr "Modul dvs. de lucru a fost schimbat."
+
+msgid "Your shift has been changed."
+msgstr "Tura dvs. a fost schimbată."
+
+msgid "Shift Changes notification"
+msgstr "Notificare privind schimbările de tură"
+
+msgid "Shift changes notification, Requested date expired."
+msgstr "Notificare privind schimbările de tură, data solicitată a expirat."
+
+msgid "Work Type Changes notification"
+msgstr "Notificare privind schimbările modului de lucru"
+
+msgid "Work type changes notification, Requested date expired."
+msgstr ""
+"Notificare privind schimbările modului de lucru, data solicitată a expirat."
+
 msgid "General"
 msgstr "General"
 
@@ -4594,7 +4707,9 @@ msgid "Default Records Per Page"
 msgstr "Înregistrări implicite pe pagină"
 
 msgid "Your personal rows-per-page preference for the selected company"
-msgstr "Preferința dumneavoastră personală privind numărul de rânduri pe pagină pentru compania selectată"
+msgstr ""
+"Preferința dumneavoastră personală privind numărul de rânduri pe pagină "
+"pentru compania selectată"
 
 msgid "Badge ID Prefix"
 msgstr "Prefix număr de marcă"
@@ -4646,7 +4761,9 @@ msgstr "Urmărirea informațiilor profesionale"
 msgid ""
 "Enable tracking of changes to employee work information fields for the "
 "selected company"
-msgstr "Activați urmărirea modificărilor câmpurilor de informații despre muncă ale angajatului pentru compania selectată"
+msgstr ""
+"Activați urmărirea modificărilor câmpurilor de informații despre muncă ale "
+"angajatului pentru compania selectată"
 
 msgid "Tracking Fields"
 msgstr "Câmpuri urmărite"
@@ -5204,7 +5321,9 @@ msgstr "Urmărirea istoricului angajatului"
 msgid ""
 "Employee history will be stored during updation of the fields that selected "
 "here. Leave empty to track all work information fields."
-msgstr "Istoricul angajatului va fi stocat la actualizarea câmpurilor selectate aici. Lăsați gol pentru a urmări toate câmpurile de informații despre muncă."
+msgstr ""
+"Istoricul angajatului va fi stocat la actualizarea câmpurilor selectate "
+"aici. Lăsați gol pentru a urmări toate câmpurile de informații despre muncă."
 
 msgid "Assign to Companies"
 msgstr "Atribuie companiilor"
@@ -5212,7 +5331,9 @@ msgstr "Atribuie companiilor"
 msgid ""
 "Select the companies that should receive these tracking settings. The All "
 "Companies default is always saved as well."
-msgstr "Selectați companiile care ar trebui să primească aceste setări de urmărire. Setarea implicită Toate companiile este întotdeauna salvată și ea."
+msgstr ""
+"Selectați companiile care ar trebui să primească aceste setări de urmărire. "
+"Setarea implicită Toate companiile este întotdeauna salvată și ea."
 
 msgid "Choose which companies these settings should be applied to."
 msgstr "Alegeți companiilor cărora ar trebui să li se aplice aceste setări."
@@ -5223,12 +5344,17 @@ msgstr "Salvare și atribuire"
 msgid ""
 "Configure the default, then choose which companies should receive these "
 "settings."
-msgstr "Configurați setarea implicită, apoi alegeți companiile care vor primi aceste setări."
+msgstr ""
+"Configurați setarea implicită, apoi alegeți companiile care vor primi aceste "
+"setări."
 
 msgid ""
 "By enabling this feature, you can save the history of employee work "
 "information during updates for the currently selected company."
-msgstr "Prin activarea acestei funcții, puteți salva istoricul informațiilor de muncă ale angajaților în timpul actualizărilor pentru compania selectată în prezent."
+msgstr ""
+"Prin activarea acestei funcții, puteți salva istoricul informațiilor de "
+"muncă ale angajaților în timpul actualizărilor pentru compania selectată în "
+"prezent."
 
 msgid "First Name"
 msgstr "Prenume"
@@ -5286,7 +5412,9 @@ msgstr "Nu există grupuri de angajați momentan."
 msgid ""
 "Editing members of \"%(name)s\". Unchecking an employee removes them from "
 "this role, and unchecking a company removes that assignment."
-msgstr "Editați membrii din „%(name)s”. Debifarea unui angajat îl elimină din acest rol, iar debifarea unei companii elimină acea alocare."
+msgstr ""
+"Editați membrii din „%(name)s”. Debifarea unui angajat îl elimină din acest "
+"rol, iar debifarea unei companii elimină acea alocare."
 
 #, python-format
 msgid ""
@@ -5896,12 +6024,16 @@ msgstr "Limbi activate"
 msgid ""
 "Choose which languages employees of this company can switch to. Leave empty "
 "to allow every language."
-msgstr "Alegeți limbile la care angajații acestei companii se pot schimba. Lăsați necompletat pentru a permite toate limbile."
+msgstr ""
+"Alegeți limbile la care angajații acestei companii se pot schimba. Lăsați "
+"necompletat pentru a permite toate limbile."
 
 msgid ""
 "Selected languages will appear in the language switcher for employees of "
 "this company. Leave empty to enable every language."
-msgstr "Limbile selectate vor apărea în selectorul de limbă pentru angajații acestei companii. Lăsați gol pentru a activa toate limbile."
+msgstr ""
+"Limbile selectate vor apărea în selectorul de limbă pentru angajații acestei "
+"companii. Lăsați gol pentru a activa toate limbile."
 
 msgid "Select languages…"
 msgstr "Selectați limbile…"
@@ -6320,12 +6452,6 @@ msgstr "Cererea dumneavoastră de bun a fost aprobată!"
 
 msgid "Your asset request rejected!."
 msgstr "Cererea dumneavoastră de bun a fost respinsă!"
-
-msgid "You are added to rotating work type"
-msgstr "Ați fost adăugat la un mod de lucru rotativ"
-
-msgid "You are added to rotating shift"
-msgstr "Ați fost adăugat la o tură rotativă"
 
 msgid "Your work type request has been canceled."
 msgstr "Cererea dumneavoastră de mod de lucru a fost anulată."
@@ -7702,6 +7828,9 @@ msgstr "Nu aveți permisiunea necesară"
 msgid "Work type request has been rejected."
 msgstr "Cererea de mod de lucru a fost respinsă."
 
+msgid "Your work type request has been rejected."
+msgstr "Cererea dvs. de mod de lucru a fost respinsă."
+
 msgid "No worktype request found matching the query."
 msgstr ""
 "Nu a fost găsită nicio cerere de mod de lucru care să corespundă căutării."
@@ -7748,6 +7877,9 @@ msgstr "Cererea de tură aprobată nu poate fi editată"
 msgid "Shift request rejected"
 msgstr "Cerere de tură respinsă"
 
+msgid "Your shift request has been rejected."
+msgstr "Cererea dvs. de tură a fost respinsă."
+
 msgid "No shift request found matching the query."
 msgstr "Nu a fost găsită nicio cerere de tură care să corespundă căutării."
 
@@ -7759,6 +7891,10 @@ msgstr "Tura a fost aprobată."
 
 msgid "You are available for shift reallocation."
 msgstr "Sunteți disponibil pentru realocarea turei."
+
+#, python-format
+msgid "%(employee_get)s is available for shift reallocation."
+msgstr "%(employee_get)s este disponibil pentru realocarea turei."
 
 msgid "Shifts have been approved."
 msgstr "Turele au fost aprobate."
@@ -7871,11 +8007,25 @@ msgstr ""
 msgid "Multiple approval condition deleted successfully"
 msgstr "Condiție de aprobare multiplă ștearsă cu succes"
 
+#, python-format
+msgid "%(employee)s's shift request has received a comment."
+msgstr "Cererea de tură a lui %(employee)s a primit un comentariu."
+
+msgid "Your shift request has received a comment."
+msgstr "Cererea dvs. de tură a primit un comentariu."
+
 msgid "Invalid Request"
 msgstr "Cerere invalidă"
 
 msgid "Comment not found."
 msgstr "Comentariul nu a fost găsit."
+
+#, python-format
+msgid "%(employee)s's work type request has received a comment."
+msgstr "Cererea de mod de lucru a lui %(employee)s a primit un comentariu."
+
+msgid "Your work type request has received a comment."
+msgstr "Cererea dvs. de mod de lucru a primit un comentariu."
 
 msgid "Default pagination updated."
 msgstr "Paginarea implicită a fost actualizată."
@@ -7901,13 +8051,17 @@ msgstr "Acțiunea a fost ștearsă cu succes!"
 msgid ""
 "Chart preferences are managed via Customize on the modern dashboard. Legacy "
 "Dashboard Charts was not applied."
-msgstr "Preferințele graficelor sunt gestionate prin Personalizare pe tabloul de bord modern. Graficele vechi ale tabloului de bord nu au fost aplicate."
+msgstr ""
+"Preferințele graficelor sunt gestionate prin Personalizare pe tabloul de "
+"bord modern. Graficele vechi ale tabloului de bord nu au fost aplicate."
 
 msgid "Dashboard charts updated successfully"
 msgstr "Graficele tabloului de bord au fost actualizate cu succes"
 
 msgid "Use Customize on the modern dashboard to reorder charts."
-msgstr "Utilizați Personalizare pe tabloul de bord modern pentru a reordona graficele."
+msgstr ""
+"Utilizați Personalizare pe tabloul de bord modern pentru a reordona "
+"graficele."
 
 msgid "The biometric attendance feature has been activated successfully."
 msgstr "Pontajul biometric a fost activat cu succes."
@@ -8606,6 +8760,9 @@ msgstr "Întreprindeți o acțiune"
 msgid "Disciplinary action updated Successfully"
 msgstr "Acțiune disciplinară actualizată cu succes"
 
+msgid "Disciplinary action is taken on you."
+msgstr "A fost luată o acțiune disciplinară împotriva dvs."
+
 msgid "Disciplinary action created Successfully"
 msgstr "Acțiune disciplinară creată cu succes"
 
@@ -8620,6 +8777,10 @@ msgstr "Cerere de document actualizată cu succes"
 
 msgid "Document request created successfully"
 msgstr "Cerere de document creată cu succes"
+
+#, python-format
+msgid "%(employee_get)s requested a document."
+msgstr "%(employee_get)s a solicitat un document."
 
 #, python-format
 msgid "File type %(ext)s is not allowed."
@@ -8642,6 +8803,10 @@ msgstr "Încarcă fișier"
 
 msgid "Document uploaded successfully"
 msgstr "Document încărcat cu succes"
+
+#, python-format
+msgid "%(employee_get)s uploaded a document"
+msgstr "%(employee_get)s a încărcat un document"
 
 msgid "Bulk Approve Requests"
 msgstr "Aprobă cererile în masă"
@@ -9942,6 +10107,9 @@ msgstr "{employee} este superutilizator și nu poate fi blocat."
 msgid "Employee personal information updated."
 msgstr "Informațiile personale ale angajatului au fost actualizate."
 
+msgid "Your work details have been updated."
+msgstr "Detaliile dvs. de lucru au fost actualizate."
+
 msgid "Employee work information updated."
 msgstr "Informațiile profesionale ale angajatului au fost actualizate."
 
@@ -10253,6 +10421,9 @@ msgstr "Actualizează tichetul"
 msgid "The Ticket created successfully."
 msgstr "Tichetul a fost creat cu succes."
 
+msgid "You have been assigned to a new Ticket"
+msgstr "V-a fost atribuit un tichet nou"
+
 msgid "The Ticket updated successfully."
 msgstr "Tichetul a fost actualizat cu succes."
 
@@ -10352,6 +10523,9 @@ msgstr "Creați etichete pentru clasificarea tichetelor de suport."
 
 msgid "Define categories of helpdesk tickets."
 msgstr "Definiți categoriile de tichete de suport."
+
+msgid "No records found."
+msgstr "Nu au fost găsite înregistrări."
 
 msgid "Claim Requests"
 msgstr "Cereri de decontare"
@@ -10646,11 +10820,18 @@ msgstr "Tichetul a fost arhivat cu succes."
 msgid "Invalid request method."
 msgstr "Metodă de cerere invalidă."
 
+#, python-format
+msgid "The status of the ticket has been changed to %(status)s."
+msgstr "Starea tichetului a fost schimbată în %(status)s."
+
 msgid "The Ticket status updated successfully."
 msgstr "Starea tichetului a fost actualizată cu succes."
 
 msgid "You Don't have the permission."
 msgstr "Nu aveți permisiunea necesară."
+
+msgid "The ticket has been deleted."
+msgstr "Tichetul a fost șters."
 
 #, python-brace-format
 msgid "The Ticket \"{}\" has been deleted successfully."
@@ -10712,8 +10893,20 @@ msgstr "Comentariul lui {} a fost șters cu succes."
 msgid "Claim request approved successfully."
 msgstr "Cererea de decontare a fost aprobată cu succes."
 
+#, python-format
+msgid "You have been assigned to a new Ticket-%(ticket)s."
+msgstr "V-a fost atribuit noul Tichet-%(ticket)s."
+
+#, python-format
+msgid "%(employee)s assigned to your ticket - %(ticket)s."
+msgstr "%(employee)s a fost alocat tichetului dvs. - %(ticket)s."
+
 msgid "Claim request rejected successfully."
 msgstr "Cererea de decontare a fost respinsă cu succes."
+
+#, python-format
+msgid "Your claim request is rejected for Ticket-%(ticket)s"
+msgstr "Cererea dvs. de decontare pentru Tichetul-%(ticket)s a fost respinsă"
 
 msgid "No Department Manager found matching the query."
 msgstr ""
@@ -10732,7 +10925,9 @@ msgid "Ticket type can not delete"
 msgstr "Tipul de tichet nu poate fi șters"
 
 msgid "Default FAQs could not be loaded. Please contact support."
-msgstr "Întrebările frecvente implicite nu au putut fi încărcate. Vă rugăm contactați asistența."
+msgstr ""
+"Întrebările frecvente implicite nu au putut fi încărcate. Vă rugăm "
+"contactați asistența."
 
 #, python-format
 msgid "Automation '%(faq_obj_question)s' created successfully."
@@ -10856,7 +11051,8 @@ msgstr "Nimic de aprobat."
 
 #, python-format
 msgid "%(employee)s don't have enough leave days to approve the request.."
-msgstr "%(employee)s nu are suficiente zile de concediu pentru a aproba cererea.."
+msgstr ""
+"%(employee)s nu are suficiente zile de concediu pentru a aproba cererea.."
 
 msgid "If 'is_fixed' is True, 'amount' must be a positive number."
 msgstr "Dacă 'is_fixed' este True, 'amount' trebuie să fie un număr pozitiv."
@@ -10898,7 +11094,9 @@ msgstr "Acest tip de concediu nu poate fi încasat"
 msgid ""
 "You Don't have work information filled or your employee detail neither "
 "entered "
-msgstr "Nu aveți informații de muncă completate și nici detaliile de angajat introduse "
+msgstr ""
+"Nu aveți informații de muncă completate și nici detaliile de angajat "
+"introduse "
 
 msgid "You do not have permission to view this attendance record."
 msgstr "Nu aveți permisiunea de a vizualiza această înregistrare de prezență."
@@ -10910,7 +11108,8 @@ msgid "You do not have permission to view this attendance request."
 msgstr "Nu aveți permisiunea de a vizualiza această cerere de prezență."
 
 msgid "You do not have permission to view this overtime record."
-msgstr "Nu aveți permisiunea de a vizualiza această înregistrare de ore suplimentare."
+msgstr ""
+"Nu aveți permisiunea de a vizualiza această înregistrare de ore suplimentare."
 
 msgid "Overtime deleted successfully"
 msgstr "Orele suplimentare au fost șterse cu succes"
@@ -10925,7 +11124,8 @@ msgid "Mail template not found."
 msgstr "Șablonul de e-mail nu a fost găsit."
 
 msgid "Too many failed login attempts. Try again later."
-msgstr "Prea multe încercări eșuate de autentificare. Încercați din nou mai târziu."
+msgstr ""
+"Prea multe încercări eșuate de autentificare. Încercați din nou mai târziu."
 
 msgid "Invalid credentials"
 msgstr "Date de autentificare nevalide"
@@ -11035,6 +11235,22 @@ msgstr "ClaimRequest nu a fost găsit"
 msgid "DepartmentManager not found"
 msgstr "DepartmentManager nu a fost găsit"
 
+#, python-format
+msgid "New leave allocation request created for %(employee)s."
+msgstr ""
+"A fost creată o nouă cerere de alocare a concediului pentru %(employee)s."
+
+#, python-format
+msgid "New leave request created for %(employee)s."
+msgstr "A fost creată o nouă cerere de concediu pentru %(employee)s."
+
+#, python-format
+msgid "Leave request updated for %(employee)s."
+msgstr "Cererea de concediu pentru %(employee)s a fost actualizată."
+
+msgid "Your Leave request has been rejected"
+msgstr "Cererea dvs. de concediu a fost respinsă"
+
 msgid "Nothing to reject."
 msgstr "Nimic de respins."
 
@@ -11102,7 +11318,8 @@ msgid "Payslip missing start_date or end_date"
 msgstr "Fluturașul de salariu nu are start_date sau end_date"
 
 msgid "PDF generation not available on server. Install pdfkit/wkhtmltopdf."
-msgstr "Generarea PDF nu este disponibilă pe server. Instalați pdfkit/wkhtmltopdf."
+msgstr ""
+"Generarea PDF nu este disponibilă pe server. Instalați pdfkit/wkhtmltopdf."
 
 msgid "Period not found"
 msgstr "Perioada nu a fost găsită"
@@ -11471,7 +11688,9 @@ msgid "Trigger"
 msgstr "Declanșator"
 
 msgid "Default mail automations could not be loaded. Please contact support."
-msgstr "Automatizările implicite de e-mail nu au putut fi încărcate. Vă rugăm contactați asistența."
+msgstr ""
+"Automatizările implicite de e-mail nu au putut fi încărcate. Vă rugăm "
+"contactați asistența."
 
 #, python-format
 msgid "Automation '%(automation_obj_title)s' added successfully."
@@ -11527,7 +11746,8 @@ msgid "Enable to backup database to Google Drive"
 msgstr "Activați pentru a face backup pentru baza de date pe Google Drive"
 
 msgid "Enable to backup all media files to Google Drive"
-msgstr "Activați pentru a face backup pentru toate fișierele media pe Google Drive"
+msgstr ""
+"Activați pentru a face backup pentru toate fișierele media pe Google Drive"
 
 msgid "Please provide a valid OAuth credentials file (must be valid JSON)."
 msgstr ""
@@ -12167,29 +12387,43 @@ msgstr "Împiedică angajații să își editeze propriile date de profil."
 msgid ""
 "Configure default tracking settings, then assign them to one or more "
 "companies below."
-msgstr "Configurați setările implicite de urmărire, apoi atribuiți-le uneia sau mai multor companii de mai jos."
+msgstr ""
+"Configurați setările implicite de urmărire, apoi atribuiți-le uneia sau mai "
+"multor companii de mai jos."
 
 msgid ""
 "Save a history record whenever an employee's work information is updated. "
 "Applies to the currently selected company."
-msgstr "Salvează o înregistrare istorică ori de câte ori informațiile de muncă ale unui angajat sunt actualizate. Se aplică companiei selectate în prezent."
+msgstr ""
+"Salvează o înregistrare istorică ori de câte ori informațiile de muncă ale "
+"unui angajat sunt actualizate. Se aplică companiei selectate în prezent."
 
 msgid ""
 "Selected fields will be recorded in employee history whenever they are "
 "updated. Leave empty to track all work information fields."
-msgstr "Câmpurile selectate vor fi înregistrate în istoricul angajatului ori de câte ori sunt actualizate. Lăsați gol pentru a urmări toate câmpurile de informații de muncă."
+msgstr ""
+"Câmpurile selectate vor fi înregistrate în istoricul angajatului ori de câte "
+"ori sunt actualizate. Lăsați gol pentru a urmări toate câmpurile de "
+"informații de muncă."
 
 msgid ""
 "Select the companies that should receive these tracking settings. All "
 "companies are selected by default. Company-specific field selections are "
 "preserved; new fields from All Companies are merged in."
-msgstr "Selectați companiile care ar trebui să primească aceste setări de urmărire. În mod implicit sunt selectate toate companiile. Selecțiile de câmpuri specifice companiei sunt păstrate; câmpurile noi din Toate companiile sunt îmbinate."
+msgstr ""
+"Selectați companiile care ar trebui să primească aceste setări de urmărire. "
+"În mod implicit sunt selectate toate companiile. Selecțiile de câmpuri "
+"specifice companiei sunt păstrate; câmpurile noi din Toate companiile sunt "
+"îmbinate."
 
 msgid ""
 "Choose which companies these settings should be applied to. All companies "
 "are selected by default. Existing company-specific fields are kept; new "
 "fields are added to them."
-msgstr "Alegeți companiilor cărora ar trebui să li se aplice aceste setări. Toate companiile sunt selectate implicit. Câmpurile existente specifice companiei sunt păstrate; câmpurile noi sunt adăugate la acestea."
+msgstr ""
+"Alegeți companiilor cărora ar trebui să li se aplice aceste setări. Toate "
+"companiile sunt selectate implicit. Câmpurile existente specifice companiei "
+"sunt păstrate; câmpurile noi sunt adăugate la acestea."
 
 msgid "Select companies…"
 msgstr "Selectați companiile…"
@@ -12321,12 +12555,17 @@ msgstr "Adaugă membri la \"%(name)s\""
 msgid ""
 "Update which companies %(name)s gets this role's permissions in. Other "
 "members of this role are not affected."
-msgstr "Actualizați companiile în care %(name)s primește permisiunile acestui rol. Ceilalți membri ai acestui rol nu sunt afectați."
+msgstr ""
+"Actualizați companiile în care %(name)s primește permisiunile acestui rol. "
+"Ceilalți membri ai acestui rol nu sunt afectați."
 
 msgid ""
 "Update employees or companies for this role. Unchecking an employee removes "
 "them from the role; the selected companies apply to everyone selected."
-msgstr "Actualizați angajații sau companiile pentru acest rol. Debifarea unui angajat îl elimină din rol; companiile selectate se aplică tuturor celor selectați."
+msgstr ""
+"Actualizați angajații sau companiile pentru acest rol. Debifarea unui "
+"angajat îl elimină din rol; companiile selectate se aplică tuturor celor "
+"selectați."
 
 msgid ""
 "Search and pick employees below. Saving adds the selected employees to this "
@@ -12579,6 +12818,9 @@ msgstr "Doriți să ștergeți această reținere?"
 msgid "Are you sure you want to delete this assigned leave request?"
 msgstr "Sigur doriți să ștergeți această cerere de concediu atribuită?"
 
+msgid "Options"
+msgstr "Opțiuni"
+
 msgid "Do you want to approve this attendance request?"
 msgstr "Doriți să aprobați această cerere de pontaj?"
 
@@ -12765,8 +13007,11 @@ msgstr "cu"
 msgid "Sl No."
 msgstr "Nr. crt."
 
-msgid "Add Candidate"
-msgstr "Adaugă candidat"
+msgid "No stages found"
+msgstr "Nu s-au găsit etape"
+
+msgid "This recruitment has no stages yet."
+msgstr "Această recrutare nu are încă etape."
 
 msgid "Do you want to delete this project?"
 msgstr "Doriți să ștergeți acest proiect?"
@@ -14142,7 +14387,10 @@ msgstr "Urmărire proprie de către candidat"
 msgid ""
 "Let candidates track their application progress, view interview schedules, "
 "upload requested documents and see their overall rating."
-msgstr "Permiteți candidaților să urmărească progresul aplicației, să vadă programările de interviu, să încarce documentele solicitate și să vadă evaluarea lor generală."
+msgstr ""
+"Permiteți candidaților să urmărească progresul aplicației, să vadă "
+"programările de interviu, să încarce documentele solicitate și să vadă "
+"evaluarea lor generală."
 
 msgid "Application Tracking"
 msgstr "Urmărirea candidaturii"
@@ -14303,7 +14551,9 @@ msgstr "Rapoarte angajați"
 msgid ""
 "Ad-hoc pivots per module. Use Standard Reports for curated KPIs, charts, and "
 "export."
-msgstr "Analize pivot ad-hoc pe modul. Utilizați Rapoarte standard pentru KPI, grafice și export organizate."
+msgstr ""
+"Analize pivot ad-hoc pe modul. Utilizați Rapoarte standard pentru KPI, "
+"grafice și export organizate."
 
 msgid "Standard Reports"
 msgstr "Rapoarte standard"
@@ -14638,7 +14888,8 @@ msgid "Added to view."
 msgstr "Adăugat la vizualizare."
 
 msgid "Could not add to that view. Please try again."
-msgstr "Nu s-a putut adăuga la această vizualizare. Vă rugăm încercați din nou."
+msgstr ""
+"Nu s-a putut adăuga la această vizualizare. Vă rugăm încercați din nou."
 
 msgid "Saved filters"
 msgstr "Filtre salvate"
@@ -14697,7 +14948,9 @@ msgstr "Abonează-te la acest raport"
 msgid ""
 "Email the current filters on a schedule. Recipients can be any comma-"
 "separated addresses."
-msgstr "Trimiteți filtrele curente prin e-mail conform unui program. Destinatarii pot fi orice adrese separate prin virgulă."
+msgstr ""
+"Trimiteți filtrele curente prin e-mail conform unui program. Destinatarii "
+"pot fi orice adrese separate prin virgulă."
 
 msgid "Attachment"
 msgstr "Atașament"
@@ -14812,7 +15065,9 @@ msgstr "Nicio dată pentru perioada selectată."
 msgid ""
 "Showing the first %(shown_rows)s of %(total_rows)s rows. Narrow the filters "
 "or export to CSV for the complete data set."
-msgstr "Se afișează primele %(shown_rows)s din %(total_rows)s rânduri. Restrângeți filtrele sau exportați în CSV pentru setul complet de date."
+msgstr ""
+"Se afișează primele %(shown_rows)s din %(total_rows)s rânduri. Restrângeți "
+"filtrele sau exportați în CSV pentru setul complet de date."
 
 msgid "No rows"
 msgstr "Niciun rând"
@@ -14829,7 +15084,9 @@ msgstr "Tipărire %(name)s"
 
 #, python-format
 msgid "PDF shows the first %(limit)s rows. Use Excel for a fuller extract."
-msgstr "PDF-ul afișează primele %(limit)s rânduri. Utilizați Excel pentru un extras complet."
+msgstr ""
+"PDF-ul afișează primele %(limit)s rânduri. Utilizați Excel pentru un extras "
+"complet."
 
 msgid "Print Excel"
 msgstr "Tipărire Excel"
@@ -14896,6 +15153,9 @@ msgstr ""
 
 msgid "Prefix added to every auto-generated employee badge ID (e.g. PEP0001)."
 msgstr "Prefix adăugat fiecărui număr de marcă generat automat (ex. PEP0001)."
+
+msgid "Add Candidate"
+msgstr "Adaugă candidat"
 
 msgid "Do you want to archive this talent pool?"
 msgstr "Doriți să arhivați acest bazin de talente?"
@@ -15324,6 +15584,20 @@ msgstr "Șterge gruparea"
 msgid "Save filter"
 msgstr "Salvează filtrul"
 
+msgid "No Records found"
+msgstr "Nu au fost găsite înregistrări"
+
+msgid "groups"
+msgstr "Grupuri"
+
+#, python-format
+msgid "No %(label)s found"
+msgstr "Nu s-a găsit %(label)s"
+
+#, python-format
+msgid "There are no %(label)s to display."
+msgstr "Nu există %(label)s de afișat."
+
 msgid "library outline"
 msgstr "library outline"
 
@@ -15475,6 +15749,11 @@ msgstr "Creează cerere de alocare de concediu"
 msgid "Leave allocation request updated"
 msgstr "Cerere de alocare de concediu actualizată"
 
+#, python-format
+msgid "Leave allocation request updated for %(employee)s."
+msgstr ""
+"Cererea de alocare a concediului pentru %(employee)s a fost actualizată."
+
 msgid "New leave allocation request created"
 msgstr "Cerere nouă de alocare de concediu creată"
 
@@ -15494,7 +15773,7 @@ msgstr "Cererea de concediu a fost actualizată cu succes"
 msgid "Leave request created successfully"
 msgstr "Cerere de concediu creată cu succes"
 
-msgid "Closed Due To"
+msgid "Clashed Due To"
 msgstr "Suprapunere din cauza"
 
 msgid "Deducted FromCFD"
@@ -16106,9 +16385,19 @@ msgid_plural ""
 "\n"
 "                The selected dates include company holidays: %(names)s.\n"
 "            "
-msgstr[0] "\n                Data selectată include o sărbătoare a companiei: %(names)s.\n            "
-msgstr[1] "\n                Datele selectate includ o sărbătoare a companiei: %(names)s.\n            "
-msgstr[2] "\n                Datele selectate includ sărbători ale companiei: %(names)s.\n            "
+msgstr[0] ""
+"\n"
+"                Data selectată include o sărbătoare a companiei: %(names)s.\n"
+"            "
+msgstr[1] ""
+"\n"
+"                Datele selectate includ o sărbătoare a companiei: "
+"%(names)s.\n"
+"            "
+msgstr[2] ""
+"\n"
+"                Datele selectate includ sărbători ale companiei: %(names)s.\n"
+"            "
 
 msgid "Select All Requests"
 msgstr "Selectează toate cererile"
@@ -16118,9 +16407,6 @@ msgstr "Deselectează toate cererile"
 
 msgid "Export Requests"
 msgstr "Exportă cererile"
-
-msgid "Clashed Due To"
-msgstr "Suprapunere din cauza"
 
 msgid "No clashed requests available for cancelled or rejected leaves."
 msgstr "Nu există suprapuneri pentru concediile anulate sau respinse."
@@ -16375,6 +16661,9 @@ msgstr "Cererea de concediu nu a fost găsită"
 msgid "Leave request rejected successfully.."
 msgstr "Cerere de concediu respinsă cu succes.."
 
+msgid "Your leave request has been rejected."
+msgstr "Cererea dvs. de concediu a fost respinsă."
+
 msgid "Leave request already rejected."
 msgstr "Cererea de concediu a fost deja respinsă."
 
@@ -16412,6 +16701,10 @@ msgstr "Unele tipuri de concediu erau deja atribuite pentru {} angajați."
 
 msgid "Available leaves updated successfully..."
 msgstr "Concediile disponibile au fost actualizate cu succes..."
+
+#, python-format
+msgid "Your %(leave_type)s leave type updated."
+msgstr "Tipul dvs. de concediu %(leave_type)s a fost actualizat."
 
 msgid "Assigned leave successfully deleted."
 msgstr "Concediul atribuit a fost șters cu succes."
@@ -16502,11 +16795,17 @@ msgstr "Nu puteți actualiza această cerere..."
 msgid "Leave allocation request approved successfully"
 msgstr "Cerere de alocare de concediu aprobată cu succes"
 
+msgid "Your leave allocation request has been approved"
+msgstr "Cererea dvs. de alocare a concediului a fost aprobată"
+
 msgid "The leave allocation request can't be approved"
 msgstr "Cererea de alocare de concediu nu poate fi aprobată"
 
 msgid "Leave allocation request rejected successfully"
 msgstr "Cerere de alocare de concediu respinsă cu succes"
+
+msgid "Your leave allocation request has been rejected"
+msgstr "Cererea dvs. de alocare a concediului a fost respinsă"
 
 msgid "The leave allocation request can't be rejected"
 msgstr "Cererea de alocare de concediu nu poate fi respinsă"
@@ -16542,6 +16841,21 @@ msgstr "Cerere de concediu ștearsă."
 msgid "You cannot delete leave request with status {}."
 msgstr "Nu puteți șterge o cerere de concediu cu starea {}."
 
+#, python-format
+msgid "%(employee)s's leave request has received a comment."
+msgstr "Cererea de concediu a lui %(employee)s a primit un comentariu."
+
+msgid "Your leave request has received a comment."
+msgstr "Cererea dvs. de concediu a primit un comentariu."
+
+#, python-format
+msgid "%(employee)s's leave allocation request has received a comment."
+msgstr ""
+"Cererea de alocare a concediului lui %(employee)s a primit un comentariu."
+
+msgid "Your leave allocation request has received a comment."
+msgstr "Cererea dvs. de alocare a concediului a primit un comentariu."
+
 msgid "No comment found matching the query."
 msgstr "Nu a fost găsit niciun comentariu care să corespundă căutării."
 
@@ -16570,14 +16884,33 @@ msgstr "Cererea de zile libere compensatorii a fost ștearsă."
 msgid "Compensatory leave request approved."
 msgstr "Cererea de zile libere compensatorii a fost aprobată."
 
+msgid "Your compensatory leave request has been approved"
+msgstr "Cererea dvs. de concediu compensatoriu a fost aprobată"
+
 msgid "The compensatory leave request is not in the 'requested' status."
 msgstr "Cererea de zile libere compensatorii nu are starea „solicitat”."
 
 msgid "Compensatory Leave request rejected."
 msgstr "Cererea de zile libere compensatorii a fost respinsă."
 
+msgid "Your compensatory leave request has been rejected"
+msgstr "Cererea dvs. de concediu compensatoriu a fost respinsă"
+
 msgid "Compensatory leave request not found."
 msgstr "Cererea de concediu compensatoriu nu a fost găsită."
+
+#, python-format
+msgid "%(employee)s's Compensatory leave request has received a comment."
+msgstr ""
+"Cererea de concediu compensatoriu a lui %(employee)s a primit un comentariu."
+
+msgid "Your compensatory leave request has received a comment."
+msgstr "Cererea dvs. de concediu compensatoriu a primit un comentariu."
+
+#, python-format
+msgid "%(employee)s's compensatory leave request has received a comment."
+msgstr ""
+"Cererea de concediu compensatoriu a lui %(employee)s a primit un comentariu."
 
 msgid "No interview found matching the query."
 msgstr "Nu a fost găsit niciun interviu care să corespundă căutării."
@@ -16616,6 +16949,10 @@ msgstr "Angajat actualizat"
 
 msgid "Added Employee"
 msgstr "Angajat adăugat"
+
+#, python-format
+msgid "You have been added to the %(stage)s of %(offboarding_id)s"
+msgstr "Ați fost adăugat(ă) la %(stage)s din %(offboarding_id)s"
 
 msgid "Create Offboarding"
 msgstr "Creează proces de ieșire"
@@ -16661,6 +16998,9 @@ msgstr "Gestionează ordinea etapelor"
 
 msgid "Stages"
 msgstr "Etape"
+
+msgid "Pipeline"
+msgstr "Flux de recrutare"
 
 #, python-format
 msgid ""
@@ -16721,6 +17061,10 @@ msgstr "Sarcină către"
 msgid "You cannot edit a request that has been rejected/approved"
 msgstr "Nu puteți edita o cerere respinsă sau aprobată"
 
+#, python-format
+msgid "%(get_full_name)s requested for resignation."
+msgstr "%(get_full_name)s a solicitat demisia."
+
 msgid "Ongoing"
 msgstr "În desfășurare"
 
@@ -16763,6 +17107,10 @@ msgstr "De făcut"
 
 msgid "Stuck"
 msgstr "Blocat"
+
+#, python-format
+msgid "Offboarding task \"%(title)s\" has been assigned"
+msgstr "Sarcina de ieșire din organizație \"%(title)s\" a fost atribuită"
 
 msgid "Offboarding"
 msgstr "Ieșire din organizație"
@@ -16970,11 +17318,17 @@ msgstr "Sigur doriți să ștergeți această etapă?"
 msgid "Do you want to delete task?"
 msgstr "Doriți să ștergeți sarcina?"
 
+msgid "You are chosen as an offboarding manager"
+msgstr "Ați fost ales(ă) ca manager de ieșire din organizație"
+
 msgid "Offboarding deleted"
 msgstr "Proces de ieșire șters"
 
 msgid "Stage saved"
 msgstr "Etapă salvată"
+
+msgid "You are chosen as offboarding stage manager"
+msgstr "Ați fost ales(ă) ca manager al etapei de ieșire din organizație"
 
 msgid "Sequence Updated Successfully"
 msgstr "Secvență actualizată cu succes"
@@ -16987,6 +17341,9 @@ msgstr "Angajat salvat"
 
 msgid "Offboarding employee deleted"
 msgstr "Angajat șters din procesul de ieșire"
+
+msgid "You have been removed from the offboarding"
+msgstr "Ați fost eliminat(ă) din procesul de ieșire din organizație"
 
 msgid "Employees not found"
 msgstr "Angajații nu au fost găsiți"
@@ -17005,6 +17362,9 @@ msgstr ""
 msgid "Cannot Change Stage"
 msgstr "Etapa nu poate fi schimbată"
 
+msgid "Offboarding stage has been changed"
+msgstr "Etapa de ieșire din organizație a fost modificată"
+
 msgid "stage changed successfully."
 msgstr "etapa a fost schimbată cu succes."
 
@@ -17022,6 +17382,9 @@ msgstr "Lipsesc parametri obligatorii."
 
 msgid "Task status updated successfully..."
 msgstr "Starea sarcinii a fost actualizată cu succes..."
+
+msgid "Offboarding Task status has been updated"
+msgstr "Starea sarcinii de ieșire din organizație a fost actualizată"
 
 msgid "Task status changed successfully."
 msgstr "Starea sarcinii a fost schimbată cu succes."
@@ -17061,6 +17424,10 @@ msgstr ""
 #, python-format
 msgid "Resignation request has been %(status)s"
 msgstr "Cererea de demisie a fost %(status)s"
+
+#, python-format
+msgid "Resignation request has been %(get_status_display)s"
+msgstr "Cererea de demisie a fost %(get_status_display)s"
 
 #, python-brace-format
 msgid "Resignation Request setting has been {} successfully."
@@ -17114,6 +17481,9 @@ msgstr "Etapă nouă creată cu succes"
 msgid "New Task Created Successfully"
 msgstr "Sarcină nouă creată cu succes"
 
+msgid "You are chosen as an onboarding task manager"
+msgstr "Ați fost ales(ă) ca manager de sarcini de integrare"
+
 msgid "Task updated successfully.."
 msgstr "Sarcină actualizată cu succes.."
 
@@ -17134,6 +17504,9 @@ msgstr "Nu sunteți autentificat."
 
 msgid "No stage found matching the query."
 msgstr "Nu a fost găsită nicio etapă care să corespundă căutării."
+
+msgid "stages"
+msgstr "etapă"
 
 msgid "Stage Updated"
 msgstr "Etapă actualizată"
@@ -17245,6 +17618,18 @@ msgstr "Trimite linkul portalului / Declanșează integrarea"
 
 msgid "Send Portal Link"
 msgstr "Trimite linkul portalului"
+
+msgid "Probation End From"
+msgstr "Sfârșitul perioadei de probă de la"
+
+msgid "Probation End Till"
+msgstr "Sfârșitul perioadei de probă până la"
+
+msgid "Scheduled From"
+msgstr "Programat de la"
+
+msgid "Scheduled Till"
+msgstr "Programat până la"
 
 msgid "Is closed"
 msgstr "Este închis"
@@ -17533,11 +17918,24 @@ msgstr "Portalul de integrare nu a fost găsit."
 msgid "Employee bank details created successfully.."
 msgstr "Detaliile bancare ale angajatului au fost create cu succes.."
 
+#, python-format
+msgid ""
+"The task %(onboarding_task_id)s of %(candidate_id)s was updated to "
+"%(status)s."
+msgstr ""
+"Sarcina %(onboarding_task_id)s a lui %(candidate_id)s a fost actualizată la "
+"%(status)s."
+
 msgid "Candidate onboarding task updated"
 msgstr "Sarcina de integrare a candidatului a fost actualizată"
 
 msgid "Object not found."
 msgstr "Obiectul nu a fost găsit."
+
+#, python-format
+msgid "The stage of %(candidate_id)s was updated to %(onboarding_stage_id)s."
+msgstr ""
+"Etapa lui %(candidate_id)s a fost actualizată la %(onboarding_stage_id)s."
 
 msgid "Candidate onboarding stage updated"
 msgstr "Etapa de integrare a candidatului a fost actualizată"
@@ -17792,6 +18190,9 @@ msgstr "Creează fluturaș de salariu"
 msgid "Payslip Saved"
 msgstr "Fluturaș salvat"
 
+msgid "Payslip has been generated for you."
+msgstr "Fluturașul dvs. de salariu a fost generat."
+
 msgid "Payroll"
 msgstr "Salarizare"
 
@@ -17914,7 +18315,9 @@ msgstr "Lot de fluturași"
 msgid ""
 "These employees have no active contract, so a salary structure can't be "
 "assigned to them: %(names)s"
-msgstr "Acești angajați nu au un contract activ, deci nu li se poate atribui o structură salarială: %(names)s"
+msgstr ""
+"Acești angajați nu au un contract activ, deci nu li se poate atribui o "
+"structură salarială: %(names)s"
 
 msgid "Rate must be greater than 0"
 msgstr "Cota trebuie să fie mai mare decât 0"
@@ -17946,6 +18349,10 @@ msgstr "Nu sunt suficiente zile reportate pentru valorificare"
 
 msgid "Not enough available days to redeem"
 msgstr "Nu sunt suficiente zile disponibile pentru valorificare"
+
+#, python-format
+msgid "You have a new reimbursement request to approve for %(employee)s."
+msgstr "Aveți o nouă cerere de decontare de aprobat pentru %(employee)s."
 
 msgid "Tax code is empty."
 msgstr "Codul fiscal este gol."
@@ -18728,8 +19135,17 @@ msgstr "Decontare salvată cu succes"
 msgid "Please check the data you provided."
 msgstr "Verificați datele introduse."
 
+msgid "Your reimbursement request has been rejected."
+msgstr "Cererea dvs. de decontare a fost respinsă."
+
+msgid "Your reimbursement request has been approved."
+msgstr "Cererea dvs. de decontare a fost aprobată."
+
 msgid "Reimbursements deleted"
 msgstr "Decontări șterse"
+
+msgid "Your reimbursement request has been deleted."
+msgstr "Cererea dvs. de decontare a fost ștearsă."
 
 msgid "Reimbursement request not found."
 msgstr "Cererea de decontare nu a fost găsită."
@@ -18846,6 +19262,13 @@ msgstr "{name} a fost șters."
 msgid "You cannot delete {contract}"
 msgstr "Nu puteți șterge {contract}"
 
+#, python-format
+msgid "%(employee)s's reimbursement request has received a comment."
+msgstr "Cererea de decontare a lui %(employee)s a primit un comentariu."
+
+msgid "Your reimbursement request has received a comment."
+msgstr "Cererea dvs. de decontare a primit un comentariu."
+
 msgid "No file IDs provided for deletion."
 msgstr "Nu au fost furnizate ID-uri de fișiere pentru ștergere."
 
@@ -18927,6 +19350,9 @@ msgstr "Feedback actualizat cu succes"
 msgid "Feedback Created Successfully"
 msgstr "Feedback creat cu succes"
 
+msgid "You received anonymous feedback!"
+msgstr "Ați primit feedback anonim!"
+
 msgid "Update Feedback"
 msgstr "Actualizează feedbackul"
 
@@ -18962,6 +19388,18 @@ msgstr "Actualizează ședința"
 
 msgid "Meeting added successfully"
 msgstr "Ședință adăugată cu succes"
+
+#, python-format
+msgid "You have been added as a manager for the meeting %(title)s"
+msgstr "Ați fost adăugat(ă) ca manager pentru ședința %(title)s"
+
+#, python-format
+msgid "You have been added to the meeting %(title)s"
+msgstr "Ați fost adăugat(ă) la ședința %(title)s"
+
+#, python-format
+msgid "You have been added as an answerable employee for the meeting %(title)s"
+msgstr "Ați fost adăugat(ă) ca angajat responsabil pentru ședința %(title)s"
 
 msgid "Add Response"
 msgstr "Adaugă răspuns"
@@ -19014,6 +19452,9 @@ msgstr "Obiectiv actualizat cu succes"
 msgid "Update Objective"
 msgstr "Actualizează obiectivul"
 
+msgid "You got an OKR!"
+msgstr "Ați obținut un OKR!"
+
 msgid "Create Objective Template"
 msgstr "Creează șablon de obiectiv"
 
@@ -19041,8 +19482,14 @@ msgstr "Obiectivul angajatului nu a fost găsit."
 msgid "Key result updated sucessfully."
 msgstr "Rezultatul-cheie a fost actualizat cu succes."
 
+msgid "Your Key Result updated."
+msgstr "Rezultatul dvs. cheie a fost actualizat."
+
 msgid "Key result assigned sucessfully."
 msgstr "Rezultatul-cheie a fost atribuit cu succes."
+
+msgid "You got a Key Result!"
+msgstr "Ați obținut un Rezultat cheie!"
 
 msgid "Are you sure you want to delete\tthis Key result?"
 msgstr "Sigur doriți să ștergeți\tacest rezultat-cheie?"
@@ -19774,6 +20221,12 @@ msgstr "Nu puteți șterge acest obiectiv, există înregistrări asociate"
 msgid "Objective deleted successfully!."
 msgstr "Obiectiv șters cu succes!"
 
+#, python-format
+msgid ""
+"The status of the objective '%(objective_id)s' has been changed to "
+"%(status)s."
+msgstr "Starea obiectivului '%(objective_id)s' a fost schimbată în %(status)s."
+
 msgid "The status of the objective is the same as selected."
 msgstr "Starea obiectivului este aceeași cu cea selectată."
 
@@ -19788,6 +20241,9 @@ msgstr "Rezultate-cheie create"
 
 msgid "Key result updated"
 msgstr "Rezultat-cheie actualizat"
+
+msgid "You have been requested to provide feedback!"
+msgstr "Vi s-a solicitat să oferiți feedback!"
 
 msgid "Feedback created successfully."
 msgstr "Feedback creat cu succes."
@@ -20281,6 +20737,13 @@ msgstr "Detalii fișă de pontaj"
 msgid "Project updated"
 msgstr "Proiect actualizat"
 
+#, python-format
+msgid ""
+"The status of the project '%(project)s' has been changed to "
+"%(get_status_display)s."
+msgstr ""
+"Starea proiectului '%(project)s' a fost schimbată în %(get_status_display)s."
+
 msgid "Invalid status or missing data."
 msgstr "Stare invalidă sau date lipsă."
 
@@ -20500,6 +20963,14 @@ msgstr "Ora interviului"
 msgid "Is Interview Completed"
 msgstr "Interviul este finalizat"
 
+#, python-format
+msgid ""
+"You are scheduled as an interviewer for an interview with %(name)s on "
+"%(interview_date)s at %(interview_time)s."
+msgstr ""
+"Sunteți programat(ă) ca intervievator pentru un interviu cu %(name)s pe "
+"%(interview_date)s la ora %(interview_time)s."
+
 msgid "Interview Updated Successfully"
 msgstr "Interviu actualizat cu succes"
 
@@ -20517,9 +20988,6 @@ msgstr "Nicio recrutare găsită care să corespundă căutării."
 
 msgid "Reject Candidate"
 msgstr "Respinge candidatul"
-
-msgid "Pipeline"
-msgstr "Flux de recrutare"
 
 msgid "Survey Questions"
 msgstr "Întrebări din chestionar"
@@ -20628,6 +21096,14 @@ msgstr "Etapă actualizată"
 
 msgid "Stage added"
 msgstr "Etapă adăugată"
+
+#, python-format
+msgid ""
+"Stage %(stage_obj)s is updated on recruitment %(recruitment_id)s. You are "
+"chosen as one of the managers."
+msgstr ""
+"Etapa %(stage_obj)s din recrutarea %(recruitment_id)s a fost actualizată. "
+"Ați fost ales(ă) ca unul dintre manageri."
 
 msgid "LinkedIn Accounts"
 msgstr "Conturi LinkedIn"
@@ -20766,6 +21242,12 @@ msgstr "În aplicație"
 
 msgid "Converted"
 msgstr "Convertit"
+
+msgid "Not sent"
+msgstr "Netrimis"
+
+msgid "Onboarding not started yet"
+msgstr "Integrarea nu a început încă"
 
 msgid "Employee is uniques for candidate"
 msgstr "Angajatul este unic pentru candidat"
@@ -20980,13 +21462,16 @@ msgstr "Al dumneavoastră"
 msgid ""
 "application for <span class=\"font-semibold text-dark-200\">%(title)s</span> "
 "has been received."
-msgstr "candidatura pentru <span class=\"font-semibold text-dark-200\">%(title)s</span> a fost primită."
+msgstr ""
+"candidatura pentru <span class=\"font-semibold text-dark-200\">%(title)s</"
+"span> a fost primită."
 
 msgid "application has been received."
 msgstr "candidatura a fost primită."
 
 msgid "We'll be in touch if there's a match. Feel free to close this window."
-msgstr "Vă vom contacta dacă există o potrivire. Puteți închide această fereastră."
+msgstr ""
+"Vă vom contacta dacă există o potrivire. Puteți închide această fereastră."
 
 msgid "View more open positions"
 msgstr "Vizualizați mai multe posturi vacante"
@@ -21117,6 +21602,9 @@ msgstr "Trimite e-mail către mai mulți candidați"
 
 msgid "Congrats..."
 msgstr "Felicitări..."
+
+msgid "Unable to load preview"
+msgstr "Previzualizarea nu a putut fi încărcată"
 
 msgid "Example: Candidate asked to reschedule interview to Friday."
 msgstr "Exemplu: candidatul a cerut reprogramarea interviului pentru vineri."
@@ -21436,8 +21924,18 @@ msgstr "Recrutare adăugată."
 msgid "Recruitment manager removed successfully."
 msgstr "Managerul de recrutare a fost eliminat cu succes."
 
+#, python-format
+msgid "You are removed from recruitment manager from %(recruitment_obj)s"
+msgstr "Ați fost eliminat(ă) ca manager de recrutare din %(recruitment_obj)s"
+
 msgid "Recruitment Updated."
 msgstr "Recrutare actualizată."
+
+#, python-format
+msgid "%(recruitment_obj)s is updated. You are chosen as one of the managers."
+msgstr ""
+"%(recruitment_obj)s a fost actualizat. Ați fost ales(ă) ca unul dintre "
+"manageri."
 
 msgid "Recruitment deleted successfully."
 msgstr "Recrutare ștearsă cu succes."
@@ -21445,17 +21943,44 @@ msgstr "Recrutare ștearsă cu succes."
 msgid "You cannot delete this recruitment"
 msgstr "Nu puteți șterge această recrutare"
 
+#, python-format
+msgid ""
+"You are chosen as recruitment manager for the recruitment %(recruitment_obj)s"
+msgstr ""
+"Ați fost ales(ă) ca manager de recrutare pentru recrutarea "
+"%(recruitment_obj)s"
+
+#, python-format
+msgid "New candidate arrived on stage %(stage)s"
+msgstr "Un candidat nou a ajuns la etapa %(stage)s"
+
 msgid "Candidate added."
 msgstr "Candidat adăugat."
 
 msgid "Stage added."
 msgstr "Etapă adăugată."
 
+#, python-format
+msgid ""
+"You are chosen as a stage manager on the stage %(stage)s in recruitment "
+"%(recruitment_id)s"
+msgstr ""
+"Ați fost ales(ă) ca manager de etapă pentru etapa %(stage)s din recrutarea "
+"%(recruitment_id)s"
+
 msgid "You don't have access"
 msgstr "Nu aveți acces"
 
 msgid "Stage updated."
 msgstr "Etapă actualizată."
+
+#, python-format
+msgid ""
+"%(stage)s stage in recruitment %(recruitment_id)s is updated. You are chosen "
+"as one of the managers."
+msgstr ""
+"Etapa %(stage)s din recrutarea %(recruitment_id)s a fost actualizată. Ați "
+"fost ales(ă) ca unul dintre manageri."
 
 msgid "Recruitment updated."
 msgstr "Recrutare actualizată."
@@ -21480,6 +22005,10 @@ msgstr "Notiță ștearsă"
 
 msgid "You cannot delete this note."
 msgstr "Nu puteți șterge această notiță."
+
+#, python-format
+msgid "You are removed from stage managers from stage %(stage_obj)s"
+msgstr "Ați fost eliminat(ă) dintre managerii etapei %(stage_obj)s"
 
 msgid "Stage manager removed successfully."
 msgstr "Managerul de etapă a fost eliminat cu succes."
@@ -21795,6 +22324,10 @@ msgstr "Competență creată cu succes"
 msgid "%(title)s is deleted."
 msgstr "%(title)s a fost șters."
 
+#, python-format
+msgid "%(label)s has added a note on the candidate %(candidate)s"
+msgstr "%(label)s a adăugat o notă la candidatul %(candidate)s"
+
 msgid "Candidate rejection deleted successfully"
 msgstr "Respingerea candidatului a fost ștearsă cu succes"
 
@@ -21814,7 +22347,11 @@ msgid ""
 "\n"
 "Report: %(name)s\n"
 "Format: %(fmt)s"
-msgstr "Exportul solicitat este atașat.\n\nRaport: %(name)s\nFormat: %(fmt)s"
+msgstr ""
+"Exportul solicitat este atașat.\n"
+"\n"
+"Raport: %(name)s\n"
+"Format: %(fmt)s"
 
 #, python-format
 msgid "Horilla report export failed: %(name)s"
@@ -21827,7 +22364,12 @@ msgid ""
 "Report: %(name)s\n"
 "\n"
 "Please try again, or narrow the filters if the report is very large."
-msgstr "Exportul solicitat nu a putut fi generat.\n\nRaport: %(name)s\n\nÎncercați din nou sau restrângeți filtrele dacă raportul este foarte mare."
+msgstr ""
+"Exportul solicitat nu a putut fi generat.\n"
+"\n"
+"Raport: %(name)s\n"
+"\n"
+"Încercați din nou sau restrângeți filtrele dacă raportul este foarte mare."
 
 msgid "Report Audit"
 msgstr "Audit raport"
@@ -21981,9 +22523,6 @@ msgstr "Candidatură"
 msgid "Software"
 msgstr "Software"
 
-msgid "Not sent"
-msgstr "Netrimis"
-
 msgid "Review ongoing"
 msgstr "Evaluare în curs"
 
@@ -22031,7 +22570,7 @@ msgid "Deletes"
 msgstr "Ștergeri"
 
 msgid "Action=delete"
-msgstr ""
+msgstr "Action=delete"
 
 msgid "Events"
 msgstr "Evenimente"
@@ -22167,7 +22706,9 @@ msgid "Workforce Composition"
 msgstr "Compoziția forței de muncă"
 
 msgid "Headcount, FTE proxy, and distribution by dept/type/job/location."
-msgstr "Număr de angajați, aproximare FTE și distribuție pe departament/tip/post/locație."
+msgstr ""
+"Număr de angajați, aproximare FTE și distribuție pe departament/tip/post/"
+"locație."
 
 msgid "Diversity Snapshot"
 msgstr "Instantaneu al diversității"
@@ -22175,7 +22716,10 @@ msgstr "Instantaneu al diversității"
 msgid ""
 "DEI / representation — gender and age bands plus leadership mix. Authorized "
 "roles only; marital status excluded from default view."
-msgstr "DEI / reprezentare — grupe de gen și vârstă plus componența conducerii. Doar pentru roluri autorizate; starea civilă este exclusă din vizualizarea implicită."
+msgstr ""
+"DEI / reprezentare — grupe de gen și vârstă plus componența conducerii. Doar "
+"pentru roluri autorizate; starea civilă este exclusă din vizualizarea "
+"implicită."
 
 msgid "Tenure & Longevity"
 msgstr "Vechime și longevitate"
@@ -22189,7 +22733,10 @@ msgstr "Fluctuație (toate ieșirile)"
 msgid ""
 "Hires vs all exits (offboarding / resignation / inactive fallback), period "
 "turnover rate, and first-year exit proxy — no voluntary split."
-msgstr "Angajări vs. toate ieșirile (offboarding / demisie / inactiv implicit), rata de fluctuație pe perioadă și aproximarea ieșirilor din primul an — fără separare voluntară."
+msgstr ""
+"Angajări vs. toate ieșirile (offboarding / demisie / inactiv implicit), rata "
+"de fluctuație pe perioadă și aproximarea ieșirilor din primul an — fără "
+"separare voluntară."
 
 msgid "Joiners & Leavers"
 msgstr "Angajări și plecări"
@@ -22197,18 +22744,23 @@ msgstr "Angajări și plecări"
 msgid ""
 "Period joiners and leavers (with exit source), net change, and approximate "
 "month-end headcount trend."
-msgstr "Angajări și plecări din perioadă (cu sursa plecării), variație netă și tendința aproximativă a numărului de angajați la sfârșitul lunii."
+msgstr ""
+"Angajări și plecări din perioadă (cu sursa plecării), variație netă și "
+"tendința aproximativă a numărului de angajați la sfârșitul lunii."
 
 msgid "Attendance Summary"
 msgstr "Rezumat prezență"
 
 msgid "Present days, late comes, overtime, and department breakdown."
-msgstr "Zile de prezență, întârzieri, ore suplimentare și defalcare pe departamente."
+msgstr ""
+"Zile de prezență, întârzieri, ore suplimentare și defalcare pe departamente."
 
 msgid ""
 "Unscheduled absence vs calendar expected days (holidays/company leaves "
 "subtracted; approved leave excluded from absence)."
-msgstr "Absență neprogramată vs. zile calendaristice așteptate (se scad sărbătorile/concediile companiei; concediul aprobat este exclus din absență)."
+msgstr ""
+"Absență neprogramată vs. zile calendaristice așteptate (se scad sărbătorile/"
+"concediile companiei; concediul aprobat este exclus din absență)."
 
 msgid "Overtime Analysis"
 msgstr "Analiza orelor suplimentare"
@@ -22216,7 +22768,9 @@ msgstr "Analiza orelor suplimentare"
 msgid ""
 "OT hours by department (default). Named employee rows require ?"
 "include_names=1 and attendance.change_attendance."
-msgstr "Ore suplimentare pe departament (implicit). Rândurile cu numele angajaților necesită ?include_names=1 și attendance.change_attendance."
+msgstr ""
+"Ore suplimentare pe departament (implicit). Rândurile cu numele angajaților "
+"necesită ?include_names=1 și attendance.change_attendance."
 
 msgid "Leave Planning (Used vs Entitlement)"
 msgstr "Planificarea concediilor (Utilizat vs. Drept)"
@@ -22224,7 +22778,10 @@ msgstr "Planificarea concediilor (Utilizat vs. Drept)"
 msgid ""
 "Planner ratio of period-approved leave days to the current entitlement "
 "snapshot — not an employee consumption nudge."
-msgstr "Raportul planificatorului dintre zilele de concediu aprobate în perioadă și instantaneul curent al dreptului — nu este un indicator de consum al angajatului."
+msgstr ""
+"Raportul planificatorului dintre zilele de concediu aprobate în perioadă și "
+"instantaneul curent al dreptului — nu este un indicator de consum al "
+"angajatului."
 
 msgid "Open Leave Balance (Days)"
 msgstr "Sold concediu deschis (zile)"
@@ -22232,7 +22789,9 @@ msgstr "Sold concediu deschis (zile)"
 msgid ""
 "Open leave balances in days (available + carry forward) by type/dept — not a "
 "currency liability."
-msgstr "Solduri de concediu deschise în zile (disponibil + reportat) pe tip/departament — nu o obligație valorică."
+msgstr ""
+"Solduri de concediu deschise în zile (disponibil + reportat) pe tip/"
+"departament — nu o obligație valorică."
 
 msgid "Labor Cost Summary"
 msgstr "Sumar costuri cu forța de muncă"
@@ -22240,7 +22799,9 @@ msgstr "Sumar costuri cu forța de muncă"
 msgid ""
 "Gross, net, deductions by department. Employer cost shown as gross proxy "
 "until contribution components exist."
-msgstr "Brut, net, deduceri pe departament. Costul angajatorului este afișat ca aproximare a brutului până când vor exista componente de contribuție."
+msgstr ""
+"Brut, net, deduceri pe departament. Costul angajatorului este afișat ca "
+"aproximare a brutului până când vor exista componente de contribuție."
 
 msgid "Cost Composition"
 msgstr "Compoziția costurilor"
@@ -22248,7 +22809,10 @@ msgstr "Compoziția costurilor"
 msgid ""
 "Allowance and deduction component mix from payslip heads (falls back to "
 "unsplit gross with an explicit hint)."
-msgstr "Combinația de componente de indemnizații și deduceri din capetele fluturașului de salariu (revine la brutul neseparat cu o indicație explicită)."
+msgstr ""
+"Combinația de componente de indemnizații și deduceri din capetele "
+"fluturașului de salariu (revine la brutul neseparat cu o indicație "
+"explicită)."
 
 msgid "Payroll Headcount Cost"
 msgstr "Cost salarial pe număr de angajați"
@@ -22256,7 +22820,9 @@ msgstr "Cost salarial pe număr de angajați"
 msgid ""
 "Gross cost per active headcount and average pay by department (not hours-"
 "based FTE)."
-msgstr "Cost brut per angajat activ și salariu mediu pe departament (nu FTE bazat pe ore)."
+msgstr ""
+"Cost brut per angajat activ și salariu mediu pe departament (nu FTE bazat pe "
+"ore)."
 
 msgid "Payslip Register"
 msgstr "Registru fluturași de salariu"
@@ -22264,7 +22830,10 @@ msgstr "Registru fluturași de salariu"
 msgid ""
 "Confidential payslip register for the selected period. Export requires "
 "export permission (matrix can_export); treat named pay rows as ops-only."
-msgstr "Registru confidențial al fluturașilor de salariu pentru perioada selectată. Exportul necesită permisiunea de export (matrice can_export); tratați rândurile de salariu numite ca fiind doar pentru operațiuni."
+msgstr ""
+"Registru confidențial al fluturașilor de salariu pentru perioada selectată. "
+"Exportul necesită permisiunea de export (matrice can_export); tratați "
+"rândurile de salariu numite ca fiind doar pentru operațiuni."
 
 msgid "Recruitment Funnel"
 msgstr "Pâlnie de recrutare"
@@ -22272,7 +22841,9 @@ msgstr "Pâlnie de recrutare"
 msgid ""
 "Stage snapshot of candidates in period (not sequential conversion), plus "
 "mutually exclusive source mix."
-msgstr "Instantaneu al etapelor candidaților în perioadă (nu conversie secvențială), plus mixul de surse reciproc exclusive."
+msgstr ""
+"Instantaneu al etapelor candidaților în perioadă (nu conversie secvențială), "
+"plus mixul de surse reciproc exclusive."
 
 msgid "Time to Hire / Fill"
 msgstr "Timp de angajare / ocupare"
@@ -22280,7 +22851,9 @@ msgstr "Timp de angajare / ocupare"
 msgid ""
 "Average and median days from application (created_at) to joining_date; open "
 "requisition aging."
-msgstr "Zile medii și mediane de la aplicare (created_at) până la data angajării (joining_date); vechimea cerințelor deschise."
+msgstr ""
+"Zile medii și mediane de la aplicare (created_at) până la data angajării "
+"(joining_date); vechimea cerințelor deschise."
 
 msgid "Offer & Acceptance"
 msgstr "Ofertă și acceptare"
@@ -22294,25 +22867,34 @@ msgstr "Progresul onboarding-ului"
 msgid ""
 "Onboarding stage and task completion for candidates who started onboarding "
 "in the selected period (tasks scoped to those candidates)."
-msgstr "Etapa de onboarding și finalizarea sarcinilor pentru candidații care au început onboarding-ul în perioada selectată (sarcini limitate la acești candidați)."
+msgstr ""
+"Etapa de onboarding și finalizarea sarcinilor pentru candidații care au "
+"început onboarding-ul în perioada selectată (sarcini limitate la acești "
+"candidați)."
 
 msgid "Objective & KR Health"
 msgstr "Starea obiectivelor și a rezultatelor cheie"
 
 msgid ""
 "Objective/KR status and progress bands — not a performance rating curve."
-msgstr "Starea și benzile de progres ale obiectivelor/rezultatelor cheie — nu o curbă de evaluare a performanței."
+msgstr ""
+"Starea și benzile de progres ale obiectivelor/rezultatelor cheie — nu o "
+"curbă de evaluare a performanței."
 
 msgid ""
 "Global audit log volume by action and model (not company-scoped). Prefer "
 "ReportAccess matrix for production tenants."
-msgstr "Volumul jurnalului global de audit pe acțiune și model (fără limitare la companie). Preferați matricea ReportAccess pentru mediile de producție."
+msgstr ""
+"Volumul jurnalului global de audit pe acțiune și model (fără limitare la "
+"companie). Preferați matricea ReportAccess pentru mediile de producție."
 
 msgid "Span of Control"
 msgstr "Domeniu de control"
 
 msgid "Manager count, average span, and manager-to-headcount ratio."
-msgstr "Numărul de manageri, intervalul mediu de control și raportul manageri/angajați."
+msgstr ""
+"Numărul de manageri, intervalul mediu de control și raportul manageri/"
+"angajați."
 
 msgid "Pipeline Aging"
 msgstr "Vechimea în flux"
@@ -22320,7 +22902,10 @@ msgstr "Vechimea în flux"
 msgid ""
 "Age of open candidates since application (created_at) by stage — not stage-"
 "entry age unless audit history is wired later."
-msgstr "Vârsta candidaților deschiși de la aplicare (created_at) pe etapă — nu vârsta de intrare în etapă, decât dacă istoricul de audit este conectat ulterior."
+msgstr ""
+"Vârsta candidaților deschiși de la aplicare (created_at) pe etapă — nu "
+"vârsta de intrare în etapă, decât dacă istoricul de audit este conectat "
+"ulterior."
 
 msgid "Source Quality"
 msgstr "Calitatea sursei"
@@ -22328,19 +22913,25 @@ msgstr "Calitatea sursei"
 msgid ""
 "Hire conversion by mutually exclusive source buckets (referral first; no "
 "double-count)."
-msgstr "Rata de conversie a angajărilor pe grupe de sursă reciproc exclusive (recomandarea are prioritate; fără dublă numărare)."
+msgstr ""
+"Rata de conversie a angajărilor pe grupe de sursă reciproc exclusive "
+"(recomandarea are prioritate; fără dublă numărare)."
 
 msgid "Document Expiry Aging"
 msgstr "Vechimea expirării documentelor"
 
 msgid "Overdue and upcoming horilla_documents expiry buckets (90-day horizon)."
-msgstr "Categorii de expirare a documentelor Horilla restante și viitoare (orizont de 90 de zile)."
+msgstr ""
+"Categorii de expirare a documentelor Horilla restante și viitoare (orizont "
+"de 90 de zile)."
 
 msgid "Headcount Bridge"
 msgstr "Punte a numărului de angajați"
 
 msgid "Opening headcount + joiners − leavers = closing bridge for the period."
-msgstr "Efectiv la deschidere + angajări − plecări = punte către efectivul de închidere al perioadei."
+msgstr ""
+"Efectiv la deschidere + angajări − plecări = punte către efectivul de "
+"închidere al perioadei."
 
 msgid "Exit Analysis"
 msgstr "Analiza ieșirilor"
@@ -22348,13 +22939,17 @@ msgstr "Analiza ieșirilor"
 msgid ""
 "Exits by source, department, and tenure at exit — no voluntary/involuntary "
 "split until reason fields exist."
-msgstr "Ieșiri pe sursă, departament și vechime la ieșire — fără separare voluntar/involuntar până când vor exista câmpuri de motiv."
+msgstr ""
+"Ieșiri pe sursă, departament și vechime la ieșire — fără separare voluntar/"
+"involuntar până când vor exista câmpuri de motiv."
 
 msgid "New-Hire 90-Day Attrition"
 msgstr "Plecări în primele 90 de zile de la angajare"
 
 msgid "Share of period joiners who exit within 90 days of joining."
-msgstr "Ponderea angajaților noi din perioadă care pleacă în primele 90 de zile de la angajare."
+msgstr ""
+"Ponderea angajaților noi din perioadă care pleacă în primele 90 de zile de "
+"la angajare."
 
 msgid "Unscheduled Absence"
 msgstr "Absență neprogramată"
@@ -22362,12 +22957,17 @@ msgstr "Absență neprogramată"
 msgid ""
 "Calendar-aware unscheduled absence for the selected period (holidays/company "
 "leave subtracted; approved leave excluded)."
-msgstr "Absență neprogramată, ținând cont de calendar, pentru perioada selectată (se scad sărbătorile/concediul companiei; concediul aprobat este exclus)."
+msgstr ""
+"Absență neprogramată, ținând cont de calendar, pentru perioada selectată (se "
+"scad sărbătorile/concediul companiei; concediul aprobat este exclus)."
 
 msgid ""
 "Employment contracts ending and documents with expiry_date. Visa-like "
 "classification is title-based only — not a legal visa register."
-msgstr "Contracte de muncă care expiră și documente cu dată de expirare. Clasificarea de tip viză se bazează doar pe titlu — nu este un registru legal de vize."
+msgstr ""
+"Contracte de muncă care expiră și documente cu dată de expirare. "
+"Clasificarea de tip viză se bazează doar pe titlu — nu este un registru "
+"legal de vize."
 
 msgid "Quality of Hire (90-day retention)"
 msgstr "Calitatea angajării (reținere la 90 de zile)"
@@ -22375,7 +22975,9 @@ msgstr "Calitatea angajării (reținere la 90 de zile)"
 msgid ""
 "90-day retention of hires with joining_date in period — not a performance "
 "quality score."
-msgstr "Retenția la 90 de zile a angajărilor cu data angajării (joining_date) în perioadă — nu este un scor de performanță."
+msgstr ""
+"Retenția la 90 de zile a angajărilor cu data angajării (joining_date) în "
+"perioadă — nu este un scor de performanță."
 
 msgid "Payroll Readiness"
 msgstr "Pregătire pentru salarizare"
@@ -22383,7 +22985,9 @@ msgstr "Pregătire pentru salarizare"
 msgid ""
 "Active employees who cannot be paid: missing bank details or no active "
 "contract. An exception report -- empty is good."
-msgstr "Angajați activi care nu pot fi plătiți: lipsesc detaliile bancare sau nu au contract activ. Un raport de excepții -- gol este bine."
+msgstr ""
+"Angajați activi care nu pot fi plătiți: lipsesc detaliile bancare sau nu au "
+"contract activ. Un raport de excepții -- gol este bine."
 
 msgid "Loan & Advance Ledger"
 msgstr "Registru împrumuturi și avansuri"
@@ -22391,7 +22995,9 @@ msgstr "Registru împrumuturi și avansuri"
 msgid ""
 "Outstanding employee loans and advances: principal, recovered installments "
 "and remaining balance."
-msgstr "Împrumuturi și avansuri restante ale angajaților: principal, rate recuperate și sold rămas."
+msgstr ""
+"Împrumuturi și avansuri restante ale angajaților: principal, rate recuperate "
+"și sold rămas."
 
 msgid "Reimbursement Register"
 msgstr "Registru de rambursări"
@@ -22399,12 +23005,16 @@ msgstr "Registru de rambursări"
 msgid ""
 "Reimbursement and encashment claims by type and status, with pending "
 "exposure before a payroll run closes."
-msgstr "Cereri de rambursare și compensare bănească pe tip și stare, cu expunerea în așteptare înainte de închiderea rulării de salarizare."
+msgstr ""
+"Cereri de rambursare și compensare bănească pe tip și stare, cu expunerea în "
+"așteptare înainte de închiderea rulării de salarizare."
 
 msgid ""
 "Asset inventory by status, and how long each assigned asset has been held -- "
 "the offboarding recovery control."
-msgstr "Inventarul activelor pe stare și durata pentru care fiecare activ atribuit a fost deținut -- controlul de recuperare la offboarding."
+msgstr ""
+"Inventarul activelor pe stare și durata pentru care fiecare activ atribuit a "
+"fost deținut -- controlul de recuperare la offboarding."
 
 msgid "With ≥1 report"
 msgstr "Cu ≥1 raport"
@@ -22551,7 +23161,9 @@ msgid "Employees with OT"
 msgstr "Angajați cu ore suplimentare"
 
 msgid "Names hidden unless include_names + change_attendance"
-msgstr "Numele sunt ascunse dacă nu sunt specificate include_names + change_attendance"
+msgstr ""
+"Numele sunt ascunse dacă nu sunt specificate include_names + "
+"change_attendance"
 
 msgid "Gross pay"
 msgstr "Salariu brut"
@@ -22999,7 +23611,9 @@ msgid "Period used / entitlement"
 msgstr "Folosit în perioadă / drept"
 
 msgid "Planner ratio — period approved days ÷ current entitlement snapshot"
-msgstr "Raport planificator — zile aprobate în perioadă ÷ instantaneu curent al dreptului"
+msgstr ""
+"Raport planificator — zile aprobate în perioadă ÷ instantaneu curent al "
+"dreptului"
 
 msgid "Days used (period)"
 msgstr "Zile utilizate (perioadă)"
@@ -23091,7 +23705,9 @@ msgstr "Ore suplimentare · %(dept)s"
 msgid ""
 "Department totals only. Named rows require the overtime permission and ?"
 "include_names=1."
-msgstr "Doar totaluri pe departament. Rândurile cu nume necesită permisiunea pentru ore suplimentare și ?include_names=1."
+msgstr ""
+"Doar totaluri pe departament. Rândurile cu nume necesită permisiunea pentru "
+"ore suplimentare și ?include_names=1."
 
 msgid "Headcount"
 msgstr "Număr de angajați"
@@ -23213,7 +23829,9 @@ msgstr "Ultimele 6 luni glisante"
 msgid ""
 "Fixed rolling 6-month window — this report ignores the selected start date "
 "so the turnover rate stays comparable between runs."
-msgstr "Fereastră fixă de 6 luni — acest raport ignoră data de început selectată, astfel încât rata de fluctuație să rămână comparabilă între execuții."
+msgstr ""
+"Fereastră fixă de 6 luni — acest raport ignoră data de început selectată, "
+"astfel încât rata de fluctuație să rămână comparabilă între execuții."
 
 msgid "Turnover rate (6m)"
 msgstr "Rata fluctuației (6 luni)"
@@ -23429,7 +24047,8 @@ msgid "Standard Report Layout"
 msgstr "Aspect standard al raportului"
 
 msgid "Marks layouts seeded for standard enterprise reports."
-msgstr "Marchează machetele inițializate pentru rapoartele standard de întreprindere."
+msgstr ""
+"Marchează machetele inițializate pentru rapoartele standard de întreprindere."
 
 msgid "Subscription Name"
 msgstr "Nume abonament"
@@ -23477,7 +24096,9 @@ msgid "Report slug"
 msgstr "Slug raport"
 
 msgid "Leave blank to apply to a whole domain (or all reports)."
-msgstr "Lăsați necompletat pentru a aplica la un întreg domeniu (sau la toate rapoartele)."
+msgstr ""
+"Lăsați necompletat pentru a aplica la un întreg domeniu (sau la toate "
+"rapoartele)."
 
 msgid "Domain"
 msgstr "Domeniu"
@@ -23486,7 +24107,9 @@ msgid "workforce, time_leave, payroll, talent, compliance — or blank."
 msgstr "workforce, time_leave, payroll, talent, compliance — sau necompletat."
 
 msgid "Blank = any authenticated user (still subject to permission)."
-msgstr "Necompletat = orice utilizator autentificat (supus în continuare permisiunilor)."
+msgstr ""
+"Necompletat = orice utilizator autentificat (supus în continuare "
+"permisiunilor)."
 
 msgid "Permission"
 msgstr "Permisiune"
@@ -23512,7 +24135,9 @@ msgid "Key changes: %(changes)s."
 msgstr "Modificări cheie: %(changes)s."
 
 msgid "No material KPI movement versus the comparison period."
-msgstr "Nicio variație semnificativă a indicatorilor cheie față de perioada de comparație."
+msgstr ""
+"Nicio variație semnificativă a indicatorilor cheie față de perioada de "
+"comparație."
 
 #, python-format
 msgid "%(title)s highlights — %(top)s."
@@ -23556,7 +24181,9 @@ msgstr "Contul dumneavoastră nu are o adresă de e-mail pentru export asincron.
 
 msgid ""
 "Too many exports are running right now. Please try again in a few minutes."
-msgstr "În acest moment rulează prea multe exporturi. Încercați din nou peste câteva minute."
+msgstr ""
+"În acest moment rulează prea multe exporturi. Încercați din nou peste câteva "
+"minute."
 
 #, python-format
 msgid "Export started. You will receive an email at %(email)s when ready."
@@ -23567,7 +24194,9 @@ msgstr "Acest raport nu acceptă detalierea (drill-down)."
 
 #, python-format
 msgid "Pin limit reached (%(n)s). Unpin a report first."
-msgstr "Limita de fixare a fost atinsă (%(n)s). Anulați fixarea unui raport mai întâi."
+msgstr ""
+"Limita de fixare a fost atinsă (%(n)s). Anulați fixarea unui raport mai "
+"întâi."
 
 msgid "Preset name is required."
 msgstr "Numele presetării este obligatoriu."
@@ -23624,7 +24253,8 @@ msgid "Trying to connect..."
 msgstr "Se încearcă conectarea..."
 
 msgid "KPIs span all companies you can access"
-msgstr "Indicatorii cheie de performanță acoperă toate companiile la care aveți acces"
+msgstr ""
+"Indicatorii cheie de performanță acoperă toate companiile la care aveți acces"
 
 msgid "Active company scope"
 msgstr "Domeniul companiei active"
@@ -23904,7 +24534,9 @@ msgstr "Acces refuzat!"
 msgid ""
 "Your login credentials are currently blocked. Please contact HR "
 "administrators for assistance."
-msgstr "Datele dumneavoastră de autentificare sunt momentan blocate. Contactați administratorii HR pentru asistență."
+msgstr ""
+"Datele dumneavoastră de autentificare sunt momentan blocate. Contactați "
+"administratorii HR pentru asistență."
 
 msgid "Jan 03, 2023, at 11:13AM"
 msgstr "03 ian. 2023, ora 11:13"
@@ -24055,7 +24687,12 @@ msgid ""
 "webhook calls. Without it Horilla cannot tell a real delivery from a forged "
 "one, so unsigned payloads are rejected. Find it under App Settings > Basic "
 "in the Meta developer console."
-msgstr "Cheia secretă a aplicației Meta, utilizată pentru a verifica antetul X-Hub-Signature-256 la apelurile webhook primite. Fără aceasta, Horilla nu poate distinge o livrare reală de una falsificată, astfel încât conținuturile nesemnate sunt respinse. O găsiți la App Settings > Basic în consola pentru dezvoltatori Meta."
+msgstr ""
+"Cheia secretă a aplicației Meta, utilizată pentru a verifica antetul X-Hub-"
+"Signature-256 la apelurile webhook primite. Fără aceasta, Horilla nu poate "
+"distinge o livrare reală de una falsificată, astfel încât conținuturile "
+"nesemnate sunt respinse. O găsiți la App Settings > Basic în consola pentru "
+"dezvoltatori Meta."
 
 msgid "WhatsApp Integration"
 msgstr "Integrare WhatsApp"
@@ -24081,6 +24718,9 @@ msgstr "Număr de telefon"
 
 msgid "Message templates and flows created successfully."
 msgstr "Șabloanele de mesaje și fluxurile au fost create cu succes."
+
+#~ msgid "Closed Due To"
+#~ msgstr "Suprapunere din cauza"
 
 #, python-brace-format
 #~ msgid "${emp.name}"
@@ -24611,12 +25251,6 @@ msgstr "Șabloanele de mesaje și fluxurile au fost create cu succes."
 
 #~ msgid "To Skill zone"
 #~ msgstr "Către zona de competențe"
-
-#~ msgid "Scheduled From"
-#~ msgstr "Programat de la"
-
-#~ msgid "Scheduled Till"
-#~ msgstr "Programat până la"
 
 #~ msgid "Interview Date From"
 #~ msgstr "Data interviului de la"

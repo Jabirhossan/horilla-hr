@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: horilla-hrms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-10 10:51+0530\n"
+"POT-Creation-Date: 2026-09-14 15:26+0530\n"
 "PO-Revision-Date: 2026-08-04 09:08+0000\n"
 "Last-Translator: \n"
 "Language-Team: French\n"
@@ -329,6 +329,9 @@ msgstr "Demande d'actif non trouvée."
 msgid "Asset request approved successfully!."
 msgstr "Demande d'actif approuvée avec succès!."
 
+msgid "Your asset request approved!"
+msgstr "Votre demande d'actif a été approuvée !"
+
 msgid "Days Left"
 msgstr "Jours restants"
 
@@ -507,6 +510,14 @@ msgstr "Utilisateur requérant"
 
 msgid "Asset Requests"
 msgstr "Requêtes d'actif"
+
+#, python-format
+msgid "The Asset '%(asset_name)s' expires in %(notify_before)s days"
+msgstr "L'actif '%(asset_name)s' expire dans %(notify_before)s jours"
+
+#, python-format
+msgid "The document ' %(title)s ' expires in %(notify_before)s days"
+msgstr "Le document ' %(title)s ' expire dans %(notify_before)s jours"
 
 msgid "Dashboard"
 msgstr "Tableau de bord"
@@ -985,6 +996,9 @@ msgstr "Une erreur est survenue : "
 msgid "Asset request has been rejected."
 msgstr "La demande de bien a été rejetée."
 
+msgid "Your asset request rejected!"
+msgstr "Votre demande d'actif a été rejetée !"
+
 msgid "Asset allocated successfully!."
 msgstr "L'actif a été alloué avec succès!"
 
@@ -994,6 +1008,12 @@ msgstr "Affectation d'actif introuvable."
 #, python-brace-format
 msgid "Return request for {} initiated."
 msgstr "Demande de retour pour {} initiée."
+
+#, python-format
+msgid ""
+"Return request for %(asset_id)s initiated from %(assigned_to_employee_id)s"
+msgstr ""
+"Demande de retour pour %(asset_id)s initiée par %(assigned_to_employee_id)s"
 
 msgid "Asset Returned Successfully..."
 msgstr "L'actif a été retourné avec succès..."
@@ -1153,6 +1173,12 @@ msgstr "Nouvelle demande de présence mise à jour"
 
 msgid "Attendance update request created."
 msgstr "Demande de mise à jour de présence créée."
+
+#, python-format
+msgid ""
+"%(employee_name)s's attendance update request for %(attendance_date)s is "
+"created"
+msgstr "La demande de mise à jour de présence de %(employee_name)s pour le %(attendance_date)s a été créée"
 
 msgid "Validate Attendances"
 msgstr "Valider les présences"
@@ -2920,15 +2946,6 @@ msgstr "Valider la demande de présence"
 msgid "View"
 msgstr "Voir"
 
-msgid "Options"
-msgstr "Options"
-
-msgid "No Records found"
-msgstr "Aucun enregistrement trouvé"
-
-msgid "No records found."
-msgstr "Aucun enregistrement trouvé."
-
 msgid "Add / View Comment"
 msgstr "Ajouter / Voir le commentaire"
 
@@ -3088,11 +3105,24 @@ msgstr "Aucune présence trouvée correspondant à la requête."
 msgid "Attendance request has been approved"
 msgstr "La demande de présence a été approuvée"
 
+#, python-format
+msgid "Your attendance request for %(attendance_date)s is validated"
+msgstr "Votre demande de présence pour le %(attendance_date)s est validée"
+
+#, python-format
+msgid ""
+"%(employee_name)s's attendance request for %(attendance_date)s is validated"
+msgstr "La demande de présence de %(employee_name)s pour le %(attendance_date)s est validée"
+
 msgid "The requested attendance is removed."
 msgstr "La présence demandée est supprimée."
 
 msgid "Attendance request has been rejected"
 msgstr "La demande de présence a été rejetée"
+
+#, python-format
+msgid "Your attendance request for %(attendance_date)s is rejected"
+msgstr "Votre demande de présence pour le %(attendance_date)s est rejetée"
 
 msgid "Attendance request not found"
 msgstr "Demande de présence introuvable"
@@ -3227,6 +3257,10 @@ msgstr ""
 "En attente de mise à jour de la demande de mise à jour de présence de {} sur "
 "{} !"
 
+#, python-format
+msgid "Your attendance for the date %(attendance_date)s is validated"
+msgstr "Votre présence pour la date %(attendance_date)s est validée"
+
 #, python-brace-format
 msgid "{} Attendances validated."
 msgstr "{} Participations validées."
@@ -3238,12 +3272,28 @@ msgstr "Vous ne pouvez pas valider votre propre présence."
 msgid "%(employee)s %(date)s Attendance validated."
 msgstr "%(employee)s %(date)s Présence validée."
 
+#, python-format
+msgid "%(employee)s requested revalidation for %(attendance_date)s attendance"
+msgstr ""
+"%(employee)s a demandé une revalidation de la présence du %(attendance_date)s"
+
 msgid "You cannot approve your own overtime."
 msgstr "Vous ne pouvez pas approuver vos propres heures supplémentaires."
 
 #, python-format
 msgid "%(employee)s's %(date)s overtime approved"
 msgstr "Heures supplémentaires du %(date)s de %(employee)s approuvées"
+
+#, python-format
+msgid "Your %(attendance_date)s's attendance overtime approved."
+msgstr ""
+"Vos heures supplémentaires pour la présence du %(attendance_date)s ont été "
+"approuvées."
+
+#, python-format
+msgid "Overtime approved for %(attendance_date)s's attendance"
+msgstr ""
+"Heures supplémentaires approuvées pour la présence du %(attendance_date)s"
 
 #, python-brace-format
 msgid " {} Overtime approved"
@@ -3293,6 +3343,13 @@ msgstr "Quelque chose s'est mal passé."
 
 msgid "Comment added successfully!"
 msgstr "Commentaire ajouté avec succès !"
+
+#, python-format
+msgid "%(employee)s's attendance request has received a comment."
+msgstr "La demande de présence de %(employee)s a reçu un commentaire."
+
+msgid "Your attendance request has received a comment."
+msgstr "Votre demande de présence a reçu un commentaire."
 
 msgid "No Comment found matching the query."
 msgstr "Aucun commentaire trouvé correspondant à la requête."
@@ -3367,6 +3424,12 @@ msgstr "Vous avez été mentionné dans une annonce."
 msgid "Announcement created successfully."
 msgstr "Annonce créée avec succès."
 
+msgid "Your department was mentioned in a post."
+msgstr "Votre service a été mentionné dans une publication."
+
+msgid "Your job position was mentioned in a post."
+msgstr "Votre poste a été mentionné dans une publication."
+
 msgid "Announcement deleted successfully."
 msgstr "Annonce supprimée avec succès."
 
@@ -3378,6 +3441,10 @@ msgstr "Le fichier a été supprimé avec succès."
 
 msgid "You commented a post."
 msgstr "Vous avez commenté un post."
+
+#, python-format
+msgid "Comment under the announcement %(title)s."
+msgstr "Commentaire sous l'annonce %(title)s."
 
 msgid "Announcement not found."
 msgstr "Annonce introuvable."
@@ -3755,6 +3822,9 @@ msgstr "Rotation de l'attribution de Maj mise à jour avec succès"
 msgid "Rotating Shift Assign Created Successfully"
 msgstr "La rotation de Maj a été créée avec succès"
 
+msgid "You are added to rotating shift"
+msgstr "Vous êtes ajouté au décalage en rotation"
+
 msgid "Rotating Work Type"
 msgstr "Type de travail rotatif"
 
@@ -3775,6 +3845,9 @@ msgstr "Rotation de l'affectation professionnelle mise à jour avec succès"
 
 msgid "Rotating Work Assigned"
 msgstr "Travail en rotation assigné"
+
+msgid "You are added to rotating work type"
+msgstr "Vous avez été ajouté au type de travail en rotation"
 
 msgid "Rotating Work Assign Created"
 msgstr "Travail en rotation assigné à la création"
@@ -3854,8 +3927,23 @@ msgstr "La demande de changement a été mise à jour avec succès"
 msgid "Shift request added Successfully"
 msgstr "La demande de changement a été ajoutée avec succès"
 
+#, python-format
+msgid "You have new shift request to approve for %(employee)s"
+msgstr "Vous avez une nouvelle demande d'équipe à approuver pour %(employee)s"
+
 msgid "Shift Swap Request"
 msgstr "Demande d'échange d'équipe"
+
+#, python-format
+msgid "You have a new shift reallocation request to approve for %(employee)s."
+msgstr ""
+"Vous avez une nouvelle demande de réaffectation d'équipe à approuver pour "
+"%(employee)s."
+
+#, python-format
+msgid "You have a new shift reallocation request from %(employee)s."
+msgstr ""
+"Vous avez une nouvelle demande de réaffectation d'équipe de %(employee)s."
 
 msgid "Work type request"
 msgstr "Demande de type de travail"
@@ -3904,6 +3992,11 @@ msgstr "Demande mise à jour avec succès"
 
 msgid "Work type Request Created"
 msgstr "Demande de type de travail créée"
+
+#, python-format
+msgid "You have new work type request to validate for %(employee)s"
+msgstr ""
+"Vous avez une nouvelle demande de type de travail à valider pour %(employee)s"
 
 msgid "You do not have access to that company."
 msgstr "Vous n'avez pas accès à cette entreprise."
@@ -4604,6 +4697,25 @@ msgstr "Le type de congé est requis"
 
 msgid "Penalty Accounts"
 msgstr "Comptes de pénalité"
+
+msgid "Your Work Type has been changed."
+msgstr "Votre type de travail a été modifié."
+
+msgid "Your shift has been changed."
+msgstr "Votre équipe a été modifiée."
+
+msgid "Shift Changes notification"
+msgstr "Notification de changements d'équipe"
+
+msgid "Shift changes notification, Requested date expired."
+msgstr "Notification de changements d'équipe, la date demandée a expiré."
+
+msgid "Work Type Changes notification"
+msgstr "Notification de changements de type de travail"
+
+msgid "Work type changes notification, Requested date expired."
+msgstr ""
+"Notification de changements de type de travail, la date demandée a expiré."
 
 msgid "General"
 msgstr "Généraux"
@@ -6389,12 +6501,6 @@ msgstr "Votre demande d'actif a été approuvée!."
 msgid "Your asset request rejected!."
 msgstr "Votre demande d'actif a été rejetée!."
 
-msgid "You are added to rotating work type"
-msgstr "Vous avez été ajouté au type de travail en rotation"
-
-msgid "You are added to rotating shift"
-msgstr "Vous êtes ajouté au décalage en rotation"
-
 msgid "Your work type request has been canceled."
 msgstr "Votre demande de type de travail a été annulée."
 
@@ -7772,6 +7878,9 @@ msgstr "Vous n'avez pas la permission"
 msgid "Work type request has been rejected."
 msgstr "La demande de type de travail a été rejetée."
 
+msgid "Your work type request has been rejected."
+msgstr "Votre demande de type de travail a été rejetée."
+
 msgid "No worktype request found matching the query."
 msgstr "Aucune demande de type de travail trouvée correspondant à la requête."
 
@@ -7819,6 +7928,9 @@ msgstr "Impossible de modifier la demande de quart approuvée"
 msgid "Shift request rejected"
 msgstr "Demande de décalage rejetée"
 
+msgid "Your shift request has been rejected."
+msgstr "Votre demande de changement d'équipe a été rejetée."
+
 msgid "No shift request found matching the query."
 msgstr "Aucune demande d'équipe trouvée correspondant à la requête."
 
@@ -7830,6 +7942,10 @@ msgstr "Le décalage a été approuvé."
 
 msgid "You are available for shift reallocation."
 msgstr "Vous êtes disponible pour la réaffectation des équipes."
+
+#, python-format
+msgid "%(employee_get)s is available for shift reallocation."
+msgstr "%(employee_get)s est disponible pour une réaffectation d'équipe."
 
 msgid "Shifts have been approved."
 msgstr "Les changements ont été approuvés."
@@ -7946,11 +8062,26 @@ msgstr "Aucune condition d'approbation multiple ne correspond à la requête."
 msgid "Multiple approval condition deleted successfully"
 msgstr "Condition d'approbation multiple supprimée avec succès"
 
+#, python-format
+msgid "%(employee)s's shift request has received a comment."
+msgstr ""
+"La demande de changement d'équipe de %(employee)s a reçu un commentaire."
+
+msgid "Your shift request has received a comment."
+msgstr "Votre demande de changement d'équipe a reçu un commentaire."
+
 msgid "Invalid Request"
 msgstr "Requête invalide"
 
 msgid "Comment not found."
 msgstr "Commentaire introuvable."
+
+#, python-format
+msgid "%(employee)s's work type request has received a comment."
+msgstr "La demande de type de travail de %(employee)s a reçu un commentaire."
+
+msgid "Your work type request has received a comment."
+msgstr "Votre demande de type de travail a reçu un commentaire."
 
 msgid "Default pagination updated."
 msgstr "Page par défaut mise à jour."
@@ -8693,6 +8824,9 @@ msgstr "Prendre une action"
 msgid "Disciplinary action updated Successfully"
 msgstr "Action disciplinaire mise à jour avec succès"
 
+msgid "Disciplinary action is taken on you."
+msgstr "Une action disciplinaire a été prise à votre encontre."
+
 msgid "Disciplinary action created Successfully"
 msgstr "Action disciplinaire créée avec succès"
 
@@ -8707,6 +8841,10 @@ msgstr "Demande de document mise à jour avec succès"
 
 msgid "Document request created successfully"
 msgstr "Demande de document créée avec succès"
+
+#, python-format
+msgid "%(employee_get)s requested a document."
+msgstr "%(employee_get)s a demandé un document."
 
 #, python-format
 msgid "File type %(ext)s is not allowed."
@@ -8729,6 +8867,10 @@ msgstr "Charger un fichier"
 
 msgid "Document uploaded successfully"
 msgstr "Document téléchargé avec succès"
+
+#, python-format
+msgid "%(employee_get)s uploaded a document"
+msgstr "%(employee_get)s a téléchargé un document"
 
 msgid "Bulk Approve Requests"
 msgstr "Demandes d'approbation en bloc"
@@ -10033,6 +10175,9 @@ msgstr "{employee} est un super-utilisateur et ne peut pas être bloqué."
 msgid "Employee personal information updated."
 msgstr "Les renseignements personnels des employés ont été mis à jour."
 
+msgid "Your work details have been updated."
+msgstr "Vos informations de travail ont été mises à jour."
+
 msgid "Employee work information updated."
 msgstr "Renseignements sur le travail des employés mis à jour."
 
@@ -10346,6 +10491,9 @@ msgstr "Mettre à jour le ticket"
 msgid "The Ticket created successfully."
 msgstr "Ticket créé avec succès."
 
+msgid "You have been assigned to a new Ticket"
+msgstr "Un nouveau ticket vous a été attribué"
+
 msgid "The Ticket updated successfully."
 msgstr "Ticket mis à jour avec succès."
 
@@ -10444,6 +10592,9 @@ msgstr "Créez des étiquettes pour classer les tickets de support."
 
 msgid "Define categories of helpdesk tickets."
 msgstr "Définissez les catégories de tickets de support."
+
+msgid "No records found."
+msgstr "Aucun enregistrement trouvé."
 
 msgid "Claim Requests"
 msgstr "Demandes de réclamation"
@@ -10735,11 +10886,18 @@ msgstr "Ticket archivé avec succès."
 msgid "Invalid request method."
 msgstr "Méthode de requête invalide."
 
+#, python-format
+msgid "The status of the ticket has been changed to %(status)s."
+msgstr "Le statut du ticket a été changé en %(status)s."
+
 msgid "The Ticket status updated successfully."
 msgstr "Le statut du ticket a été mis à jour avec succès."
 
 msgid "You Don't have the permission."
 msgstr "Vous n'avez pas la permission."
+
+msgid "The ticket has been deleted."
+msgstr "Le ticket a été supprimé."
 
 #, python-brace-format
 msgid "The Ticket \"{}\" has been deleted successfully."
@@ -10801,8 +10959,20 @@ msgstr "Le commentaire de {} a été supprimé avec succès."
 msgid "Claim request approved successfully."
 msgstr "Demande de réclamation approuvée avec succès."
 
+#, python-format
+msgid "You have been assigned to a new Ticket-%(ticket)s."
+msgstr "Le ticket-%(ticket)s vous a été attribué."
+
+#, python-format
+msgid "%(employee)s assigned to your ticket - %(ticket)s."
+msgstr "%(employee)s a été affecté à votre ticket - %(ticket)s."
+
 msgid "Claim request rejected successfully."
 msgstr "Demande de réclamation rejetée avec succès."
+
+#, python-format
+msgid "Your claim request is rejected for Ticket-%(ticket)s"
+msgstr "Votre demande de réclamation pour le Ticket-%(ticket)s a été rejetée"
 
 msgid "No Department Manager found matching the query."
 msgstr "Aucun responsable de département trouvé correspondant à la requête."
@@ -11134,6 +11304,21 @@ msgstr "ClaimRequest introuvable"
 
 msgid "DepartmentManager not found"
 msgstr "DepartmentManager introuvable"
+
+#, python-format
+msgid "New leave allocation request created for %(employee)s."
+msgstr "Nouvelle demande d'allocation de congé créée pour %(employee)s."
+
+#, python-format
+msgid "New leave request created for %(employee)s."
+msgstr "Nouvelle demande de congé créée pour %(employee)s."
+
+#, python-format
+msgid "Leave request updated for %(employee)s."
+msgstr "Demande de congé mise à jour pour %(employee)s."
+
+msgid "Your Leave request has been rejected"
+msgstr "Votre demande de congé a été rejetée"
 
 msgid "Nothing to reject."
 msgstr "Rien à rejeter."
@@ -12723,6 +12908,9 @@ msgid "Are you sure you want to delete this assigned leave request?"
 msgstr ""
 "Êtes-vous sûr de vouloir supprimer cette demande de permission assignée ?"
 
+msgid "Options"
+msgstr "Options"
+
 msgid "Do you want to approve this attendance request?"
 msgstr "Voulez-vous approuver cette demande de présence ?"
 
@@ -12909,8 +13097,11 @@ msgstr "avec"
 msgid "Sl No."
 msgstr "N° de Sl"
 
-msgid "Add Candidate"
-msgstr "Ajouter un candidat"
+msgid "No stages found"
+msgstr "Aucune étape trouvée"
+
+msgid "This recruitment has no stages yet."
+msgstr "Ce recrutement n'a pas encore d'étapes."
 
 msgid "Do you want to delete this project?"
 msgstr "Voulez-vous supprimer ce projet ?"
@@ -15069,6 +15260,9 @@ msgstr ""
 "Préfixe ajouté à chaque identifiant de badge employé généré automatiquement "
 "(p. ex. PEP0001)."
 
+msgid "Add Candidate"
+msgstr "Ajouter un candidat"
+
 msgid "Do you want to archive this talent pool?"
 msgstr "Voulez-vous archiver ce vivier de talents ?"
 
@@ -15502,6 +15696,20 @@ msgstr "Effacer le regroupement"
 msgid "Save filter"
 msgstr "Enregistrer le filtre"
 
+msgid "No Records found"
+msgstr "Aucun enregistrement trouvé"
+
+msgid "groups"
+msgstr "Groupes"
+
+#, python-format
+msgid "No %(label)s found"
+msgstr "Aucun(e) %(label)s trouvé(e)"
+
+#, python-format
+msgid "There are no %(label)s to display."
+msgstr "Il n'y a aucun(e) %(label)s à afficher."
+
 msgid "library outline"
 msgstr ""
 
@@ -15656,6 +15864,10 @@ msgstr "Créer une demande d'allocation de congé"
 msgid "Leave allocation request updated"
 msgstr "Demande d'allocation de congés mise à jour"
 
+#, python-format
+msgid "Leave allocation request updated for %(employee)s."
+msgstr "Demande d'allocation de congé mise à jour pour %(employee)s."
+
 msgid "New leave allocation request created"
 msgstr "Nouvelle demande d'allocation de congés créée"
 
@@ -15675,8 +15887,8 @@ msgstr "La demande de départ a été mise à jour avec succès"
 msgid "Leave request created successfully"
 msgstr "Demande de départ créée avec succès"
 
-msgid "Closed Due To"
-msgstr "Classé en raison de"
+msgid "Clashed Due To"
+msgstr "Classé à cause de"
 
 msgid "Deducted FromCFD"
 msgstr "Déduction des CFD"
@@ -16302,9 +16514,6 @@ msgstr "Désélectionner toutes les demandes"
 msgid "Export Requests"
 msgstr "Demandes d'exportation"
 
-msgid "Clashed Due To"
-msgstr "Classé à cause de"
-
 msgid "No clashed requests available for cancelled or rejected leaves."
 msgstr ""
 "Aucune requête en conflit n'est disponible pour les congés annulés ou "
@@ -16560,6 +16769,9 @@ msgstr "Demande de congé introuvable"
 msgid "Leave request rejected successfully.."
 msgstr "La demande de permission a été rejetée avec succès..."
 
+msgid "Your leave request has been rejected."
+msgstr "Votre demande de congé a été rejetée."
+
 msgid "Leave request already rejected."
 msgstr "La demande de permission a déjà été rejetée."
 
@@ -16596,6 +16808,10 @@ msgstr "Certains types de congés ont déjà été assignés à {} employés."
 
 msgid "Available leaves updated successfully..."
 msgstr "Feuilles disponibles mises à jour avec succès..."
+
+#, python-format
+msgid "Your %(leave_type)s leave type updated."
+msgstr "Votre type de congé %(leave_type)s a été mis à jour."
 
 msgid "Assigned leave successfully deleted."
 msgstr "La permission assignée a été supprimée avec succès."
@@ -16688,11 +16904,17 @@ msgstr "Vous ne pouvez pas mettre à jour cette requête..."
 msgid "Leave allocation request approved successfully"
 msgstr "Quitter la demande d'allocation approuvée avec succès"
 
+msgid "Your leave allocation request has been approved"
+msgstr "Votre demande d'allocation de congé a été approuvée"
+
 msgid "The leave allocation request can't be approved"
 msgstr "La demande d'allocation de congés ne peut pas être approuvée"
 
 msgid "Leave allocation request rejected successfully"
 msgstr "Demande d'allocation rejetée avec succès"
+
+msgid "Your leave allocation request has been rejected"
+msgstr "Votre demande d'allocation de congé a été rejetée"
 
 msgid "The leave allocation request can't be rejected"
 msgstr "La demande d'allocation de permission ne peut pas être rejetée"
@@ -16729,6 +16951,21 @@ msgid "You cannot delete leave request with status {}."
 msgstr ""
 "Vous ne pouvez pas supprimer la demande de permission avec le statut {}."
 
+#, python-format
+msgid "%(employee)s's leave request has received a comment."
+msgstr "La demande de congé de %(employee)s a reçu un commentaire."
+
+msgid "Your leave request has received a comment."
+msgstr "Votre demande de congé a reçu un commentaire."
+
+#, python-format
+msgid "%(employee)s's leave allocation request has received a comment."
+msgstr ""
+"La demande d'allocation de congé de %(employee)s a reçu un commentaire."
+
+msgid "Your leave allocation request has received a comment."
+msgstr "Votre demande d'allocation de congé a reçu un commentaire."
+
 msgid "No comment found matching the query."
 msgstr "Aucun commentaire trouvé correspondant à la requête."
 
@@ -16756,6 +16993,9 @@ msgstr "Demande de permission compensatoire supprimée."
 msgid "Compensatory leave request approved."
 msgstr "Demande de congé compensatoire approuvée."
 
+msgid "Your compensatory leave request has been approved"
+msgstr "Votre demande de congé compensatoire a été approuvée"
+
 msgid "The compensatory leave request is not in the 'requested' status."
 msgstr ""
 "La demande de congé compensatoire n'est pas dans le statut \"demandé\"."
@@ -16763,8 +17003,24 @@ msgstr ""
 msgid "Compensatory Leave request rejected."
 msgstr "Demande de congé compensatoire rejetée."
 
+msgid "Your compensatory leave request has been rejected"
+msgstr "Votre demande de congé compensatoire a été rejetée"
+
 msgid "Compensatory leave request not found."
 msgstr "Demande de congé compensatoire introuvable."
+
+#, python-format
+msgid "%(employee)s's Compensatory leave request has received a comment."
+msgstr ""
+"La demande de congé compensatoire de %(employee)s a reçu un commentaire."
+
+msgid "Your compensatory leave request has received a comment."
+msgstr "Votre demande de congé compensatoire a reçu un commentaire."
+
+#, python-format
+msgid "%(employee)s's compensatory leave request has received a comment."
+msgstr ""
+"La demande de congé compensatoire de %(employee)s a reçu un commentaire."
 
 msgid "No interview found matching the query."
 msgstr "Aucun entretien trouvé correspondant à la requête."
@@ -16801,6 +17057,10 @@ msgstr "Employé mis à jour"
 
 msgid "Added Employee"
 msgstr "Employé ajouté"
+
+#, python-format
+msgid "You have been added to the %(stage)s of %(offboarding_id)s"
+msgstr "Vous avez été ajouté(e) à %(stage)s de %(offboarding_id)s"
 
 msgid "Create Offboarding"
 msgstr "Créer une intégration"
@@ -16846,6 +17106,9 @@ msgstr "Gérer l'ordre des étapes"
 
 msgid "Stages"
 msgstr "Étapes"
+
+msgid "Pipeline"
+msgstr "Pipeline"
 
 #, python-format
 msgid ""
@@ -16906,6 +17169,10 @@ msgstr "Attribuer la tâche à"
 msgid "You cannot edit a request that has been rejected/approved"
 msgstr "Vous ne pouvez pas modifier une demande qui a été rejetée/approuvée"
 
+#, python-format
+msgid "%(get_full_name)s requested for resignation."
+msgstr "%(get_full_name)s a demandé sa démission."
+
 msgid "Ongoing"
 msgstr "En cours"
 
@@ -16948,6 +17215,10 @@ msgstr "Todo"
 
 msgid "Stuck"
 msgstr "Bloqué"
+
+#, python-format
+msgid "Offboarding task \"%(title)s\" has been assigned"
+msgstr "La tâche de départ \"%(title)s\" a été assignée"
 
 msgid "Offboarding"
 msgstr "Départ"
@@ -17157,11 +17428,17 @@ msgstr "Êtes-vous sûr de vouloir supprimer cette étape?"
 msgid "Do you want to delete task?"
 msgstr "Voulez-vous supprimer cette tâche ?"
 
+msgid "You are chosen as an offboarding manager"
+msgstr "Vous avez été choisi(e) comme gestionnaire de départ"
+
 msgid "Offboarding deleted"
 msgstr "Désintégration supprimée"
 
 msgid "Stage saved"
 msgstr "Étape enregistrée"
+
+msgid "You are chosen as offboarding stage manager"
+msgstr "Vous avez été choisi(e) comme gestionnaire de l'étape de départ"
 
 msgid "Sequence Updated Successfully"
 msgstr "Séquence mise à jour avec succès"
@@ -17174,6 +17451,9 @@ msgstr "Employé enregistré"
 
 msgid "Offboarding employee deleted"
 msgstr "Employé hors internat supprimé"
+
+msgid "You have been removed from the offboarding"
+msgstr "Vous avez été retiré(e) du départ"
 
 msgid "Employees not found"
 msgstr "Employés introuvables"
@@ -17192,6 +17472,9 @@ msgstr ""
 msgid "Cannot Change Stage"
 msgstr "Impossible de changer l'étape"
 
+msgid "Offboarding stage has been changed"
+msgstr "L'étape de départ a été modifiée"
+
 msgid "stage changed successfully."
 msgstr "étape modifiée avec succès."
 
@@ -17209,6 +17492,9 @@ msgstr "Paramètres requis manquants."
 
 msgid "Task status updated successfully..."
 msgstr "Statut de la tâche mis à jour avec succès..."
+
+msgid "Offboarding Task status has been updated"
+msgstr "Le statut de la tâche de départ a été mis à jour"
 
 msgid "Task status changed successfully."
 msgstr "Le statut de la tâche a été modifié avec succès."
@@ -17248,6 +17534,10 @@ msgstr ""
 #, python-format
 msgid "Resignation request has been %(status)s"
 msgstr "La demande de démission a été %(status)s"
+
+#, python-format
+msgid "Resignation request has been %(get_status_display)s"
+msgstr "La demande de démission a été %(get_status_display)s"
 
 #, python-brace-format
 msgid "Resignation Request setting has been {} successfully."
@@ -17301,6 +17591,9 @@ msgstr "Nouvelle étape créée avec succès"
 msgid "New Task Created Successfully"
 msgstr "Nouvelle tâche créée avec succès"
 
+msgid "You are chosen as an onboarding task manager"
+msgstr "Vous avez été choisi(e) comme gestionnaire des tâches d'intégration"
+
 msgid "Task updated successfully.."
 msgstr "Tâche mise à jour avec succès..."
 
@@ -17321,6 +17614,9 @@ msgstr "Vous n'êtes pas connecté."
 
 msgid "No stage found matching the query."
 msgstr "Aucune étape trouvée correspondant à la requête."
+
+msgid "stages"
+msgstr "étape"
 
 msgid "Stage Updated"
 msgstr "Phase mise à jour"
@@ -17432,6 +17728,18 @@ msgstr "Envoyer le lien du portail / Déclencher l'intégration"
 
 msgid "Send Portal Link"
 msgstr "Envoyer le lien du portail"
+
+msgid "Probation End From"
+msgstr "Fin de la période d'essai à partir de"
+
+msgid "Probation End Till"
+msgstr "Fin de la période d'essai jusqu'à"
+
+msgid "Scheduled From"
+msgstr "Planifié à partir de"
+
+msgid "Scheduled Till"
+msgstr "Till programmé"
 
 msgid "Is closed"
 msgstr "Est fermé"
@@ -17722,11 +18030,24 @@ msgstr "Portail d'intégration introuvable."
 msgid "Employee bank details created successfully.."
 msgstr "Les coordonnées bancaires des employés ont été créées avec succès."
 
+#, python-format
+msgid ""
+"The task %(onboarding_task_id)s of %(candidate_id)s was updated to "
+"%(status)s."
+msgstr ""
+"La tâche %(onboarding_task_id)s de %(candidate_id)s a été mise à jour vers "
+"%(status)s."
+
 msgid "Candidate onboarding task updated"
 msgstr "Tâche d'intégration du candidat mise à jour"
 
 msgid "Object not found."
 msgstr "Objet introuvable."
+
+#, python-format
+msgid "The stage of %(candidate_id)s was updated to %(onboarding_stage_id)s."
+msgstr ""
+"L'étape de %(candidate_id)s a été mise à jour vers %(onboarding_stage_id)s."
 
 msgid "Candidate onboarding stage updated"
 msgstr "L'étape d'intégration des candidats a été mise à jour"
@@ -17981,6 +18302,9 @@ msgstr "Créer un bulletin de paie"
 msgid "Payslip Saved"
 msgstr "Fiche de paie enregistrée"
 
+msgid "Payslip has been generated for you."
+msgstr "Votre fiche de paie a été générée."
+
 msgid "Payroll"
 msgstr "Frais de personnel"
 
@@ -18141,6 +18465,12 @@ msgstr "Pas assez de jours de transfert pour racheter"
 
 msgid "Not enough available days to redeem"
 msgstr "Pas assez de jours disponibles pour racheter"
+
+#, python-format
+msgid "You have a new reimbursement request to approve for %(employee)s."
+msgstr ""
+"Vous avez une nouvelle demande de remboursement à approuver pour "
+"%(employee)s."
 
 msgid "Tax code is empty."
 msgstr "Le code fiscal est vide."
@@ -18703,7 +19033,7 @@ msgid "There are currently no loans to consider."
 msgstr "Il n'y a actuellement aucun prêt à envisager."
 
 msgid "donation box"
-msgstr ""
+msgstr "boîte de dons"
 
 msgid "View Payslips"
 msgstr "Voir les bulletins de paie"
@@ -18924,8 +19254,17 @@ msgstr "Remboursement enregistré avec succès"
 msgid "Please check the data you provided."
 msgstr "Veuillez vérifier les données que vous avez fournies."
 
+msgid "Your reimbursement request has been rejected."
+msgstr "Votre demande de remboursement a été rejetée."
+
+msgid "Your reimbursement request has been approved."
+msgstr "Votre demande de remboursement a été approuvée."
+
 msgid "Reimbursements deleted"
 msgstr "Remboursements supprimés"
+
+msgid "Your reimbursement request has been deleted."
+msgstr "Votre demande de remboursement a été supprimée."
 
 msgid "Reimbursement request not found."
 msgstr "Demande de remboursement introuvable."
@@ -19041,6 +19380,13 @@ msgstr "{name} a été supprimé(e)."
 msgid "You cannot delete {contract}"
 msgstr "Vous ne pouvez pas supprimer {contract}"
 
+#, python-format
+msgid "%(employee)s's reimbursement request has received a comment."
+msgstr "La demande de remboursement de %(employee)s a reçu un commentaire."
+
+msgid "Your reimbursement request has received a comment."
+msgstr "Votre demande de remboursement a reçu un commentaire."
+
 msgid "No file IDs provided for deletion."
 msgstr "Aucun identifiant de fichier fourni pour la suppression."
 
@@ -19124,6 +19470,9 @@ msgstr "Le commentaire a été mis à jour avec succès"
 msgid "Feedback Created Successfully"
 msgstr "Le commentaire a été créé avec succès"
 
+msgid "You received anonymous feedback!"
+msgstr "Vous avez reçu des commentaires anonymes !"
+
 msgid "Update Feedback"
 msgstr "Mettre à jour les commentaires"
 
@@ -19159,6 +19508,19 @@ msgstr "Mettre à jour la réunion"
 
 msgid "Meeting added successfully"
 msgstr "Réunion ajoutée avec succès"
+
+#, python-format
+msgid "You have been added as a manager for the meeting %(title)s"
+msgstr "Vous avez été ajouté(e) comme gestionnaire de la réunion %(title)s"
+
+#, python-format
+msgid "You have been added to the meeting %(title)s"
+msgstr "Vous avez été ajouté(e) à la réunion %(title)s"
+
+#, python-format
+msgid "You have been added as an answerable employee for the meeting %(title)s"
+msgstr ""
+"Vous avez été ajouté(e) comme employé(e) responsable de la réunion %(title)s"
 
 msgid "Add Response"
 msgstr "Ajouter une réponse"
@@ -19211,6 +19573,9 @@ msgstr "Objectif mis à jour avec succès"
 msgid "Update Objective"
 msgstr "Mettre à jour l'objectif"
 
+msgid "You got an OKR!"
+msgstr "Vous avez obtenu un OKR !"
+
 msgid "Create Objective Template"
 msgstr "Créer un modèle d'objectif"
 
@@ -19238,8 +19603,14 @@ msgstr "Objectif de l'employé introuvable."
 msgid "Key result updated sucessfully."
 msgstr "Résultat de la clé mis à jour avec succès."
 
+msgid "Your Key Result updated."
+msgstr "Votre résultat clé a été mis à jour."
+
 msgid "Key result assigned sucessfully."
 msgstr "Résultat de la clé assigné avec succès."
+
+msgid "You got a Key Result!"
+msgstr "Vous avez obtenu un résultat clé !"
 
 msgid "Are you sure you want to delete\tthis Key result?"
 msgstr "Êtes-vous sûr de vouloir supprimer le résultat de cette clé?"
@@ -19967,6 +20338,12 @@ msgstr ""
 msgid "Objective deleted successfully!."
 msgstr "Objectif supprimé avec succès !"
 
+#, python-format
+msgid ""
+"The status of the objective '%(objective_id)s' has been changed to "
+"%(status)s."
+msgstr "Le statut de l'objectif '%(objective_id)s' a été changé en %(status)s."
+
 msgid "The status of the objective is the same as selected."
 msgstr "Le statut de l'objectif est le même que celui sélectionné."
 
@@ -19981,6 +20358,9 @@ msgstr "Résultats clés créés"
 
 msgid "Key result updated"
 msgstr "Résultat de la clé mis à jour"
+
+msgid "You have been requested to provide feedback!"
+msgstr "On vous a demandé de fournir vos commentaires !"
 
 msgid "Feedback created successfully."
 msgstr "Commentaire créé avec succès."
@@ -20486,6 +20866,13 @@ msgstr "Détails de la feuille de temps"
 msgid "Project updated"
 msgstr "Projet mis à jour"
 
+#, python-format
+msgid ""
+"The status of the project '%(project)s' has been changed to "
+"%(get_status_display)s."
+msgstr ""
+"Le statut du projet '%(project)s' a été changé en %(get_status_display)s."
+
 msgid "Invalid status or missing data."
 msgstr "Statut invalide ou données manquantes."
 
@@ -20705,6 +21092,14 @@ msgstr "Heure de l'entrevue"
 msgid "Is Interview Completed"
 msgstr "Interview terminée"
 
+#, python-format
+msgid ""
+"You are scheduled as an interviewer for an interview with %(name)s on "
+"%(interview_date)s at %(interview_time)s."
+msgstr ""
+"Vous êtes programmé(e) comme intervieweur(euse) pour un entretien avec "
+"%(name)s le %(interview_date)s à %(interview_time)s."
+
 msgid "Interview Updated Successfully"
 msgstr "Interview mise à jour avec succès"
 
@@ -20722,9 +21117,6 @@ msgstr "Aucun recrutement trouvé correspondant à la requête."
 
 msgid "Reject Candidate"
 msgstr "Rejeter le candidat"
-
-msgid "Pipeline"
-msgstr "Pipeline"
 
 msgid "Survey Questions"
 msgstr "Questions du sondage"
@@ -20833,6 +21225,14 @@ msgstr "Étape mise à jour"
 
 msgid "Stage added"
 msgstr "Étape ajoutée"
+
+#, python-format
+msgid ""
+"Stage %(stage_obj)s is updated on recruitment %(recruitment_id)s. You are "
+"chosen as one of the managers."
+msgstr ""
+"L'étape %(stage_obj)s du recrutement %(recruitment_id)s a été mise à jour. "
+"Vous avez été choisi(e) comme l'un des gestionnaires."
 
 msgid "LinkedIn Accounts"
 msgstr "Comptes LinkedIn"
@@ -20970,6 +21370,12 @@ msgstr "Logiciel à l'intérieur"
 
 msgid "Converted"
 msgstr "Converti"
+
+msgid "Not sent"
+msgstr "Non envoyé"
+
+msgid "Onboarding not started yet"
+msgstr "L'intégration n'a pas encore commencé"
 
 msgid "Employee is uniques for candidate"
 msgstr "L'employé est unique pour le candidat"
@@ -21327,6 +21733,9 @@ msgstr "Envoyer un mail à plusieurs candidats"
 msgid "Congrats..."
 msgstr "Félicitations..."
 
+msgid "Unable to load preview"
+msgstr "Impossible de charger l'aperçu"
+
 msgid "Example: Candidate asked to reschedule interview to Friday."
 msgstr "Exemple : le candidat a demandé de reporter l'entretien à vendredi."
 
@@ -21648,8 +22057,20 @@ msgstr "Recrutement ajouté."
 msgid "Recruitment manager removed successfully."
 msgstr "Gestionnaire de recrutement supprimé avec succès."
 
+#, python-format
+msgid "You are removed from recruitment manager from %(recruitment_obj)s"
+msgstr ""
+"Vous avez été retiré(e) des gestionnaires de recrutement de "
+"%(recruitment_obj)s"
+
 msgid "Recruitment Updated."
 msgstr "Recrutement mis à jour."
+
+#, python-format
+msgid "%(recruitment_obj)s is updated. You are chosen as one of the managers."
+msgstr ""
+"%(recruitment_obj)s a été mis à jour. Vous avez été choisi(e) comme l'un des "
+"gestionnaires."
 
 msgid "Recruitment deleted successfully."
 msgstr "Recrutement supprimé avec succès."
@@ -21657,17 +22078,44 @@ msgstr "Recrutement supprimé avec succès."
 msgid "You cannot delete this recruitment"
 msgstr "Vous ne pouvez pas supprimer ce recrutement"
 
+#, python-format
+msgid ""
+"You are chosen as recruitment manager for the recruitment %(recruitment_obj)s"
+msgstr ""
+"Vous avez été choisi(e) comme gestionnaire de recrutement pour le "
+"recrutement %(recruitment_obj)s"
+
+#, python-format
+msgid "New candidate arrived on stage %(stage)s"
+msgstr "Un nouveau candidat est arrivé à l'étape %(stage)s"
+
 msgid "Candidate added."
 msgstr "Candidat ajouté."
 
 msgid "Stage added."
 msgstr "Étape ajoutée."
 
+#, python-format
+msgid ""
+"You are chosen as a stage manager on the stage %(stage)s in recruitment "
+"%(recruitment_id)s"
+msgstr ""
+"Vous avez été choisi(e) comme gestionnaire d'étape sur l'étape %(stage)s du "
+"recrutement %(recruitment_id)s"
+
 msgid "You don't have access"
 msgstr "Vous n'avez pas accès"
 
 msgid "Stage updated."
 msgstr "Phase mise à jour."
+
+#, python-format
+msgid ""
+"%(stage)s stage in recruitment %(recruitment_id)s is updated. You are chosen "
+"as one of the managers."
+msgstr ""
+"L'étape %(stage)s du recrutement %(recruitment_id)s a été mise à jour. Vous "
+"avez été choisi(e) comme l'un des gestionnaires."
 
 msgid "Recruitment updated."
 msgstr "Recrutement mis à jour."
@@ -21692,6 +22140,11 @@ msgstr "Note supprimée"
 
 msgid "You cannot delete this note."
 msgstr "Vous ne pouvez pas supprimer cette note."
+
+#, python-format
+msgid "You are removed from stage managers from stage %(stage_obj)s"
+msgstr ""
+"Vous avez été retiré(e) des gestionnaires d'étape de l'étape %(stage_obj)s"
 
 msgid "Stage manager removed successfully."
 msgstr "Gestionnaire d'étape supprimé avec succès."
@@ -22008,6 +22461,10 @@ msgstr "Compétence créée avec succès"
 msgid "%(title)s is deleted."
 msgstr "%(title)s est supprimé."
 
+#, python-format
+msgid "%(label)s has added a note on the candidate %(candidate)s"
+msgstr "%(label)s a ajouté une note sur le candidat %(candidate)s"
+
 msgid "Candidate rejection deleted successfully"
 msgstr "Le rejet du candidat a été supprimé avec succès"
 
@@ -22202,9 +22659,6 @@ msgstr "Candidature"
 
 msgid "Software"
 msgstr "Logiciel"
-
-msgid "Not sent"
-msgstr "Non envoyé"
 
 msgid "Review ongoing"
 msgstr "Examen en cours"
@@ -24406,6 +24860,9 @@ msgstr "Numéro de téléphone"
 msgid "Message templates and flows created successfully."
 msgstr "Modèles de messages et flux créés avec succès."
 
+#~ msgid "Closed Due To"
+#~ msgstr "Classé en raison de"
+
 #~ msgid "Clear it"
 #~ msgstr "Nettoyer"
 
@@ -24872,12 +25329,6 @@ msgstr "Modèles de messages et flux créés avec succès."
 
 #~ msgid "To Skill zone"
 #~ msgstr "Vers la zone de compétence"
-
-#~ msgid "Scheduled From"
-#~ msgstr "Planifié à partir de"
-
-#~ msgid "Scheduled Till"
-#~ msgstr "Till programmé"
 
 #~ msgid "Interview Date From"
 #~ msgstr "Date d'entretien à partir de"
