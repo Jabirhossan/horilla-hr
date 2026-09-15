@@ -1229,7 +1229,7 @@ def create_payslip(request, new_post_data=None):
                 return HorillaRedirect(
                     request,
                     redirect_to=reverse(
-                        "view-payslip", kwargs={"payslip_id": payslip.pk}
+                        "view-created-payslip", kwargs={"payslip_id": payslip.pk}
                     ),
                 )
     return render(
@@ -1659,7 +1659,7 @@ def add_bonus(request):
                     return HorillaRedirect(
                         request,
                         redirect_to=reverse(
-                            "view-payslip", kwargs={"payslip_id": payslip.id}
+                            "view-created-payslip", kwargs={"payslip_id": payslip.id}
                         ),
                     )
                 else:
@@ -1722,7 +1722,9 @@ def add_deduction(request):
 
             return HorillaRedirect(
                 request,
-                redirect_to=reverse("view-payslip", kwargs={"payslip_id": payslip.id}),
+                redirect_to=reverse(
+                    "view-created-payslip", kwargs={"payslip_id": payslip.id}
+                ),
             )
 
     else:
