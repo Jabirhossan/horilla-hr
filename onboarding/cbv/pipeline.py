@@ -228,6 +228,12 @@ class RecruitmentCandidateNav(HorillaNavView):
     apply_first_filter = True
     template_name = "generic/inline_nav.html"
     nav_title = _("Pipeline")
+    # Modern slide-over filter panel (generic/inline_nav.html's own
+    # {% if modern_filter %} branch) -- same treatment as the page-level
+    # PipelineNav/filters.html and the sibling recruitment/offboarding
+    # per-tab panels. PipelineCandidateFilter is now a HorillaFilterSet
+    # subclass so it gets the Advanced "+ Add filter" builder too.
+    modern_filter = True
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)

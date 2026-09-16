@@ -2,8 +2,9 @@
 {% load static %}
 
 <div class="oh-dropdown__filter-body">
-    <div class="oh-accordion">
+    <div class="oh-accordion{% if modern_filter %} oh-accordion--show{% endif %}">
         <div class="oh-accordion-header">
+            <span class="oh-filter-section-icon"><ion-icon name="people-outline"></ion-icon></span>
             {% trans 'Candidate' %}
         </div>
         <div class="oh-accordion-body">
@@ -47,8 +48,9 @@
             </div>
         </div>
     </div>
-    <div class="oh-accordion">
+    <div class="oh-accordion{% if modern_filter %} oh-accordion--show{% endif %}">
         <div class="oh-accordion-header">
+            <span class="oh-filter-section-icon"><ion-icon name="calendar-outline"></ion-icon></span>
             {% trans 'Interview' %}
         </div>
         <div class="oh-accordion-body">
@@ -68,4 +70,38 @@
             </div>
         </div>
     </div>
+    <div class="oh-accordion{% if modern_filter %} oh-accordion--show{% endif %}">
+        <div class="oh-accordion-header"
+            onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');"
+        >
+            <span class="oh-filter-section-icon"><ion-icon name="options-outline"></ion-icon></span>
+            {% trans "Advanced" %}
+        </div>
+        <div class="oh-accordion-body">
+            <!-- Registry: PipelineCandidateFilter._build_custom_filter_fields
+                 (onboarding/filters.py); applied server-side by
+                 HorillaFilterSet._apply_custom_filters. Row markup/JS are
+                 generic (initCustomFilterBuilder, horilla_nav.html); context
+                 wiring in HorillaNavView.get_context_data via this Nav's own
+                 filter_instance (single-filterset Nav, same as
+                 recruitment.cbv.pipeline.RecruitmentCandidateNav). -->
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <div class="oh-input-group">
+                        <div id="customFilterRowsContainer-onboarding-candidate-tab" class="oh-custom-filter-rows"></div>
+                        <button
+                            type="button"
+                            class="oh-custom-filter-add"
+                            onclick="addCustomFilterRow('onboarding-candidate-tab')"
+                        >+ {% trans "Add filter" %}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+{{ custom_filter_fields|json_script:"customFilterFields-onboarding-candidate-tab" }}
+{{ custom_filter_rows|json_script:"customFilterRows-onboarding-candidate-tab" }}
+<script>
+    initCustomFilterBuilder('onboarding-candidate-tab');
+</script>
