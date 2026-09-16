@@ -11,8 +11,6 @@ if apps.is_installed("recruitment"):
     from base.methods import has_export_access
     from base.models import Company
     from horilla.decorators import login_required, permission_required
-    from onboarding.filters import OnboardingStageFilter
-    from onboarding.models import OnboardingStage
     from recruitment.filters import CandidateFilter, RecruitmentFilter
     from recruitment.models import Candidate, Recruitment
     from report.dynamic_filter_utils import (
@@ -344,7 +342,8 @@ if apps.is_installed("recruitment"):
             qs = Candidate.objects.all()
         elif model_type == "recruitment":
             qs = Recruitment.objects.all()
-        elif model_type == "onboarding":
+        elif model_type == "onboarding" and apps.is_installed("onboarding"):
+            OnboardingStage = apps.get_model("onboarding", "OnboardingStage")
             qs = OnboardingStage.objects.all()
         else:
             return JsonResponse({"options": []})
@@ -383,6 +382,11 @@ if apps.is_installed("recruitment"):
         selected_company = request.session.get("selected_company")
         if selected_company != "all":
             company = Company.objects.filter(id=selected_company).first()
+        if apps.is_installed("onboarding"):
+            OnboardingStage = apps.get_model("onboarding", "OnboardingStage")
+            onboarding_export_access = has_export_access(request, OnboardingStage)
+        else:
+            onboarding_export_access = False
         return render(
             request,
             "report/recruitment_report.html",
@@ -390,11 +394,10 @@ if apps.is_installed("recruitment"):
                 "company": company,
                 "f": CandidateFilter(),
                 "fr": RecruitmentFilter(),
-                "fo": OnboardingStageFilter(),
                 "export_access_map": {
                     "candidate": has_export_access(request, Candidate),
                     "recruitment": has_export_access(request, Recruitment),
-                    "onboarding": has_export_access(request, OnboardingStage),
+                    "onboarding": onboarding_export_access,
                 },
             },
         )
@@ -514,7 +517,10 @@ if apps.is_installed("recruitment"):
                 }
                 for item in data
             ]
-        elif model_type == "onboarding":
+        elif model_type == "onboarding" and apps.is_installed("onboarding"):
+            from onboarding.filters import OnboardingStageFilter
+
+            OnboardingStage = apps.get_model("onboarding", "OnboardingStage")
             qs = OnboardingStage.objects.all()
             filter_obj = OnboardingStageFilter(request.GET, queryset=qs)
             qs = filter_obj.qs
