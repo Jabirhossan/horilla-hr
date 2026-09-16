@@ -6,6 +6,9 @@
     <div hx-get="{% url 'assigned-leave-nav' %}" hx-trigger="load"></div>
 
     {% include "generic/components.html" %}
+    <div class="oh-activity-sidebar pb-5" id="leaveLedgerSidebar" style="z-index: 1000;">
+        <div class="oh-activity-sidebar__body h-full" id="leaveLedgerContainer"></div>
+    </div>
     <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none">
     </div>
 

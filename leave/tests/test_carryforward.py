@@ -33,7 +33,7 @@ class AvailableLeaveCarryforwardTests(TestCase):
         self.assertEqual(avail.carryforward_days, 5)
         self.assertEqual(avail.available_days, 12)
 
-    def test_no_carryforward_resets_available_only(self):
+    def test_no_carryforward_clears_stale_balance(self):
         lt = self.LeaveType.objects.create(
             name="Sick No Carry",
             total_days=8,
@@ -44,11 +44,14 @@ class AvailableLeaveCarryforwardTests(TestCase):
             employee_id=self.employee,
             leave_type_id=lt,
             available_days=2,
+            # Simulates a balance left over from before the policy was
+            # switched to "no carryforward" -- update_carryforward() must
+            # not let this survive the reset.
             carryforward_days=4,
             total_leave_days=6,
         )
         avail.update_carryforward()
-        self.assertEqual(avail.carryforward_days, 4)
+        self.assertEqual(avail.carryforward_days, 0)
         self.assertEqual(avail.available_days, 8)
 
     def test_pre_save_processing_totals(self):

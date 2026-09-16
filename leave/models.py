@@ -411,7 +411,13 @@ class LeaveType(HorillaModel):
                 ).date()
 
         elif self.reset_based == "weekly":
-            target_weekday = WEEK_DAYS[self.reset_day]
+            # reset_weekend (not reset_day, which is day-of-month for
+            # monthly/custom resets) holds the target weekday, already
+            # "0"-"6" matching date.weekday()'s own Monday=0..Sunday=6
+            # numbering -- no WEEK_DAYS choices lookup needed. Mirrors
+            # set_reset_date()'s weekly branch, which already reads this
+            # field correctly.
+            target_weekday = int(self.reset_weekend)
             days_until_reset = (target_weekday - today.weekday()) % 7 or 7
             reset_date = today + timedelta(days=days_until_reset)
 
@@ -719,6 +725,13 @@ class AvailableLeave(HorillaModel):
                 self.carryforward_days = self.total_leave_days
             else:
                 self.carryforward_days = self.leave_type_id.carryforward_max
+        else:
+            # Otherwise a stale carryforward_days value (e.g. left over
+            # from before the policy was switched to "no carryforward")
+            # would survive every future reset -- same "no carryforward"
+            # semantics already used for balance validation, see the local
+            # (non-persisted) computation in LeaveRequest's clean().
+            self.carryforward_days = 0
         self.available_days = self.leave_type_id.total_days
 
     # Setting the reset date for carryforward leaves
@@ -792,6 +805,237 @@ class AvailableLeave(HorillaModel):
         ).aggregate(total_sum=Sum("requested_days"))
 
         return leave_taken["total_sum"] if leave_taken["total_sum"] else 0
+
+    def build_ledger(self):
+        """
+        Chronological running-balance ledger combining this AvailableLeave's
+        own history (assignment, reset, carryforward expiry, manual edits,
+        and any approval that itself decremented available_days/
+        carryforward_days -- every one of them ends in a `.save()`, so
+        every real balance change already has a history row) with every
+        approved LeaveRequest taken against it.
+
+        A given approved LeaveRequest is represented exactly once: if its
+        approval already shows up as a matching negative delta in this
+        history (matched by date -- see approved_by_date below), that
+        delta's row is labeled from the request instead of a generic
+        "Balance updated", and the request is *not* added again (adding it
+        separately would double-count the same deduction, since some
+        approval code paths -- LeaveRequest.no_approval(), the
+        compensatory-leave paths -- already decrement the balance and
+        save() before this method ever runs). If the approval never
+        touched this AvailableLeave's own fields at all (a LeaveRequest
+        created/approved through some other path -- bulk import, admin
+        edit, demo fixtures -- that never called those methods), it gets
+        its own debit row instead, dated by when it was actually approved,
+        so it isn't silently invisible just because the balance field
+        itself was never adjusted. In that case the running balance will
+        not equal the live available_days + carryforward_days -- that's
+        the underlying data being genuinely inconsistent (approved leave
+        that was never deducted), not a bug in this method.
+
+        Returns a list of dicts: {date, label, credit, debit, balance},
+        newest first (matching how the ledger sidebar displays it).
+        """
+        history_rows = list(self.history.order_by("history_date"))
+        if not history_rows:
+            return []
+
+        def as_date(value):
+            # assigned_date is a DateField, but its default (timezone.now)
+            # can leave the in-memory attribute holding a full tz-aware
+            # datetime until the instance round-trips through the DB --
+            # normalize so it never breaks the date-only sort below.
+            return (
+                value.date()
+                if hasattr(value, "date") and callable(value.date)
+                else value
+            )
+
+        # For labeling debits only (see docstring). Keyed by the date the
+        # request's OWN history shows it actually became "approved" -- not
+        # start_date, since a leave is very commonly approved on a
+        # different day than the leave itself falls on (e.g. approved
+        # today for a request starting next week). The approval save() and
+        # this AvailableLeave's own save() happen together, so their dates
+        # line up; start_date and the save date generally do not.
+        approved_by_date = {}
+        for request in LeaveRequest.objects.filter(
+            leave_type_id=self.leave_type_id,
+            employee_id=self.employee_id,
+            start_date__gte=self.assigned_date,
+            status="approved",
+        ):
+            approved_snapshot = (
+                request.history.filter(status="approved")
+                .order_by("history_date")
+                .first()
+            )
+            approval_date = (
+                approved_snapshot.history_date.date()
+                if approved_snapshot
+                else request.start_date
+            )
+            approved_by_date.setdefault(approval_date, []).append(request)
+
+        entries = []
+        first = history_rows[0]
+        # Split out any starting carryforward as its own row instead of
+        # lumping it into "Initial assignment" -- otherwise, for an
+        # AvailableLeave created with a pre-existing carryforward balance
+        # (e.g. imported from an older system, or backdated data), that
+        # portion is invisible; every later change already gets its own
+        # distinctly-labeled row, so the opening balance should too.
+        opening_available = round(first.available_days or 0, 2)
+        opening_carryforward = round(first.carryforward_days or 0, 2)
+        if opening_available:
+            entries.append(
+                {
+                    "date": as_date(self.assigned_date),
+                    "label": _("Initial assignment"),
+                    "credit": opening_available,
+                    "debit": 0,
+                    "carryforward_amount": 0,
+                }
+            )
+        if opening_carryforward:
+            entries.append(
+                {
+                    "date": as_date(self.assigned_date),
+                    "label": _("Initial carryforward"),
+                    "credit": opening_carryforward,
+                    "debit": 0,
+                    "carryforward_amount": 0,
+                }
+            )
+        for previous, current in zip(history_rows, history_rows[1:]):
+            # Round before comparing to zero and before display -- adding
+            # two independently-stored floats (e.g. 3.9 + 2.7) routinely
+            # reintroduces binary floating-point noise past the 2nd
+            # decimal (6.6 becomes 6.6000000000000005), which would both
+            # show ugly long decimals AND, worse, create a spurious
+            # near-zero "phantom" row if left unrounded before this check.
+            delta = round(
+                ((current.available_days or 0) + (current.carryforward_days or 0))
+                - ((previous.available_days or 0) + (previous.carryforward_days or 0)),
+                2,
+            )
+            if delta == 0:
+                continue
+            entry_date = current.history_date.date()
+            if delta > 0:
+                entries.append(
+                    {
+                        "date": entry_date,
+                        "label": current.history_change_reason or _("Balance updated"),
+                        "credit": delta,
+                        "debit": 0,
+                        "carryforward_amount": 0,
+                    }
+                )
+            else:
+                label = current.history_change_reason
+                if not label:
+                    matches = approved_by_date.get(entry_date)
+                    carryforward_amount = 0
+                    if matches:
+                        request = matches.pop(0)
+                        label = _("Leave taken (%(start)s - %(end)s)") % {
+                            "start": request.start_date,
+                            "end": request.end_date or request.start_date,
+                        }
+                        carryforward_amount = round(
+                            request.approved_carryforward_days or 0, 2
+                        )
+                    else:
+                        label = _("Balance updated")
+                else:
+                    carryforward_amount = 0
+                entries.append(
+                    {
+                        "date": entry_date,
+                        "label": label,
+                        "credit": 0,
+                        "debit": -delta,
+                        "carryforward_amount": carryforward_amount,
+                    }
+                )
+
+        # Any request left in approved_by_date was never claimed above --
+        # its approval never actually decremented available_days/
+        # carryforward_days (see docstring), so it would otherwise be
+        # completely invisible here despite being "taken". Give it its own
+        # row rather than silently dropping it.
+        for unclaimed_requests in approved_by_date.values():
+            for request in unclaimed_requests:
+                entries.append(
+                    {
+                        "date": request.start_date,
+                        "label": _("Leave taken (%(start)s - %(end)s)")
+                        % {
+                            "start": request.start_date,
+                            "end": request.end_date or request.start_date,
+                        },
+                        "credit": 0,
+                        "debit": round(request.requested_days or 0, 2),
+                        "carryforward_amount": round(
+                            request.approved_carryforward_days or 0, 2
+                        ),
+                    }
+                )
+
+        # Unclaimed-request rows appended above aren't necessarily in
+        # order relative to the history-derived rows already collected --
+        # re-sort chronologically (stable, so same-day ties keep the order
+        # they were appended in) before accumulating the running balance.
+        entries.sort(key=lambda entry: entry["date"])
+
+        balance = 0
+        ledger = []
+        for entry in entries:
+            balance = round(balance + entry["credit"] - entry["debit"], 2)
+            ledger.append({**entry, "balance": balance})
+        # The running balance must be accumulated oldest-to-newest (each
+        # row depends on the one before it) -- reverse only the final,
+        # already-computed list so callers see newest first.
+        ledger.reverse()
+        return ledger
+
+    def forecast_next_reset(self):
+        """
+        Preview of the next reset, if one is scheduled -- computed the
+        same way update_carryforward() would, but without saving anything
+        or waiting for the scheduler to actually run it. Returns None if
+        this leave type doesn't reset, or no reset_date is set.
+        """
+        if not self.leave_type_id.reset or not self.reset_date:
+            return None
+
+        current_total = round(
+            (self.available_days or 0) + (self.carryforward_days or 0), 2
+        )
+        if self.leave_type_id.carryforward_type != "no carryforward":
+            forecasted_carryforward = min(
+                current_total, self.leave_type_id.carryforward_max or 0
+            )
+        else:
+            forecasted_carryforward = 0
+        forecasted_available = self.leave_type_id.total_days or 0
+        forecasted_total = round(forecasted_available + forecasted_carryforward, 2)
+
+        reset_date = self.reset_date
+        if hasattr(reset_date, "date") and callable(reset_date.date):
+            # Same DateField-holding-a-raw-datetime quirk as assigned_date
+            # in build_ledger() -- reset_date is auto-computed at save()
+            # time and can still be a full datetime in memory until the
+            # instance round-trips through the DB.
+            reset_date = reset_date.date()
+
+        return {
+            "date": reset_date,
+            "credit": round(forecasted_total - current_total, 2),
+            "balance": forecasted_total,
+        }
 
     # Setting the expiration date for carryforward leaves
     def set_expired_date(self, available_leave, assigned_date):

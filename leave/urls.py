@@ -241,6 +241,11 @@ urlpatterns = [
         views.available_leave_update,
         name="available-leave-update",
     ),
+    path(
+        "leave-balance-ledger/<int:pk>/",
+        views.leave_balance_ledger,
+        name="leave-balance-ledger",
+    ),
     # path("available-leave-update/<int:pk>",assigned_leave.AssignedLeaveFormView.as_view(),name="available-leave-update"),
     path(
         "assign-delete/<int:obj_id>/", views.leave_assign_delete, name="assign-delete"

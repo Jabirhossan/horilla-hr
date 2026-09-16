@@ -5832,3 +5832,25 @@ def leave_type_condition_delete(request, leave_type_id, condition_id):
             "condition_form": LeaveTypeConditionForm(),
         },
     )
+
+
+@login_required
+@hx_request_required
+@permission_required("leave.view_availableleave")
+def leave_balance_ledger(request, pk):
+    """
+    Renders the leave balance ledger sidebar for one AvailableLeave: a
+    chronological running-balance table combining every reset/carryforward
+    change (from its own history) with every approved leave request taken
+    against it.
+    """
+    instance = get_object_or_404(AvailableLeave, pk=pk)
+    return render(
+        request,
+        "cbv/assigned_leave/leave_ledger_sidebar.html",
+        {
+            "instance": instance,
+            "ledger": instance.build_ledger(),
+            "forecast": instance.forecast_next_reset(),
+        },
+    )

@@ -19,19 +19,27 @@ def leave_reset():
         for available_leave in available_leaves:
             reset_date = available_leave.reset_date
             expired_date = available_leave.expired_date
-            if reset_date == today_date:
+            # <= (not ==): the job only runs every few hours inside a
+            # separate run_scheduler process, so a reset_date that's
+            # already in the past (a missed tick) must still be caught
+            # here -- otherwise that employee's leave never resets again.
+            # Matches the expired_date check right below, which already
+            # uses <=.
+            if reset_date and reset_date <= today_date:
                 available_leave.update_carryforward()
                 # new_reset_date = available_leave.set_reset_date(assigned_date=today_date,available_leave = available_leave)
                 new_reset_date = available_leave.set_reset_date(
                     assigned_date=today_date, available_leave=available_leave
                 )
                 available_leave.reset_date = new_reset_date
+                available_leave._change_reason = "Leave reset"
                 available_leave.save()
             if expired_date and expired_date <= today_date:
                 new_expired_date = available_leave.set_expired_date(
                     available_leave=available_leave, assigned_date=today_date
                 )
                 available_leave.expired_date = new_expired_date
+                available_leave._change_reason = "Carryforward expired"
                 available_leave.save()
 
         if (
