@@ -218,6 +218,7 @@ def ess_leave_balance(request):
                 pass
             balances.append(
                 {
+                    "id": al.leave_type_id.id,
                     "type": al.leave_type_id.name,
                     "available": round(float(al.available_days), 1),
                     "carryforward": round(float(al.carryforward_days), 1),

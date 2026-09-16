@@ -55,7 +55,7 @@
     <div
         class="oh-wrapper"
         id="listContainer"
-        hx-get="{% url 'tab-objectives-view' %}"
+        hx-get="{% url 'tab-objectives-view' %}?{{ request.GET.urlencode }}"
         hx-trigger="load"
     >
         <div class="animated-background"></div>
