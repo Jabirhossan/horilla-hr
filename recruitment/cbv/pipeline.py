@@ -404,6 +404,11 @@ class RecruitmentCandidateNav(HorillaNavView):
 
     filter_form_context_name = "form"
     filter_body_template = "cbv/candidates/filter.html"
+    # Modern slide-over filter panel (generic/horilla_nav.html's own
+    # {% if modern_filter %} branch) -- same treatment as the page-level
+    # PipelineNav/pipeline_filter.html. CandidateFilter already carries
+    # ajax_fields for the FK/M2M pickers this panel renders.
+    modern_filter = True
     # The shell already fetches this tab's board into
     # #pipelineTabContent<rec_id> on its own load, so this Nav must not fire
     # a second `load` fetch at the same target. It used to: the Nav renders
