@@ -654,6 +654,11 @@ class OffboardingPipelineTabNav(HorillaNavView):
     filter_form_context_name = "form"
     filter_body_template = "cbv/exit_process/pipeline_tab_filter.html"
     filter_instance = PipelineEmployeeFilter()
+    # Modern slide-over filter panel (generic/horilla_nav.html's own
+    # {% if modern_filter %} branch) -- same treatment as the page-level
+    # OffboardingPipelineNav/pipeline_filter.html. PipelineEmployeeFilter
+    # already carries ajax_fields for the FK pickers this panel renders.
+    modern_filter = True
     # The shell already fetches this tab's board into
     # #pipelineTabContent<pk> on its own load, so this Nav must not fire a
     # second `load` fetch at the same target (see
