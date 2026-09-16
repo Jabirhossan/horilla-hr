@@ -5,17 +5,26 @@ Onboarding candidate view.
 from typing import Any
 
 from django.db.models import Q
+from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from base.models import HorillaMailTemplate
-from horilla_views.cbv_methods import login_required, permission_required
+from horilla_views.cbv_methods import (
+    hx_request_required,
+    login_required,
+    permission_required,
+)
 from horilla_views.generic.cbv.views import (
     HorillaListView,
     HorillaNavView,
     TemplateView,
 )
+from onboarding.filters import CandidateTaskFilter
+from onboarding.models import CandidateTask
+from recruitment.cbv.candidate_profile import CandidateProfileView
+from recruitment.cbv_decorators import all_manager_can_enter
 from recruitment.filters import CandidateFilter
 from recruitment.models import Candidate
 
@@ -253,3 +262,95 @@ class OnboardingCandidatesNav(HorillaNavView):
                     """,
         }
     ]
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(hx_request_required, name="dispatch")
+@method_decorator(
+    all_manager_can_enter(perm="recruitment.view_candidate"), name="dispatch"
+)
+class CandidateProfileTasks(HorillaListView):
+    """
+    CandidateProfileTasks
+    """
+
+    custom_empty_template = "onboarding/empty_task.html"
+    model = CandidateTask
+    template_name = "cbv/candidates/onboarding_tasks_tab.html"
+    show_filter_tags = False
+    filter_class = CandidateTaskFilter
+    filter_selected = False
+    selected_instances_key_id = "selectedInstanceIds"
+    bulk_update_fields = [
+        "status",
+    ]
+    show_toggle_form = False
+
+    def dispatch(self, request, *args, **kwargs):
+        if not Candidate.objects.filter(id=kwargs.get("pk")).exists():
+            return HttpResponse()
+        return super().dispatch(request, *args, **kwargs)
+
+    def bulk_update_accessibility(self):
+        return (
+            super().bulk_update_accessibility()
+            or self.request.user.employee_get.onboardingstage_set.filter(
+                candidate__candidate_id__pk=self.kwargs["pk"]
+            ).exists()
+        )
+
+    columns = [
+        (_("Task"), "onboarding_task_id__task_title"),
+        (_("Status"), "status_col"),
+        (
+            _("Modified By"),
+            "modified_by__employee_get__get_full_name",
+            "modified_by__employee_get__get_avatar",
+        ),
+    ]
+
+    sortby_mapping = [
+        (_("Task"), "onboarding_task_id__task_title"),
+        (_("Status"), "status"),
+        (_("Modified By"), "modified_by__employee_get__get_full_name"),
+    ]
+
+    header_attrs = {
+        "status_col": """
+            style="width:180px!important;"
+        """
+    }
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.search_url = self.request.path
+        self.view_id = "candidateOnboardingTaskList"
+
+    def get_template_names(self):
+        if self.request.headers.get("HX-Target") == self.view_id:
+            return ["generic/horilla_list_table.html"]
+        return [self.template_name]
+
+    def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
+        self.queryset = (
+            super()
+            .get_queryset(queryset, filtered, *args, **kwargs)
+            .filter(candidate_id__pk=self.kwargs["pk"])
+        )
+        return self.queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["candidate"] = Candidate.objects.filter(
+            id=self.kwargs.get("pk")
+        ).first()
+        return context
+
+
+CandidateProfileView.add_tab(
+    {
+        "title": _("Onboarding"),
+        "view": CandidateProfileTasks.as_view(),
+        "accessibility": "recruitment.cbv.accessibility.onboarding_accessibility",
+    },
+)

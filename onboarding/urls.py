@@ -223,6 +223,11 @@ urlpatterns = [
         name="onboarding-candidates-nav",
     ),
     path(
+        "get-cand-tasks/<int:pk>/",
+        onboarding_candidates.CandidateProfileTasks.as_view(),
+        name="get-cand-task",
+    ),
+    path(
         "offer-letter-bulk-status-update/",
         views.offer_letter_bulk_status_update,
         name="offer-letter-bulk-status-update",
