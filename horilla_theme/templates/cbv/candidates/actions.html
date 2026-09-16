@@ -3,7 +3,7 @@
 <div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
     {% if perms.recruitment.change_candidate %}
         <a
-            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
+            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
             title="{% trans 'Edit' %}"
             href="{% url 'rec-candidate-update' instance.id %}?container=true"
             hx-get="{% url 'rec-candidate-update' instance.id %}?container=true"
@@ -12,20 +12,22 @@
             hx-push-url="true"
         >
             <ion-icon name="create-outline"></ion-icon>
+            {% trans 'Edit' %}
         </a>
     {% endif %}
     {% if perms.recruitment.view_candidate %}
         <a
-            class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
+            class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
             title="{% trans 'View' %}"
             href="{% url 'candidate-view-individual' instance.id %}"
         >
             <ion-icon name="eye-outline"></ion-icon>
+            {% trans 'View' %}
         </a>
     {% endif %}
     {% if perms.recruitment.delete_candidate %}
         <a
-            class="oh-btn oh-btn--danger oh-btn--sq-sm"
+            class="oh-btn oh-btn--danger px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
             title="{% trans 'Delete' %}"
             hx-get="{% url 'generic-delete' %}?model=recruitment.Candidate&pk={{instance.id}}"
             hx-target="#deleteConfirmationBody"
@@ -33,6 +35,7 @@
             data-target="#deleteConfirmation"
         >
             <ion-icon name="trash-outline"></ion-icon>
+            {% trans 'Delete' %}
         </a>
     {% endif %}
 </div>
