@@ -12,8 +12,6 @@ from employee.cbv.employee_profile import EmployeeProfileView
 from horilla import settings
 from horilla_views.cbv_methods import hx_request_required, login_required
 from horilla_views.generic.cbv.views import HorillaListView, HorillaProfileView
-from onboarding.filters import CandidateTaskFilter
-from onboarding.models import CandidateTask
 from recruitment.cbv import skill_zone
 from recruitment.cbv.candidate_document import CandidateDocumentListView
 from recruitment.cbv.candidate_mail_log import CandidateMailLogTabList
@@ -73,98 +71,6 @@ class CandidateProfileView(HorillaProfileView):
     ]
 
 
-@method_decorator(login_required, name="dispatch")
-@method_decorator(hx_request_required, name="dispatch")
-@method_decorator(
-    all_manager_can_enter(perm="recruitment.view_candidate"), name="dispatch"
-)
-class CandidateProfileTasks(HorillaListView):
-    """
-    CandidateProfileTasks
-    """
-
-    custom_empty_template = "onboarding/empty_task.html"
-    model = CandidateTask
-    template_name = "cbv/candidates/onboarding_tasks_tab.html"
-    show_filter_tags = False
-    filter_class = CandidateTaskFilter
-    filter_selected = False
-    selected_instances_key_id = "selectedInstanceIds"
-    bulk_update_fields = [
-        "status",
-    ]
-
-    def dispatch(self, request, *args, **kwargs):
-        # No matching candidate (e.g. a stale/invalid pk) -- render nothing
-        # rather than a "None's Onboarding Tasks" page with the raw,
-        # unstyled list+export+column-picker fragment underneath it.
-        if not Candidate.objects.filter(id=kwargs.get("pk")).exists():
-            return HttpResponse()
-        return super().dispatch(request, *args, **kwargs)
-
-    def bulk_update_accessibility(self):
-        return (
-            super().bulk_update_accessibility()
-            or self.request.user.employee_get.onboardingstage_set.filter(
-                candidate__candidate_id__pk=self.kwargs["pk"]
-            ).exists()
-        )
-
-    columns = [
-        (_("Task"), "onboarding_task_id__task_title"),
-        (_("Status"), "status_col"),
-        (
-            _("Modified By"),
-            "modified_by__employee_get__get_full_name",
-            "modified_by__employee_get__get_avatar",
-        ),
-    ]
-
-    sortby_mapping = [
-        (_("Task"), "onboarding_task_id__task_title"),
-        (_("Status"), "status"),
-        (_("Modified By"), "modified_by__employee_get__get_full_name"),
-    ]
-
-    header_attrs = {
-        "status_col": """
-        style="width:180px!important;"
-"""
-    }
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.search_url = self.request.path
-        # Fixed (not auto-random) so pagination/sort/search requests - which
-        # all hx-target="#{{view_id}}" from generic/horilla_list_table.html -
-        # can be recognized in get_template_names() below and answered with
-        # just that fragment. Without this, every such request re-renders the
-        # full tab (title header included) and htmx's outerHTML swap dumps
-        # that whole response in place of the table, duplicating the header
-        # on each page/sort/search click.
-        self.view_id = "candidateOnboardingTaskList"
-
-    def get_template_names(self):
-        if self.request.headers.get("HX-Target") == self.view_id:
-            return ["generic/horilla_list_table.html"]
-        return [self.template_name]
-
-    def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
-        self.queryset = (
-            super()
-            .get_queryset(queryset, filtered, *args, **kwargs)
-            .filter(candidate_id__pk=self.kwargs["pk"])
-        )
-        return self.queryset
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["candidate"] = Candidate.objects.filter(
-            id=self.kwargs.get("pk")
-        ).first()
-        return context
-
-
 CandidateProfileView.add_tab(
     tabs=[
         {
@@ -201,11 +107,6 @@ CandidateProfileView.add_tab(
             "title": _("Rating"),
             "view": views.candidate_rating_tab,
             "accessibility": "recruitment.cbv.accessibility.rating_accessibility",
-        },
-        {
-            "title": _("Onboarding"),
-            "view": CandidateProfileTasks.as_view(),
-            "accessibility": "recruitment.cbv.accessibility.onboarding_accessibility",
         },
         {
             "title": _("Mail Log"),

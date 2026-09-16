@@ -36,11 +36,6 @@ urlpatterns = [
         "interview-view/", interview.InterviewViewPage.as_view(), name="interview-view"
     ),
     path(
-        "get-cand-tasks/<int:pk>/",
-        candidate_profile.CandidateProfileTasks.as_view(),
-        name="get-cand-task",
-    ),
-    path(
         "interview-nav-view/",
         interview.InterviewNavView.as_view(),
         name="interview-nav-view",
