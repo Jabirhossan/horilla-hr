@@ -282,8 +282,14 @@ def login_required(view_func):
 def hx_request_required(view_func):
     @wraps(view_func)
     def wrapped_view(request, *args, **kwargs):
+        # Sec-Fetch-Mode is set by the browser itself for a genuine
+        # top-level navigation and can't be spoofed by an htmx fetch()
+        # call, unlike the HX-Request header alone -- some browser setups
+        # send HX-Request even on a real address-bar visit, which would
+        # otherwise slip through this check and render the raw fragment.
+        is_real_navigation = request.META.get("HTTP_SEC_FETCH_MODE") == "navigate"
         key = "HTTP_HX_REQUEST"
-        if key not in request.META.keys():
+        if is_real_navigation or key not in request.META.keys():
             return render(request, "405.html", status=405)
         return view_func(request, *args, **kwargs)
 
