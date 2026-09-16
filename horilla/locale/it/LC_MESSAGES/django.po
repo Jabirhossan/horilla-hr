@@ -7052,7 +7052,7 @@ msgid "employee"
 msgstr "dipendente"
 
 msgid "employee-settings"
-msgstr ""
+msgstr "Configurazione"
 
 msgid "onboarding"
 msgstr "onboarding"
@@ -7394,40 +7394,40 @@ msgid "meet"
 msgstr "Google Incontra"
 
 msgid "gmeet-view"
-msgstr ""
+msgstr "Vista Google Meet"
 
 msgid "whatsapp"
-msgstr ""
+msgstr "WhatsApp"
 
 msgid "color-theme-view"
-msgstr ""
+msgstr "Tema colore"
 
 msgid "survey-template-preview"
-msgstr ""
+msgstr "Anteprima modello sondaggio"
 
 msgid "theme"
 msgstr "tema"
 
 msgid "objective-template-list-view"
-msgstr ""
+msgstr "Modello obiettivo"
 
 msgid "roster"
 msgstr "Turni"
 
 msgid "view-biometric-devices"
-msgstr ""
+msgstr "Dispositivi biometrici"
 
 msgid "biometric"
 msgstr "biometrico"
 
 msgid "audit-history"
-msgstr ""
+msgstr "Controllo e cronologia"
 
 msgid "policies-discipline"
-msgstr ""
+msgstr "Politiche e disciplina"
 
 msgid "work-schedules"
-msgstr ""
+msgstr "Orari di lavoro"
 
 msgid "requests"
 msgstr "richieste"
@@ -7436,34 +7436,34 @@ msgid "tours"
 msgstr "tour"
 
 msgid "templates-periods"
-msgstr ""
+msgstr "Modelli e periodi"
 
 msgid "system-preferences-view"
-msgstr ""
+msgstr "Preferenze di sistema"
 
 msgid "default-export-access"
-msgstr ""
+msgstr "Accesso di esportazione predefinito"
 
 msgid "attendance-rule-view"
-msgstr ""
+msgstr "Regola di presenza"
 
 msgid "leave-rules-view"
-msgstr ""
+msgstr "Regole del congedo"
 
 msgid "encashment-settings-view"
-msgstr ""
+msgstr "Impostazioni di liquidazione"
 
 msgid "offboarding-rules-view"
-msgstr ""
+msgstr "Regole di uscita"
 
 msgid "company-leaves-view"
-msgstr ""
+msgstr "Giorni di riposo settimanali"
 
 msgid "mail-templates-view"
-msgstr ""
+msgstr "Modello e-mail"
 
 msgid "mail-automations-view"
-msgstr ""
+msgstr "Automazione e-mail"
 
 msgid "Employee Work Info"
 msgstr "Informazioni Lavoro Dipendente"

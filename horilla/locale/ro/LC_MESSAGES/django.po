@@ -7027,7 +7027,7 @@ msgid "employee"
 msgstr "angajat"
 
 msgid "employee-settings"
-msgstr "employee-settings"
+msgstr "Configurare"
 
 msgid "onboarding"
 msgstr "integrare"
@@ -7369,40 +7369,40 @@ msgid "meet"
 msgstr "meet"
 
 msgid "gmeet-view"
-msgstr "gmeet-view"
+msgstr "Vizualizare Google Meet"
 
 msgid "whatsapp"
-msgstr "whatsapp"
+msgstr "WhatsApp"
 
 msgid "color-theme-view"
-msgstr "color-theme-view"
+msgstr "Temă de culoare"
 
 msgid "survey-template-preview"
-msgstr "survey-template-preview"
+msgstr "Previzualizare șablon sondaj"
 
 msgid "theme"
 msgstr "temă"
 
 msgid "objective-template-list-view"
-msgstr "objective-template-list-view"
+msgstr "Șablon de obiectiv"
 
 msgid "roster"
 msgstr "planificare"
 
 msgid "view-biometric-devices"
-msgstr "view-biometric-devices"
+msgstr "Dispozitive biometrice"
 
 msgid "biometric"
 msgstr "biometrie"
 
 msgid "audit-history"
-msgstr "audit-history"
+msgstr "Audit și istoric"
 
 msgid "policies-discipline"
-msgstr "policies-discipline"
+msgstr "Politici și disciplină"
 
 msgid "work-schedules"
-msgstr "work-schedules"
+msgstr "Programe de lucru"
 
 msgid "requests"
 msgstr "cereri"
@@ -7411,34 +7411,34 @@ msgid "tours"
 msgstr "tururi"
 
 msgid "templates-periods"
-msgstr "templates-periods"
+msgstr "Șabloane și perioade"
 
 msgid "system-preferences-view"
-msgstr "system-preferences-view"
+msgstr "Preferințe de sistem"
 
 msgid "default-export-access"
-msgstr "default-export-access"
+msgstr "Acces implicit la export"
 
 msgid "attendance-rule-view"
-msgstr "attendance-rule-view"
+msgstr "Regulă de prezență"
 
 msgid "leave-rules-view"
-msgstr "leave-rules-view"
+msgstr "Reguli de concediu"
 
 msgid "encashment-settings-view"
-msgstr "encashment-settings-view"
+msgstr "Setări de încasare"
 
 msgid "offboarding-rules-view"
-msgstr "offboarding-rules-view"
+msgstr "Reguli de ieșire din organizație"
 
 msgid "company-leaves-view"
-msgstr "company-leaves-view"
+msgstr "Zile libere săptămânale"
 
 msgid "mail-templates-view"
-msgstr "mail-templates-view"
+msgstr "Șablon de e-mail"
 
 msgid "mail-automations-view"
-msgstr "mail-automations-view"
+msgstr "Automatizare e-mail"
 
 msgid "Employee Work Info"
 msgstr "Informații profesionale angajat"

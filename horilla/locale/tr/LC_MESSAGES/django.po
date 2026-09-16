@@ -7010,7 +7010,7 @@ msgid "employee"
 msgstr "diyetisyen"
 
 msgid "employee-settings"
-msgstr ""
+msgstr "Yapılandırma"
 
 msgid "onboarding"
 msgstr "Işe Başlama"
@@ -7352,40 +7352,40 @@ msgid "meet"
 msgstr "Görüşme"
 
 msgid "gmeet-view"
-msgstr ""
+msgstr "Google Meet Görünümü"
 
 msgid "whatsapp"
 msgstr "WhatsApp"
 
 msgid "color-theme-view"
-msgstr ""
+msgstr "Renk Teması"
 
 msgid "survey-template-preview"
-msgstr ""
+msgstr "Anket Şablonu Önizlemesi"
 
 msgid "theme"
 msgstr "tema"
 
 msgid "objective-template-list-view"
-msgstr ""
+msgstr "Hedef Şablonu"
 
 msgid "roster"
 msgstr "çizelge"
 
 msgid "view-biometric-devices"
-msgstr ""
+msgstr "Biyometrik Cihazlar"
 
 msgid "biometric"
 msgstr "Biyometrik"
 
 msgid "audit-history"
-msgstr ""
+msgstr "Denetim ve Geçmiş"
 
 msgid "policies-discipline"
-msgstr ""
+msgstr "Politikalar ve Disiplin"
 
 msgid "work-schedules"
-msgstr ""
+msgstr "Çalışma Programları"
 
 msgid "requests"
 msgstr "talepler"
@@ -7394,34 +7394,34 @@ msgid "tours"
 msgstr "turlar"
 
 msgid "templates-periods"
-msgstr ""
+msgstr "Şablonlar ve Dönemler"
 
 msgid "system-preferences-view"
-msgstr ""
+msgstr "Sistem Tercihleri"
 
 msgid "default-export-access"
-msgstr ""
+msgstr "Varsayılan Dışa Aktarma Erişimi"
 
 msgid "attendance-rule-view"
-msgstr ""
+msgstr "Devam Kuralı"
 
 msgid "leave-rules-view"
-msgstr ""
+msgstr "İzin Kuralları"
 
 msgid "encashment-settings-view"
-msgstr ""
+msgstr "Nakit Ödeme Ayarları"
 
 msgid "offboarding-rules-view"
-msgstr ""
+msgstr "İşten Ayrılma Kuralları"
 
 msgid "company-leaves-view"
-msgstr ""
+msgstr "Haftalık İzin Günleri"
 
 msgid "mail-templates-view"
-msgstr ""
+msgstr "E-posta Şablonu"
 
 msgid "mail-automations-view"
-msgstr ""
+msgstr "E-posta Otomasyonu"
 
 msgid "Employee Work Info"
 msgstr "Çalışan İş Bilgileri"
