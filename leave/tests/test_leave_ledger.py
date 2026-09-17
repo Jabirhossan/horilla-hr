@@ -76,7 +76,7 @@ class LeaveLedgerBuildTests(TestCase):
         change.
         """
         lt = self.LeaveType.objects.create(
-            name="Ledger Opening Carryforward Type",
+            name="Ledger Carryforward Type",
             total_days=5,
             carryforward_type="carryforward",
             carryforward_max=10,
@@ -319,9 +319,14 @@ class ForecastNextResetTests(TestCase):
         self.AvailableLeave = AvailableLeave
 
     def test_no_forecast_when_reset_disabled(self):
-        lt = self.LeaveType.objects.create(name="No Reset Type", total_days=5, reset=False)
+        lt = self.LeaveType.objects.create(
+            name="No Reset Type", total_days=5, reset=False
+        )
         avail = self.AvailableLeave.objects.create(
-            employee_id=self.employee, leave_type_id=lt, available_days=5, total_leave_days=5
+            employee_id=self.employee,
+            leave_type_id=lt,
+            available_days=5,
+            total_leave_days=5,
         )
         self.assertIsNone(avail.forecast_next_reset())
 
@@ -334,10 +339,17 @@ class ForecastNextResetTests(TestCase):
         None-guard.
         """
         lt = self.LeaveType.objects.create(
-            name="Reset No Date Type", total_days=5, reset=True, reset_based="monthly", reset_day="1"
+            name="Reset No Date Type",
+            total_days=5,
+            reset=True,
+            reset_based="monthly",
+            reset_day="1",
         )
         avail = self.AvailableLeave.objects.create(
-            employee_id=self.employee, leave_type_id=lt, available_days=5, total_leave_days=5
+            employee_id=self.employee,
+            leave_type_id=lt,
+            available_days=5,
+            total_leave_days=5,
         )
         avail.reset_date = None
         self.assertIsNone(avail.forecast_next_reset())
@@ -381,7 +393,9 @@ class ForecastNextResetTests(TestCase):
         avail.refresh_from_db()
         self.assertEqual(avail.available_days, 10)
         self.assertEqual(avail.carryforward_days, 3)
-        self.assertEqual(avail.available_days + avail.carryforward_days, forecast["balance"])
+        self.assertEqual(
+            avail.available_days + avail.carryforward_days, forecast["balance"]
+        )
 
 
 class LeaveLedgerViewTests(TestCase):
