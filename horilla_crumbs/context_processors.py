@@ -103,7 +103,7 @@ def sync_session_ids(request, key, queryset):
 
 
 BREADCRUMB_URL_NAMES = {
-    "monthly-summary": _("Monthly Summary"),
+    "monthly-summary": "Monthly Summary",
     "ess": "Employee",
     "offboarding": "Offboarding",
     "helpdesk": "Helpdesk",
@@ -118,6 +118,8 @@ BREADCRUMB_URL_NAMES = {
     "performance-settings-view": "Configuration",
     "user-group-view": "Roles and Permissions",
     "employee-permission-assign": "Roles and Permissions",
+    "standard": "Standard Reports",
+    "explorer": "Explorer",
 }
 
 sidebar_urls = [
