@@ -1270,16 +1270,45 @@ class ExplorerStylesheetTests(TestCase):
                 template = get_template(f"report/{name}_report.html")
                 self.assertTrue(template.template.nodelist)
 
+    def _view_slot_classes(self, name):
+        """The class list on the explorer's view-slot element.
+
+        Read as a set of classes rather than compared as a literal attribute
+        string. The assertion below is about whether one class is applied, and
+        pinning the whole attribute made it a layout test too: adding
+        `flex items-center gap-2 my-2` to the recruitment slot during a design
+        pass failed this, although both classes it actually cares about were
+        still there.
+        """
+        import re
+
+        text = self._template_text(name)
+        match = re.search(
+            r'<div[^>]*id="oh-report-view-slot"[^>]*class="([^"]*)"', text
+        ) or re.search(r'<div[^>]*class="([^"]*oh-report-view-slot[^"]*)"', text)
+        self.assertIsNotNone(
+            match, f"{name} has no element carrying oh-report-view-slot"
+        )
+        return set(match.group(1).split())
+
     def test_only_multi_model_pages_carry_the_variant_class(self):
         """The variant supplies the "Choose Report" label typography, which
         the single-model explorers must not pick up."""
-        marker = 'class="oh-report-view-slot oh-report--multi-model"'
         for name in self.MULTI_MODEL:
             with self.subTest(explorer=name, expected=True):
-                self.assertIn(marker, self._template_text(name))
+                classes = self._view_slot_classes(name)
+                self.assertIn("oh-report-view-slot", classes)
+                self.assertIn("oh-report--multi-model", classes)
         for name in self.SINGLE_MODEL:
             with self.subTest(explorer=name, expected=False):
-                self.assertNotIn(marker, self._template_text(name))
+                classes = self._view_slot_classes(name)
+                self.assertIn("oh-report-view-slot", classes)
+                self.assertNotIn(
+                    "oh-report--multi-model",
+                    classes,
+                    f"{name} is a single-model explorer and must not pick up "
+                    "the multi-model label typography",
+                )
 
 
 class PdfFontEmbeddingTests(TestCase):
