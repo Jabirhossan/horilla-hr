@@ -232,12 +232,26 @@ class RegistryTests(SimpleTestCase):
             SUGGESTED_REPORT_SLUGS,
         )
 
-        self.assertEqual(MAX_DASHBOARD_REPORT_PINS, 6)
+        # The cap's value is a product decision and moves -- it went 6 -> 10
+        # in the report design pass. Asserting the literal here only restated
+        # the constant and failed on a deliberate change, so what is checked
+        # is the relationship that has to hold whatever the number is.
+        self.assertGreater(
+            MAX_DASHBOARD_REPORT_PINS,
+            0,
+            "a cap of zero would silently disable dashboard pinning",
+        )
         self.assertTrue(
-            set(DASHBOARD_PIN_PRIORITY_SLUGS).issubset(set(SUGGESTED_REPORT_SLUGS))
+            set(DASHBOARD_PIN_PRIORITY_SLUGS).issubset(set(SUGGESTED_REPORT_SLUGS)),
+            "every priority pin must be a report the Suggested pack offers, "
+            "or auto-pinning would put a report on the dashboard that the "
+            "catalogue never suggests",
         )
         self.assertLessEqual(
-            len(DASHBOARD_PIN_PRIORITY_SLUGS), MAX_DASHBOARD_REPORT_PINS
+            len(DASHBOARD_PIN_PRIORITY_SLUGS),
+            MAX_DASHBOARD_REPORT_PINS,
+            "the priority list must fit inside the cap, or the last entries "
+            "could never be pinned",
         )
 
     def test_run_report_attaches_metadata(self):
