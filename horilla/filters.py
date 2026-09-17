@@ -362,6 +362,7 @@ class HorillaFilterSet(FilterSet):
                 continue
             selected_values = self._data_getlist(field_name)
             field.widget = HorillaAjaxSelectWidget(
+                attrs={"id": "id_filter_" + config["key"].replace("-", "_")},
                 # reverse_lazy, not reverse: some FilterSets are
                 # instantiated at class-body time (e.g. a NavView's
                 # `filter_instance = MyFilter()`), while urls.py may
