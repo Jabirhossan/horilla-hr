@@ -159,10 +159,11 @@ class ReimbursementsAndEncashmentsListView(HorillaListView):
 
     columns = [
         (_("Employee"), "employee_id", "employee_id__get_avatar"),
-        (_("Date"), "created_at"),
+        (_("Allowance On"), "allowance_on"),
         (_("Title"), "title"),
         (_("Amount"), "amount"),
         (_("Status"), "get_status_display"),
+        (_("Created On"), "get_created_at_date"),
         (_("Description"), "description"),
         (_("Comment"), "comment_col"),
     ]
@@ -185,7 +186,8 @@ class ReimbursementsAndEncashmentsListView(HorillaListView):
         ("title", _("Title")),
         ("amount", _("Amount")),
         ("status", _("Status")),
-        ("created_at", _("Date")),
+        ("allowance_on", _("Allowance On")),
+        ("created_at", _("Created On")),
         (
             "employee_id__employee_work_info__reporting_manager_id",
             _("Reporting Manager"),
@@ -202,9 +204,10 @@ class ReimbursementsListView(ReimbursementsAndEncashmentsListView):
 
     sortby_mapping = [
         (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
-        (_("Date"), "created_at"),
+        (_("Allowance On"), "allowance_on"),
         (_("Amount"), "amount"),
         (_("Status"), "get_status_display"),
+        (_("Created On"), "get_created_at_date"),
     ]
 
     row_attrs = """
@@ -236,10 +239,11 @@ class LeaveEncashmentsListView(ReimbursementsAndEncashmentsListView):
 
     sortby_mapping = [
         (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
-        (_("Date"), "created_at"),
+        (_("Allowance On"), "allowance_on"),
         (_("Amount"), "amount"),
         (_("Available days to encash"), "ad_to_encash"),
         (_("Carryforward to encash"), "cfd_to_encash"),
+        (_("Created On"), "get_created_at_date"),
     ]
 
     columns = [
@@ -278,10 +282,11 @@ class BonusEncashmentsListView(ReimbursementsAndEncashmentsListView):
 
     sortby_mapping = [
         (_("Employee"), "employee_id__get_full_name", "employee_id__get_avatar"),
-        (_("Date"), "created_at"),
+        (_("Allowance On"), "allowance_on"),
         (_("Amount"), "amount"),
         (_("Status"), "get_status_display"),
         (_("Bonus to encash"), "bonus_to_encash"),
+        (_("Created On"), "get_created_at_date"),
     ]
 
     columns = [
@@ -411,7 +416,8 @@ class BonusEncashTabShell(AttendanceTabContentShell):
         ("title", _("Title")),
         ("amount", _("Amount")),
         ("status", _("Status")),
-        ("created_at", _("Date")),
+        ("allowance_on", _("Allowance On")),
+        ("created_at", _("Created On")),
         (
             "employee_id__employee_work_info__reporting_manager_id",
             _("Reporting Manager"),
@@ -430,10 +436,11 @@ class ReimbursementsDetailView(HorillaDetailedView):
     """
 
     body = [
-        (_("Date"), "created_at"),
+        (_("Allowance On"), "allowance_on"),
         (_("Amount"), "amount"),
         (_("Status"), "get_status_display"),
         (_("Attachments"), "attachments_col"),
+        (_("Created On"), "get_created_at_date"),
         (_("Description"), "description"),
     ]
     cols = {
