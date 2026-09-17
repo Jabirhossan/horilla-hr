@@ -148,6 +148,16 @@ class EmployeeFilter(HorillaFilterSet):
         queryset=JobPosition.objects.all(),
         label=_("Job Position"),
     )
+    employee_work_info__basic_salary__gte = django_filters.NumberFilter(
+        field_name="employee_work_info__basic_salary",
+        lookup_expr="gte",
+        label=_("Basic Salary (from)"),
+    )
+    employee_work_info__basic_salary__lt = django_filters.NumberFilter(
+        field_name="employee_work_info__basic_salary",
+        lookup_expr="lt",
+        label=_("Basic Salary (till)"),
+    )
 
     is_active = django_filters.ChoiceFilter(
         field_name="is_active",

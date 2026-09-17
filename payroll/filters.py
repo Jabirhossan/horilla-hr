@@ -776,6 +776,14 @@ class ReimbursementFilter(HorillaFilterSet):
 
     # search = django_filters.CharFilter(field_name="title", lookup_expr="icontains")
     search = django_filters.CharFilter(method="search_method")
+    status__in = django_filters.CharFilter(
+        method="filter_status_in", label=_("Status (any of)")
+    )
+
+    def filter_status_in(self, queryset, name, value):
+        statuses = [v.strip() for v in value.split(",") if v.strip()]
+        return queryset.filter(status__in=statuses) if statuses else queryset
+
     # Dedicated comma-separated "Name or Badge ID" search, alongside the
     # AJAX employee_id picker below rather than instead of it -- same
     # field/behavior as every other modernized panel this session; see

@@ -441,25 +441,25 @@
             const changeIcon = data.change_pct > 0 ? '↑' : data.change_pct < 0 ? '↓' : '→';
             const changeClass = data.change_pct > 0 ? 'pd-badge--amber' : data.change_pct < 0 ? 'pd-badge--green' : '';
             document.getElementById('pd-kpi-grid').innerHTML = `
-                <a href="{% url 'view-payslip' %}" class="pd-kpi-card">
+                <a href="{% url 'view-payslip' %}?start_date_from=${fromInput.value}&start_date_till=${toInput.value}&filter_applied=1" class="pd-kpi-card">
                     <div class="pd-kpi-card__icon pd-kpi-card__icon--green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
                     <div class="pd-kpi-card__label">{% trans "Net Payroll"|escapejs %}</div>
                     <div class="pd-kpi-card__value">${fmt(data.total_net)}</div>
                     <div class="pd-kpi-card__sub"><span class="pd-badge ${changeClass}">${changeIcon} ${Math.abs(data.change_pct)}% {% trans "vs last month"|escapejs %}</span></div>
                 </a>
-                <a href="{% url 'view-payslip' %}" class="pd-kpi-card">
+                <a href="{% url 'view-payslip' %}?start_date_from=${fromInput.value}&start_date_till=${toInput.value}&filter_applied=1" class="pd-kpi-card">
                     <div class="pd-kpi-card__icon pd-kpi-card__icon--blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></div>
                     <div class="pd-kpi-card__label">{% trans "Gross Pay"|escapejs %}</div>
                     <div class="pd-kpi-card__value">${fmt(data.total_gross)}</div>
                     <div class="pd-kpi-card__sub">${data.total_payslips} {% trans "payslips"|escapejs %}</div>
                 </a>
-                <a href="{% url 'view-payslip' %}" class="pd-kpi-card">
+                <a href="{% url 'view-payslip' %}?start_date_from=${fromInput.value}&start_date_till=${toInput.value}&filter_applied=1" class="pd-kpi-card">
                     <div class="pd-kpi-card__icon pd-kpi-card__icon--red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg></div>
                     <div class="pd-kpi-card__label">{% trans "Deductions"|escapejs %}</div>
                     <div class="pd-kpi-card__value">${fmt(data.total_deductions)}</div>
                     <div class="pd-kpi-card__sub">${data.month}</div>
                 </a>
-                <a href="{% url 'view-loan' %}" class="pd-kpi-card">
+                <a href="{% url 'view-loan' %}?open_tab=1&settled=False&filter_applied=1" class="pd-kpi-card">
                     <div class="pd-kpi-card__icon pd-kpi-card__icon--amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg></div>
                     <div class="pd-kpi-card__label">{% trans "Active Loans"|escapejs %}</div>
                     <div class="pd-kpi-card__value">${data.active_loans}</div>
@@ -570,9 +570,16 @@
                         events: { dataPointSelection: (event, ctx, opts) => {
                             const t = data.by_type[opts.dataPointIndex];
                             const base = "{% url 'view-reimbursement' %}";
-                            window.location.href = t && t.type_key
-                                ? base + "?type=" + encodeURIComponent(t.type_key)
-                                : base;
+                            if (!t || !t.type_key) { window.location.href = base; return; }
+                            // Reimbursements/Leave Encashments/Bonus Encashments are
+                            // separate tabs (in that order) on the destination page --
+                            // without open_tab, whichever tab was last active there
+                            // (persisted per user) wins instead of the one this segment
+                            // is actually about.
+                            const tabIndexByType = { reimbursement: 1, leave_encashment: 2, bonus_encashment: 3 };
+                            const openTab = tabIndexByType[t.type_key] || 1;
+                            window.location.href = base + "?open_tab=" + openTab +
+                                "&type=" + encodeURIComponent(t.type_key) + "&status__in=requested,approved&filter_applied=1";
                         }}
                     },
                     labels: data.by_type.map(t => t.type),

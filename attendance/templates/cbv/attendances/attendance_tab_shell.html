@@ -1,5 +1,5 @@
 {% load i18n %}
-<div hx-get="{% url nav_url_name %}" hx-trigger="load"></div>
+<div hx-get="{% url nav_url_name %}?{{ request.GET.urlencode }}" hx-trigger="load"></div>
 <div
     class="oh-checkpoint-badge mb-2"
     id="{{ selected_instances_key_id }}"

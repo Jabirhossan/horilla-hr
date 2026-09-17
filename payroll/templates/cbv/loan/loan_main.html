@@ -11,7 +11,7 @@
     <div
         class="oh-wrapper"
         id="listContainer"
-        hx-get="{% url 'loan-generic-tab-view' %}"
+        hx-get="{% url 'loan-generic-tab-view' %}?{{ request.GET.urlencode }}"
         hx-trigger="load"
     >
         <div class="animated-background"></div>
