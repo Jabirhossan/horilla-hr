@@ -1,0 +1,18 @@
+{% include "generic/horilla_form.html" %}
+<script>
+(function () {
+    function toggleScheduleDayFields() {
+        var freq = document.getElementById("id_frequency");
+        var weekdayRow = document.getElementById("id_weekday_parent_div");
+        var dayRow = document.getElementById("id_day_of_month_parent_div");
+        if (!freq) return;
+        if (weekdayRow) weekdayRow.style.display = freq.value === "weekly" ? "" : "none";
+        if (dayRow) dayRow.style.display = freq.value === "monthly" ? "" : "none";
+    }
+    var freqField = document.getElementById("id_frequency");
+    if (freqField) {
+        toggleScheduleDayFields();
+        freqField.addEventListener("change", toggleScheduleDayFields);
+    }
+})();
+</script>

@@ -4,8 +4,10 @@ Tests for enterprise reporting foundation — registry, engine, metric formulas.
 
 from datetime import date
 
-from django.test import RequestFactory, SimpleTestCase
+from django.test import RequestFactory, SimpleTestCase, TestCase
+from django.utils.datastructures import MultiValueDict
 
+from horilla.testkit.factories import make_company, make_employee
 from report.engine import ReportFilters, month_bounds, month_offset, parse_period
 from report.export import export_csv, export_xlsx
 from report.pivot_limits import MAX_PIVOT_ROWS, capped_list
@@ -512,52 +514,48 @@ class AttendanceDecimalTests(SimpleTestCase):
         self.assertNotIn('f"{t.hour:02}.{t.minute:02}"', source)
 
 
-class SubscriptionFormTests(SimpleTestCase):
-    def test_recipients_reject_malformed_addresses(self):
-        from report.forms import ReportSubscriptionForm
+class SubscriptionFormTests(TestCase):
+    """Recipients come from an employee multi-select, posted as raw ids."""
 
-        form = ReportSubscriptionForm(
-            data={
-                "report_slug": "workforce-composition",
-                "name": "Weekly",
-                "frequency": "weekly",
-                "recipients": "a@b.com, notanemail",
-                "format": "xlsx",
+    @classmethod
+    def setUpTestData(cls):
+        cls.company = make_company("Formcorp")
+        cls.employee_a = make_employee(
+            company=cls.company, email="a@b.com", first_name="A"
+        )
+        cls.employee_b = make_employee(
+            company=cls.company, email="c@d.com", first_name="B"
+        )
+
+    def _data(self, employee_ids):
+        return MultiValueDict(
+            {
+                "report_slug": ["workforce-composition"],
+                "name": ["Weekly"],
+                "frequency": ["weekly"],
+                "format": ["xlsx"],
+                "recipients_employees": [str(pk) for pk in employee_ids],
             }
         )
-        self.assertFalse(form.is_valid())
-        self.assertIn("recipients", form.errors)
-        self.assertIn("notanemail", str(form.errors["recipients"]))
-
-    def test_recipients_normalize_and_dedupe(self):
-        from report.forms import ReportSubscriptionForm
-
-        form = ReportSubscriptionForm(
-            data={
-                "report_slug": "workforce-composition",
-                "name": "Weekly",
-                "frequency": "weekly",
-                "recipients": " a@b.com , c@d.com,a@b.com ",
-                "format": "xlsx",
-            }
-        )
-        self.assertTrue(form.is_valid(), form.errors)
-        self.assertEqual(form.cleaned_data["recipients"], "a@b.com, c@d.com")
 
     def test_recipients_required(self):
         from report.forms import ReportSubscriptionForm
 
-        form = ReportSubscriptionForm(
-            data={
-                "report_slug": "workforce-composition",
-                "name": "Weekly",
-                "frequency": "weekly",
-                "recipients": " , ",
-                "format": "xlsx",
-            }
-        )
+        form = ReportSubscriptionForm(data=self._data([]))
         self.assertFalse(form.is_valid())
-        self.assertIn("recipients", form.errors)
+        self.assertIn("recipients_employees", form.errors)
+
+    def test_recipients_accepts_selected_employees(self):
+        from report.forms import ReportSubscriptionForm
+
+        form = ReportSubscriptionForm(
+            data=self._data([self.employee_a.pk, self.employee_b.pk])
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+        selected_ids = set(
+            form.cleaned_data["recipients_employees"].values_list("pk", flat=True)
+        )
+        self.assertEqual(selected_ids, {self.employee_a.pk, self.employee_b.pk})
 
 
 class PdfExportTests(SimpleTestCase):
@@ -720,7 +718,8 @@ class SubscriptionDeliveryTests(SimpleTestCase):
         self.assertEqual(all_time.employment_status, "all")
 
     def test_subscription_is_due(self):
-        from datetime import timedelta
+        from datetime import datetime, timedelta
+        from datetime import timezone as dt_timezone
         from types import SimpleNamespace
 
         from django.utils import timezone
@@ -731,18 +730,54 @@ class SubscriptionDeliveryTests(SimpleTestCase):
         fresh = SimpleNamespace(last_run_at=None, frequency="weekly")
         self.assertTrue(subscription_is_due(fresh, now))
 
-        recent = SimpleNamespace(
-            last_run_at=now - timedelta(days=1), frequency="weekly"
+        too_soon = SimpleNamespace(
+            last_run_at=now - timedelta(hours=2), frequency="weekly"
         )
-        self.assertFalse(subscription_is_due(recent, now))
+        self.assertFalse(subscription_is_due(too_soon, now))
 
-        old = SimpleNamespace(last_run_at=now - timedelta(days=8), frequency="weekly")
-        self.assertTrue(subscription_is_due(old, now))
+        wrong_weekday = SimpleNamespace(
+            last_run_at=now - timedelta(days=8), frequency="weekly"
+        )
+        self.assertFalse(subscription_is_due(wrong_weekday, now))
+
+        right_weekday = SimpleNamespace(
+            last_run_at=now - timedelta(days=7), frequency="weekly"
+        )
+        self.assertTrue(subscription_is_due(right_weekday, now))
 
         daily_ok = SimpleNamespace(
             last_run_at=now - timedelta(hours=24), frequency="daily"
         )
         self.assertTrue(subscription_is_due(daily_ok, now))
+
+        feb_28 = datetime(2027, 2, 28, 10, 0, tzinfo=dt_timezone.utc)
+        clamped_from_31 = SimpleNamespace(
+            last_run_at=datetime(2027, 1, 31, 9, 0, tzinfo=dt_timezone.utc),
+            frequency="monthly",
+        )
+        self.assertTrue(subscription_is_due(clamped_from_31, feb_28))
+
+    def test_compute_schedule_anchor(self):
+        from datetime import datetime
+        from datetime import timezone as dt_timezone
+        from types import SimpleNamespace
+
+        from report.delivery import compute_schedule_anchor, subscription_is_due
+
+        now = datetime(2027, 3, 15, 9, 0, tzinfo=dt_timezone.utc)  # a Monday
+        anchor = compute_schedule_anchor("weekly", now, weekday=now.weekday())
+        self.assertEqual(anchor.date().isoformat(), "2027-03-08")
+        self.assertTrue(
+            subscription_is_due(
+                SimpleNamespace(last_run_at=anchor, frequency="weekly"), now
+            )
+        )
+
+        before_target = compute_schedule_anchor("monthly", now, day_of_month=31)
+        self.assertEqual(before_target.date().isoformat(), "2027-02-28")
+
+        after_target = compute_schedule_anchor("monthly", now, day_of_month=5)
+        self.assertEqual(after_target.date().isoformat(), "2027-03-05")
 
     def test_subscription_job_is_registered_not_started(self):
         # Replaces an argv-guard test: the module used to start its own

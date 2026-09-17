@@ -41,7 +41,7 @@ SUGGESTED_REPORT_SLUGS: tuple[str, ...] = (
 )
 
 # Priority order for the home "Pin recommended" action (subset of Suggested).
-# Cap still 6 favorites total — this only fills empty pin slots on click.
+# Cap still 10 favorites total — this only fills empty pin slots on click.
 DASHBOARD_PIN_PRIORITY_SLUGS: tuple[str, ...] = (
     "turnover-attrition",
     "time-to-hire",
@@ -51,7 +51,7 @@ DASHBOARD_PIN_PRIORITY_SLUGS: tuple[str, ...] = (
     "leave-liability",
 )
 
-MAX_DASHBOARD_REPORT_PINS = 6
+MAX_DASHBOARD_REPORT_PINS = 10
 
 
 def session_company_id(request) -> Optional[int]:

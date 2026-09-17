@@ -281,15 +281,13 @@ def build_filter_options(definition: ReportDefinition) -> dict[str, list]:
 
     # Always include period presets for the primary bar
     options["period_presets"] = [
-        {"id": "all_time", "label": str(_("All time"))},
+        {"id": "custom", "label": str(_("Custom range"))},
         {"id": "this_month", "label": str(_("This month"))},
         {"id": "last_month", "label": str(_("Last month"))},
         {"id": "last_30", "label": str(_("Last 30 days"))},
         {"id": "last_90", "label": str(_("Last 90 days"))},
-        {"id": "quarter", "label": str(_("Quarter to date"))},
-        {"id": "ytd", "label": str(_("Year to date"))},
         {"id": "last_year", "label": str(_("Last year"))},
-        {"id": "custom", "label": str(_("Custom range"))},
+        {"id": "all_time", "label": str(_("All time"))},
     ]
 
     if "employment_statuses" in needed:

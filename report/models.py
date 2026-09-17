@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company
+from employee.models import Employee
 from horilla import horilla_middlewares
 from horilla.models import HorillaModel
 from horilla_auth.models import HorillaUser
@@ -85,9 +86,11 @@ class ReportSubscription(HorillaModel):
         default=FREQUENCY_WEEKLY,
         verbose_name=_("Frequency"),
     )
-    recipients = models.TextField(
+    recipients_employees = models.ManyToManyField(
+        Employee,
+        blank=True,
         verbose_name=_("Recipients"),
-        help_text=_("Comma-separated email addresses."),
+        related_name="report_subscriptions",
     )
     filters = models.JSONField(
         default=dict,
@@ -119,10 +122,23 @@ class ReportSubscription(HorillaModel):
 
     def recipient_list(self) -> list[str]:
         return [
-            email.strip()
-            for email in (self.recipients or "").split(",")
-            if email.strip()
+            email
+            for email in (
+                employee.get_mail() for employee in self.recipients_employees.all()
+            )
+            if email
         ]
+
+    @property
+    def recipients_display(self) -> str:
+        return ", ".join(str(employee) for employee in self.recipients_employees.all())
+
+    @property
+    def last_run_display(self):
+        """last_run_at, or None if it only holds a schedule-anchor seed and no real send has happened yet."""
+        if self.last_run_at and self.created_at and self.last_run_at > self.created_at:
+            return self.last_run_at
+        return None
 
     @property
     def report_name(self) -> str:

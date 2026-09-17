@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_http_methods
 
+from employee.models import Employee
 from horilla.decorators import login_required
 from report.access import (
     company_id_from_request,
@@ -19,9 +20,11 @@ from report.access import (
     user_can_view_report,
 )
 from report.company_context import company_letterhead
+from report.delivery import compute_schedule_anchor
 from report.engine import filters_from_request
 from report.export import export_csv, export_pdf, export_xlsx
 from report.filter_schema import build_filter_options, build_filter_schema
+from report.forms import DAY_OF_MONTH_CHOICES, WEEKDAY_CHOICES
 from report.models import (
     ReportFavorite,
     ReportFilterPreset,
@@ -211,6 +214,11 @@ def standard_report_catalog(request):
             "audit_count": audit_count,
             "subscription_count": subscription_count,
             "has_explorer_access": bool(explorer_domain_entries(request)),
+            "schedule_recipient_employees": Employee.objects.filter(
+                is_active=True
+            ).order_by("employee_first_name", "employee_last_name"),
+            "schedule_weekday_choices": WEEKDAY_CHOICES,
+            "schedule_day_of_month_choices": DAY_OF_MONTH_CHOICES,
         },
     )
 
@@ -282,7 +290,7 @@ def standard_report_print_filters(request, slug):
             "can_export": can_export,
             "pdf_row_limit": 500,
             "xlsx_row_limit": 5000,
-            "default_period": "all_time",
+            "default_period": "this_month",
             "default_employment_status": "all",
         },
     )
@@ -797,25 +805,30 @@ def standard_report_presets(request, slug):
 @login_required
 @require_http_methods(["POST"])
 def standard_report_bulk_subscribe(request):
-    """
-    Create one ReportSubscription per selected report, sharing a single
-    frequency/format/recipients input — the catalog grid's bulk-select bar.
-    Reports the user lacks subscribe access to are silently skipped and
-    reported back rather than failing the whole batch.
-    """
+    """Create a ReportSubscription per selected report, skipping ones the user can't subscribe to."""
     _ensure_definitions_loaded()
     body = _parse_json_body(request)
     slugs = body.get("report_slugs") or []
     frequency = (body.get("frequency") or "weekly").strip()
     fmt = (body.get("format") or "xlsx").strip()
-    recipients = (body.get("recipients") or "").strip()
+    recipient_ids = body.get("recipients") or []
+    weekday = body.get("weekday")
+    day_of_month = body.get("day_of_month")
 
     if not isinstance(slugs, list) or not slugs:
         return JsonResponse({"error": _("Select at least one report.")}, status=400)
-    if not recipients:
-        return JsonResponse({"error": _("Recipients are required.")}, status=400)
+    if not isinstance(recipient_ids, list) or not recipient_ids:
+        return JsonResponse({"error": _("Select at least one recipient.")}, status=400)
     if frequency not in dict(ReportSubscription.FREQUENCY_CHOICES):
         return JsonResponse({"error": _("Invalid frequency.")}, status=400)
+
+    recipients = Employee.objects.filter(id__in=recipient_ids)
+    if not recipients.exists():
+        return JsonResponse({"error": _("Select at least one recipient.")}, status=400)
+
+    anchor = compute_schedule_anchor(
+        frequency, timezone.now(), weekday=weekday, day_of_month=day_of_month
+    )
 
     company_id = company_id_from_request(request)
     created = 0
@@ -827,15 +840,16 @@ def standard_report_bulk_subscribe(request):
         ):
             skipped.append(slug)
             continue
-        ReportSubscription.objects.create(
+        subscription = ReportSubscription.objects.create(
             report_slug=slug,
             name=str(definition.name),
             frequency=frequency,
-            recipients=recipients,
             filters={"format": fmt},
             owner=request.user,
             company_id_id=company_id,
+            last_run_at=anchor,
         )
+        subscription.recipients_employees.set(recipients)
         created += 1
 
     return JsonResponse({"ok": True, "created": created, "skipped": skipped})

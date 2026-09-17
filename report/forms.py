@@ -1,46 +1,87 @@
-"""Form for creating/editing report subscriptions — a real Django ModelForm
-built on Horilla's standard base.forms.ModelForm, so it renders through the
-same generic create/edit component (generic/form.html) as the rest of the
-app instead of a hand-built modal."""
+"""Form for creating/editing report subscriptions."""
 
 from __future__ import annotations
 
 from django import forms
-from django.core.validators import validate_email
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from base.forms import ModelForm
+from employee.filters import EmployeeFilter
+from employee.models import Employee
+from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
+from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from report.delivery import compute_schedule_anchor
 from report.models import ReportSubscription
 
 _SELECT_CLASS = "oh-select oh-select-2 select2-hidden-accessible"
 
+WEEKDAY_CHOICES = [
+    (0, _("Monday")),
+    (1, _("Tuesday")),
+    (2, _("Wednesday")),
+    (3, _("Thursday")),
+    (4, _("Friday")),
+    (5, _("Saturday")),
+    (6, _("Sunday")),
+]
+DAY_OF_MONTH_CHOICES = [(day, str(day)) for day in range(1, 32)]
+
 
 class ReportSubscriptionForm(ModelForm):
+
+    weekday = forms.TypedChoiceField(
+        label=_("Weekday"),
+        choices=WEEKDAY_CHOICES,
+        coerce=int,
+        required=False,
+        widget=forms.Select(attrs={"class": _SELECT_CLASS}),
+    )
+    day_of_month = forms.TypedChoiceField(
+        label=_("Date"),
+        choices=DAY_OF_MONTH_CHOICES,
+        coerce=int,
+        required=False,
+        widget=forms.Select(attrs={"class": _SELECT_CLASS}),
+    )
+
     format = forms.ChoiceField(
         label=_("Attachment"),
         choices=[("xlsx", _("Excel")), ("pdf", _("PDF"))],
         initial="xlsx",
     )
 
+    cols = {"recipients_employees": 12}
+
     class Meta:
         model = ReportSubscription
-        fields = ["report_slug", "name", "frequency", "recipients"]
+        fields = ["report_slug", "name", "frequency", "recipients_employees"]
         labels = {
             "report_slug": _("Report"),
             "name": _("Name"),
             "frequency": _("Frequency"),
-            "recipients": _("Recipients"),
+            "recipients_employees": _("Recipients"),
         }
 
     def __init__(self, *args, report_choices=None, lock_report=None, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.fields["recipients_employees"] = HorillaMultiSelectField(
+            queryset=Employee.objects.all(),
+            required=False,
+            widget=HorillaMultiSelectWidget(
+                filter_route_name="employee-widget-filter",
+                filter_class=EmployeeFilter,
+                filter_instance_context_name="f",
+                filter_template_path="employee_filters.html",
+                instance=self.instance,
+            ),
+            label=_("Recipients"),
+        )
+
         editing = bool(self.instance and self.instance.pk)
         if editing:
-            # The report a subscription is for never changes after creation
-            # — show it (so the user has context) but lock the value: a
-            # disabled field ignores whatever a client submits and always
-            # uses this single fixed choice instead.
+            # Report is locked once a subscription exists.
             self.fields["report_slug"] = forms.ChoiceField(
                 label=_("Report"),
                 choices=[(self.instance.report_slug, self.instance.report_name)],
@@ -68,35 +109,36 @@ class ReportSubscriptionForm(ModelForm):
                 widget=forms.Select(attrs={"class": _SELECT_CLASS}),
             )
 
-    def clean_recipients(self):
-        """Reject malformed addresses up front.
+        self.fields["recipients_employees"] = self.fields.pop("recipients_employees")
 
-        A subscription is a fire-and-forget scheduled job: a typo here means
-        the report silently never arrives and nothing surfaces the failure,
-        so the address list has to be validated at entry.
-        """
-        raw = self.cleaned_data.get("recipients") or ""
-        emails = [part.strip() for part in raw.split(",") if part.strip()]
-        if not emails:
-            raise forms.ValidationError(_("Enter at least one email address."))
-        invalid = []
-        for email in emails:
-            try:
-                validate_email(email)
-            except forms.ValidationError:
-                invalid.append(email)
-        if invalid:
-            raise forms.ValidationError(
-                _("Not a valid email address: %(bad)s") % {"bad": ", ".join(invalid)}
+    def clean(self):
+        """Resolve the posted employee ids and require at least one recipient."""
+        cleaned_data = super().clean()
+        if isinstance(self.fields.get("recipients_employees"), HorillaMultiSelectField):
+            self.errors.pop("recipients_employees", None)
+            employee_data = self.fields["recipients_employees"].queryset.filter(
+                id__in=self.data.getlist("recipients_employees")
             )
-        # Normalize to a de-duplicated comma-separated list, preserving order.
-        return ", ".join(dict.fromkeys(emails))
+            cleaned_data["recipients_employees"] = employee_data
+            if not employee_data.exists():
+                self.add_error(
+                    "recipients_employees", _("Select at least one recipient.")
+                )
+        return cleaned_data
 
     def save(self, commit=True):
         instance = super().save(commit=False)
         filters = dict(instance.filters or {})
         filters["format"] = self.cleaned_data.get("format") or "xlsx"
         instance.filters = filters
+        if not instance.last_run_display:
+            instance.last_run_at = compute_schedule_anchor(
+                instance.frequency,
+                timezone.now(),
+                weekday=self.cleaned_data.get("weekday"),
+                day_of_month=self.cleaned_data.get("day_of_month"),
+            )
         if commit:
             instance.save()
+            self.save_m2m()
         return instance

@@ -35,7 +35,12 @@ class ReportSubscriptionAdmin(admin.ModelAdmin):
         "owner",
     )
     list_filter = ("frequency", "is_active", "report_slug")
-    search_fields = ("name", "recipients", "report_slug")
+    search_fields = (
+        "name",
+        "report_slug",
+        "recipients_employees__employee_first_name",
+        "recipients_employees__employee_last_name",
+    )
 
 
 @admin.register(ReportFavorite)

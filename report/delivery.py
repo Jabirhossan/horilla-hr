@@ -4,11 +4,13 @@ Scheduled / on-demand delivery of standard report subscriptions.
 
 from __future__ import annotations
 
+import calendar
 import logging
 from dataclasses import dataclass
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Optional
 
+from dateutil.relativedelta import relativedelta
 from django.core.mail import EmailMessage
 from django.test import RequestFactory
 from django.utils import timezone
@@ -40,10 +42,27 @@ def subscription_is_due(subscription: ReportSubscription, now=None) -> bool:
     if subscription.frequency == ReportSubscription.FREQUENCY_DAILY:
         return delta >= timedelta(hours=23)
     if subscription.frequency == ReportSubscription.FREQUENCY_WEEKLY:
-        return delta >= timedelta(days=6, hours=12)
+        return delta >= timedelta(hours=23) and now.weekday() == last.weekday()
     if subscription.frequency == ReportSubscription.FREQUENCY_MONTHLY:
-        return delta >= timedelta(days=28)
+        target_day = min(last.day, calendar.monthrange(now.year, now.month)[1])
+        return delta >= timedelta(hours=23) and now.day == target_day
     return False
+
+
+def compute_schedule_anchor(frequency, now, weekday=None, day_of_month=None):
+    """Seed value for last_run_at so the first delivery lands on the chosen weekday/day-of-month."""
+    today = now.date()
+    if frequency == ReportSubscription.FREQUENCY_WEEKLY and weekday is not None:
+        next_occurrence = today + timedelta(days=(weekday - today.weekday()) % 7)
+        seed_date = next_occurrence - timedelta(days=7)
+    elif frequency == ReportSubscription.FREQUENCY_MONTHLY and day_of_month is not None:
+        next_occurrence = today + relativedelta(day=day_of_month)
+        if next_occurrence < today:
+            next_occurrence += relativedelta(months=1, day=day_of_month)
+        seed_date = next_occurrence - relativedelta(months=1)
+    else:
+        return None
+    return datetime.combine(seed_date, now.time(), tzinfo=now.tzinfo)
 
 
 def _owner_request(subscription: ReportSubscription):

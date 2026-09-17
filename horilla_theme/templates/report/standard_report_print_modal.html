@@ -17,7 +17,7 @@
         id="standardReportPrintForm"
     >
         <div class="oh-dropdown__filter-body">
-            <div class="oh-accordion">
+            <div class="oh-accordion oh-accordion--show">
                 <div
                     class="oh-accordion-header"
                     onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');"
@@ -53,7 +53,7 @@
             </div>
 
             {% if filter_schema.primary or filter_schema.advanced %}
-            <div class="oh-accordion">
+            <div class="oh-accordion oh-accordion--show">
                 <div
                     class="oh-accordion-header"
                     onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');"

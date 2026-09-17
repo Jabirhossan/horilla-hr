@@ -111,10 +111,7 @@ class ReportSubscriptionsNav(HorillaNavView):
 
 @method_decorator(login_required, name="dispatch")
 class ReportSubscriptionsListView(HorillaListView):
-    """
-    Every user only ever sees/manages their own subscriptions — matches the
-    ownership scoping the previous function-based view enforced.
-    """
+    """List of the current user's own report subscriptions."""
 
     model = ReportSubscription
     # True (not False) is what actually unlocks the checkbox column that
@@ -132,9 +129,9 @@ class ReportSubscriptionsListView(HorillaListView):
         (_("Subscription"), "name"),
         (_("Report"), "report_name"),
         (_("Frequency"), "frequency_label"),
-        (_("Recipients"), "recipients"),
+        (_("Recipients"), "recipients_display"),
         (_("Status"), "status_label"),
-        (_("Last sent"), "last_run_at"),
+        (_("Last sent"), "last_run_display"),
     ]
 
     # Clicking anywhere on the row opens the detail view — matches the same
@@ -202,18 +199,12 @@ class ReportSubscriptionsListView(HorillaListView):
 
 @method_decorator(login_required, name="dispatch")
 class ReportSubscriptionFormView(HorillaFormView):
-    """
-    Real Horilla create/edit form component (base.forms.ModelForm +
-    generic/form.html) — one view handles all three entry points:
-      - locked create: URL supplies `slug` (a report row's Subscribe icon)
-      - picker create: URL supplies neither `slug` nor `pk` (the
-        Subscriptions list's own Create button — no report context yet)
-      - edit: URL supplies `pk` (a subscription row's Edit action)
-    """
+    """Create/edit form for a report subscription."""
 
     model = ReportSubscription
     form_class = ReportSubscriptionForm
     new_display_title = _("Create a subscription")
+    template_name = "cbv/subscriptions/subscription_form.html"
 
     def _permission_denied(self, request: HttpRequest) -> HttpResponse:
         message = _("You do not have permission to subscribe to this report.")
@@ -248,9 +239,9 @@ class ReportSubscriptionFormView(HorillaFormView):
                     initial.setdefault("name", str(definition.name))
             initial.setdefault("frequency", "weekly")
             initial.setdefault("format", "xlsx")
-            initial.setdefault(
-                "recipients", getattr(self.request.user, "email", "") or ""
-            )
+            own_employee = getattr(self.request.user, "employee_get", None)
+            if own_employee:
+                initial.setdefault("recipients_employees", [own_employee.pk])
         return initial
 
     def init_form(self, *args, data={}, files={}, instance=None, **kwargs):
@@ -316,10 +307,7 @@ class ReportSubscriptionFormView(HorillaFormView):
 
 @method_decorator(login_required, name="dispatch")
 class ReportSubscriptionDetailView(HorillaDetailedView):
-    """Real Horilla detailed-view component — opened by clicking a row on
-    the Subscriptions list. No avatar/header card (subscriptions have no
-    visual identity beyond their name), so header is disabled and the name
-    is used as the modal title instead."""
+    """Detail view for a single report subscription."""
 
     model = ReportSubscription
     pk_url_kwarg = "subscription_id"
@@ -328,9 +316,9 @@ class ReportSubscriptionDetailView(HorillaDetailedView):
         (_("Report"), "report_name"),
         (_("Frequency"), "frequency_label"),
         (_("Attachment"), "format_label"),
-        (_("Recipients"), "recipients"),
+        (_("Recipients"), "recipients_display"),
         (_("Status"), "status_label"),
-        (_("Last sent"), "last_run_at"),
+        (_("Last sent"), "last_run_display"),
         (_("Created"), "created_at"),
     ]
 

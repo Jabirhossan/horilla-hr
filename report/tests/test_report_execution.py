@@ -537,19 +537,24 @@ class SubscriptionClaimTests(TestCase):
             create=True,
         )
 
-    def _subscription(self, **overrides):
+    def _subscription(self, recipients_employees=None, **overrides):
         from report.models import ReportSubscription
 
         defaults = {
             "report_slug": "workforce-composition",
             "name": "Weekly workforce",
             "frequency": "weekly",
-            "recipients": "boss@test.horilla",
             "last_run_at": None,
             "owner": self.owner,
         }
         defaults.update(overrides)
-        return ReportSubscription.objects.create(**defaults)
+        subscription = ReportSubscription.objects.create(**defaults)
+        subscription.recipients_employees.set(
+            recipients_employees
+            if recipients_employees is not None
+            else [self.employee]
+        )
+        return subscription
 
     def test_second_worker_does_not_resend(self):
         """Two pollers, one due subscription -> one claim wins."""

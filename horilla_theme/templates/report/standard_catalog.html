@@ -391,6 +391,7 @@
        description gets the card's whole width, and actions are lifted out
        of flow to the top-right corner the way the theme card's own
        dropdown-toggle is positioned. */
+    .sr-sections.sr-view--grid .sr-row.sr-row--hidden { display: none; }
     .sr-sections.sr-view--grid .sr-row {
         position: relative;
         display: grid;
@@ -539,9 +540,21 @@
     }
     .sr-row__check { display: none; }
     .sr-sections.sr-view--grid .sr-row__check { display: flex; }
+    .sr-row__check .oh-input__checkbox {
+        width: 16px;
+        height: 16px;
+        padding: 0;
+        margin-bottom: 0;
+        border-radius: 3px;
+    }
 
-    /* Bulk action bar — grid mode only, shown once 1+ cards are checked.
-       Coral, not the mockup's blue. */
+    .sr-sections:not(.sr-view--grid) .sr-row__check {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Bulk action bar — shown once 1+ rows are checked. Coral, not the mockup's blue. */
     .sr-bulk-bar {
         display: flex;
         align-items: center;
@@ -630,7 +643,7 @@
                     {% endif %}
                     <button type="button" class="sr-tab" data-tab="subs">
                         <span class="sr-tab__badge">{{ subscription_count }}</span>
-                        {% trans "Subscriptions" %}
+                        {% trans "Schedule" %}
                     </button>
                 </div>
                 {% if has_explorer_access %}
@@ -710,7 +723,7 @@
                     <span class="sr-bulk-bar__count" id="srBulkCount"></span>
                     <div class="sr-bulk-bar__actions">
                         <button type="button" class="oh-btn oh-btn--secondary-outline oh-btn--small" id="srBulkExport">{% trans "Export selected" %}</button>
-                        <button type="button" class="oh-btn oh-btn--secondary-outline oh-btn--small" id="srBulkSubscribe">{% trans "Subscribe selected" %}</button>
+                        <button type="button" class="oh-btn oh-btn--secondary-outline oh-btn--small" id="srBulkSubscribe">{% trans "Schedule selected" %}</button>
                         <button type="button" class="oh-btn oh-btn--secondary-outline oh-btn--small" id="srBulkAddToView">{% trans "Add to view…" %}</button>
                     </div>
                 </div>
@@ -727,6 +740,7 @@
 
                         <div class="sr-rail-heading">{% trans "Saved views" %}</div>
                         <div
+                            id="srFavoritesView"
                             class="sr-saved-view"
                             data-view-slugs="[{% for r in favorites %}&quot;{{ r.slug }}&quot;{% if not forloop.last %},{% endif %}{% endfor %}]"
                         >
@@ -747,7 +761,7 @@
                         <button type="button" class="sr-save-view-btn" id="srCreateViewBtn">+ {% trans "Save view" %}</button>
                     </nav>
 
-                    <div class="sr-sections" id="srSections">
+                    <div class="sr-sections max-h-[calc(100vh-350px)] overflow-y-auto" id="srSections">
                         {% for section in sections %}
                         <section id="sec-{{ section.domain }}" class="sr-section" data-domain="{{ section.domain }}">
                             <div class="sr-section__head">
@@ -755,7 +769,7 @@
                                     <ion-icon name="{{ section.icon }}"></ion-icon>
                                 </span>
                                 <span class="sr-section__title">{{ section.label }}</span>
-                                <span class="sr-count-badge">
+                                <span class="sr-count-badge sr-section__count">
                                     {% blocktrans count counter=section.reports|length %}{{ counter }} report{% plural %}{{ counter }} reports{% endblocktrans %}
                                 </span>
                             </div>
@@ -798,7 +812,7 @@
                                         <button
                                             type="button"
                                             class="oh-btn oh-btn--sq-sm oh-btn--transparent sr-row__btn"
-                                            title="{% trans 'Subscribe' %}"
+                                            title="{% trans 'Schedule' %}"
                                             onclick="event.stopPropagation();"
                                             data-toggle="oh-modal-toggle"
                                             data-target="#genericModal"
@@ -876,12 +890,12 @@
     </div>
 </div>
 
-{# Bulk "Subscribe selected" — replaces two chained native prompt() calls    #}
+{# Bulk "Schedule selected" — replaces two chained native prompt() calls    #}
 {# (recipients, then frequency), which broke the flow and could not validate. #}
 <div class="oh-modal" id="srSubscribeModal" role="dialog" aria-modal="true" aria-labelledby="srSubscribeModalLabel" aria-hidden="true">
     <div class="oh-modal__dialog" style="max-width: 460px;">
         <div class="oh-modal__dialog-header">
-            <h2 class="oh-modal__dialog-title" id="srSubscribeModalLabel">{% trans "Subscribe to reports" %}</h2>
+            <h2 class="oh-modal__dialog-title" id="srSubscribeModalLabel">{% trans "Schedule reports" %}</h2>
             <button type="button" class="oh-modal__close" id="srSubscribeClose" aria-label="{% trans 'Close' %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
@@ -891,15 +905,12 @@
             <form id="srSubscribeForm" onsubmit="return false;">
                 <div class="oh-input-group">
                     <label class="oh-label" for="srSubscribeRecipients">{% trans "Recipients" %}</label>
-                    <input
-                        type="text"
-                        class="oh-input w-100"
-                        id="srSubscribeRecipients"
-                        autocomplete="off"
-                        value="{{ request.user.email|default:'' }}"
-                        placeholder="{% trans 'name@example.com, other@example.com' %}"
-                    >
-                    <p class="text-xs text-gray-500 mt-1 mb-0">{% trans "Comma-separated email addresses." %}</p>
+                    <select class="oh-select oh-select-2 w-100" id="srSubscribeRecipients" multiple>
+                        {% for employee in schedule_recipient_employees %}
+                        <option value="{{ employee.id }}"{% if employee.id == request.user.employee_get.id %} selected{% endif %}>{{ employee }}</option>
+                        {% endfor %}
+                    </select>
+                    <p class="text-xs text-gray-500 mt-1 mb-0">{% trans "The report is emailed to each selected employee." %}</p>
                 </div>
                 <div class="oh-input-group mb-0">
                     <label class="oh-label" for="srSubscribeFrequency">{% trans "Frequency" %}</label>
@@ -909,6 +920,22 @@
                         <option value="monthly">{% trans "Monthly" %}</option>
                     </select>
                 </div>
+                <div class="oh-input-group" id="srSubscribeWeekdayGroup">
+                    <label class="oh-label" for="srSubscribeWeekday">{% trans "Weekday" %}</label>
+                    <select class="oh-select oh-select-2 w-100" id="srSubscribeWeekday">
+                        {% for value, label in schedule_weekday_choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="oh-input-group mb-0" id="srSubscribeDateGroup" hidden>
+                    <label class="oh-label" for="srSubscribeDate">{% trans "Date" %}</label>
+                    <select class="oh-select oh-select-2 w-100" id="srSubscribeDate">
+                        {% for value, label in schedule_day_of_month_choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
                 <p class="text-xs text-red-600 mt-2 mb-0" id="srSubscribeError" hidden></p>
             </form>
         </div>
@@ -916,7 +943,7 @@
             <button type="button" class="oh-btn oh-btn--light oh-btn--small" id="srSubscribeCancel">{% trans "Cancel" %}</button>
             <button type="button" class="oh-btn oh-btn--secondary oh-btn--small" id="srSubscribeSubmit">
                 <ion-icon name="notifications-outline"></ion-icon>
-                {% trans "Subscribe" %}
+                {% trans "Schedule" %}
             </button>
         </div>
     </div>
@@ -1060,8 +1087,18 @@ function initStandardCatalog() {
                 if (match) visibleInSection++;
             });
             section.classList.toggle("sr-section--hidden", visibleInSection === 0);
+            var sectionCountBadge = section.querySelector(".sr-section__count");
+            if (sectionCountBadge) {
+                sectionCountBadge.textContent = visibleInSection === 1
+                    ? "1 " + "{% trans 'report'|escapejs %}"
+                    : visibleInSection + " " + "{% trans 'reports'|escapejs %}";
+            }
             var railLink = document.querySelector('.sr-rail-link[data-rail="' + section.dataset.domain + '"]');
-            if (railLink) railLink.classList.toggle("sr-rail-link--hidden", visibleInSection === 0);
+            if (railLink) {
+                railLink.classList.toggle("sr-rail-link--hidden", visibleInSection === 0);
+                var railCountBadge = railLink.querySelector(".sr-count-badge");
+                if (railCountBadge) railCountBadge.textContent = visibleInSection;
+            }
             if (visibleInSection > 0) anyVisible = true;
         });
         var q = (searchInput.value || "").trim();
@@ -1092,6 +1129,24 @@ function initStandardCatalog() {
     });
 
     var csrfToken = "{{ csrf_token }}";
+    var favoritesViewEl = document.getElementById("srFavoritesView");
+
+    function updateFavoritesView(slug, favorited) {
+        if (!favoritesViewEl) return;
+        var slugs;
+        try { slugs = JSON.parse(favoritesViewEl.dataset.viewSlugs || "[]"); } catch (err) { slugs = []; }
+        var idx = slugs.indexOf(slug);
+        if (favorited && idx === -1) slugs.push(slug);
+        if (!favorited && idx !== -1) slugs.splice(idx, 1);
+        favoritesViewEl.dataset.viewSlugs = JSON.stringify(slugs);
+        var badge = favoritesViewEl.querySelector(".sr-count-badge");
+        if (badge) badge.textContent = slugs.length;
+        if (activeSavedViewEl === favoritesViewEl) {
+            activeSavedViewSlugs = slugs;
+            applyFilters();
+        }
+    }
+
     document.querySelectorAll(".sr-fav-btn").forEach(function (btn) {
         btn.addEventListener("click", async function (e) {
             e.stopPropagation();
@@ -1108,6 +1163,8 @@ function initStandardCatalog() {
                 btn.classList.toggle("is-on", !!data.favorited);
                 var icon = btn.querySelector("ion-icon");
                 if (icon) icon.setAttribute("name", data.favorited ? "star" : "star-outline");
+                var row = btn.closest(".sr-row");
+                if (row) updateFavoritesView(row.dataset.slug, !!data.favorited);
             } catch (err) {
                 console.error(err);
             }
@@ -1183,12 +1240,11 @@ function initStandardCatalog() {
     }
 
     // ---- Saved views (sidebar) ----
-    var savedViewEls = document.querySelectorAll(".sr-saved-view");
-    savedViewEls.forEach(function (el) {
+    function bindSavedViewToggle(el) {
         el.addEventListener("click", function (e) {
             if (e.target.classList.contains("sr-saved-view__del")) return;
             var isActive = el.classList.contains("sr-saved-view--active");
-            savedViewEls.forEach(function (v) { v.classList.remove("sr-saved-view--active"); });
+            document.querySelectorAll(".sr-saved-view").forEach(function (v) { v.classList.remove("sr-saved-view--active"); });
             if (isActive) {
                 activeSavedViewEl = null;
                 activeSavedViewSlugs = [];
@@ -1199,7 +1255,8 @@ function initStandardCatalog() {
             }
             applyFilters();
         });
-    });
+    }
+    document.querySelectorAll(".sr-saved-view").forEach(bindSavedViewToggle);
 
     document.getElementById("srSavedViewsList").addEventListener("click", function (e) {
         if (!e.target.classList.contains("sr-saved-view__del")) return;
@@ -1289,14 +1346,7 @@ function initStandardCatalog() {
             div.innerHTML = '<span class="sr-saved-view__name"></span><span class="sr-saved-view__del" data-view-id="' + data.view.id + '" title="{% trans "Delete view"|escapejs %}">×</span>';
             div.querySelector(".sr-saved-view__name").textContent = data.view.name;
             list.appendChild(div);
-            div.addEventListener("click", function (e) {
-                if (e.target.classList.contains("sr-saved-view__del")) return;
-                document.querySelectorAll(".sr-saved-view").forEach(function (v) { v.classList.remove("sr-saved-view--active"); });
-                div.classList.add("sr-saved-view--active");
-                activeSavedViewEl = div;
-                activeSavedViewSlugs = data.view.report_slugs;
-                applyFilters();
-            });
+            bindSavedViewToggle(div);
             closeSaveViewModal();
         }).catch(function () {
             saveViewSubmitBtn.disabled = false;
@@ -1330,16 +1380,17 @@ function initStandardCatalog() {
     function updateBulkBar() {
         var slugs = selectedSlugs();
         var inGrid = sectionsEl && sectionsEl.classList.contains("sr-view--grid");
-        if (bulkBar) bulkBar.hidden = !inGrid || slugs.length === 0;
+        if (bulkBar) bulkBar.hidden = slugs.length === 0;
         if (bulkCount) {
             bulkCount.textContent = slugs.length === 1
                 ? "1 " + "{% trans 'report selected'|escapejs %}"
                 : slugs.length + " " + "{% trans 'reports selected'|escapejs %}";
         }
-        document.querySelectorAll(".sr-row").forEach(function (row) {
-            var slug = row.dataset.slug;
-            row.classList.toggle("is-selected", inGrid && slugs.indexOf(slug) !== -1);
-        });
+        if (inGrid) {
+            document.querySelectorAll(".sr-row").forEach(function (row) {
+                row.classList.toggle("is-selected", slugs.indexOf(row.dataset.slug) !== -1);
+            });
+        }
     }
 
     document.querySelectorAll(".sr-bulk-check").forEach(function (cb) {
@@ -1406,8 +1457,19 @@ function initStandardCatalog() {
     var subModal = document.getElementById("srSubscribeModal");
     var subRecipients = document.getElementById("srSubscribeRecipients");
     var subFrequency = document.getElementById("srSubscribeFrequency");
+    var subWeekday = document.getElementById("srSubscribeWeekday");
+    var subDate = document.getElementById("srSubscribeDate");
+    var subWeekdayGroup = document.getElementById("srSubscribeWeekdayGroup");
+    var subDateGroup = document.getElementById("srSubscribeDateGroup");
     var subError = document.getElementById("srSubscribeError");
     var subSubmit = document.getElementById("srSubscribeSubmit");
+
+    function toggleSubScheduleDayFields() {
+        subWeekdayGroup.hidden = subFrequency.value !== "weekly";
+        subDateGroup.hidden = subFrequency.value !== "monthly";
+    }
+    subFrequency.addEventListener("change", toggleSubScheduleDayFields);
+    toggleSubScheduleDayFields();
 
     function setSubError(msg) {
         if (msg) { subError.textContent = msg; subError.hidden = false; }
@@ -1421,28 +1483,21 @@ function initStandardCatalog() {
         document.getElementById("srSubscribeCount").textContent =
             slugs.length + " {% trans 'report(s) selected.'|escapejs %}";
         srOpenModal(subModal);
-        setTimeout(function () { subRecipients.focus(); }, 50);
     });
 
     document.getElementById("srSubscribeClose").addEventListener("click", function () { srCloseModal(subModal); });
     document.getElementById("srSubscribeCancel").addEventListener("click", function () { srCloseModal(subModal); });
 
+    function selectedRecipientIds() {
+        return Array.from(subRecipients.selectedOptions).map(function (o) { return o.value; });
+    }
+
     subSubmit.addEventListener("click", function () {
         var slugs = selectedSlugs();
         if (!slugs.length) { srCloseModal(subModal); return; }
-        var recipients = subRecipients.value.trim();
-        if (!recipients) {
-            setSubError("{% trans 'Enter at least one recipient email address.'|escapejs %}");
-            subRecipients.focus();
-            return;
-        }
-        // Validated here rather than server-side-only: the old prompt() flow
-        // accepted anything and failed silently after the fact.
-        var invalid = recipients.split(",").map(function (e) { return e.trim(); })
-            .filter(function (e) { return e && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e); });
-        if (invalid.length) {
-            setSubError("{% trans 'Not a valid email address:'|escapejs %} " + invalid[0]);
-            subRecipients.focus();
+        var recipients = selectedRecipientIds();
+        if (!recipients.length) {
+            setSubError("{% trans 'Select at least one recipient.'|escapejs %}");
             return;
         }
         setSubError("");
@@ -1450,17 +1505,24 @@ function initStandardCatalog() {
         fetch("{% url 'standard-report-bulk-subscribe' %}", {
             method: "POST",
             headers: { "X-CSRFToken": csrfToken, "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
-            body: JSON.stringify({ report_slugs: slugs, frequency: subFrequency.value, format: "xlsx", recipients: recipients }),
+            body: JSON.stringify({
+                report_slugs: slugs,
+                frequency: subFrequency.value,
+                format: "xlsx",
+                recipients: recipients,
+                weekday: subFrequency.value === "weekly" ? parseInt(subWeekday.value, 10) : null,
+                day_of_month: subFrequency.value === "monthly" ? parseInt(subDate.value, 10) : null,
+            }),
         }).then(function (res) { return res.json(); }).then(function (data) {
             subSubmit.disabled = false;
             if (data.error) { setSubError(data.error); return; }
             srCloseModal(subModal);
-            var msg = data.created + " {% trans 'subscription(s) created.'|escapejs %}";
+            var msg = data.created + " {% trans 'schedule(s) created.'|escapejs %}";
             if (data.skipped && data.skipped.length) msg += " " + data.skipped.length + " {% trans 'skipped (no access).'|escapejs %}";
             srToast(msg);
         }).catch(function () {
             subSubmit.disabled = false;
-            setSubError("{% trans 'Could not create subscriptions. Please try again.'|escapejs %}");
+            setSubError("{% trans 'Could not create schedules. Please try again.'|escapejs %}");
         });
     });
 
@@ -1548,6 +1610,7 @@ function initStandardCatalog() {
                 div.innerHTML = '<span class="sr-saved-view__name"></span><span class="sr-saved-view__del" data-view-id="' + data.view.id + '" title="{% trans "Delete view"|escapejs %}">×</span>';
                 div.querySelector(".sr-saved-view__name").textContent = data.view.name;
                 list.appendChild(div);
+                bindSavedViewToggle(div);
                 srCloseModal(atvModal);
                 srToast("{% trans 'View created and reports added.'|escapejs %}");
             }).catch(function () {
