@@ -216,22 +216,26 @@
         color: var(--sidebar-accent) !important;
     }
 
-    /* Active submenu link highlight */
+    /* Active submenu link highlight: solid accent fill, matching the
+       parent item's .sidebox-current weight so the active submenu reads
+       as clearly "selected" rather than a faint tint. */
     .oh-sidebar-active-link {
-        background-color: #f3f4f6;
-        color: #111827 !important;
-        font-weight: 500;
+        background-color: var(--sidebar-accent) !important;
+        color: #ffffff !important;
+        font-weight: 600;
+        box-shadow: 0 4px 14px -4px rgba(20, 20, 30, 0.25);
     }
 
-    /* Dark mode: mirror light-mode contrast — subtle elevated bg + bright text */
+    /* Dark mode: mirror light-mode contrast — solid accent fill + bright text */
     body.dark #sidebar .sidebar-subnav-link:hover {
         background-color: rgba(255, 255, 255, 0.06) !important;
         color: #e5e7eb !important;
     }
     body.dark #sidebar .oh-sidebar-active-link {
-        background-color: rgba(255, 255, 255, 0.12) !important;
+        background-color: var(--sidebar-accent-dark) !important;
         color: #ffffff !important;
-        font-weight: 500;
+        font-weight: 600;
+        box-shadow: 0 4px 14px -4px rgba(20, 20, 30, 0.25);
     }
 
     /* Make icons visible: dark-gray by default (also on hover, where the soft
@@ -378,11 +382,10 @@
         color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
     }
     #sidebarFlyout a.sidebar-subnav-link.oh-sidebar-active-link {
-        background-color: color-mix(in srgb, {{ theme_obj.primary_600|default:"#E54F38" }} 16%, transparent) !important;
-        color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
+        background-color: var(--sidebar-accent) !important;
+        color: #ffffff !important;
         font-weight: 600;
-        border-left: 3px solid {{ theme_obj.primary_600|default:"#E54F38" }};
-        padding-left: calc(0.75rem - 3px) !important;
+        box-shadow: 0 4px 14px -4px rgba(20, 20, 30, 0.25);
     }
     body.dark #sidebarFlyout a.sidebar-subnav-link {
         color: #d1d5db;
@@ -392,10 +395,10 @@
         color: {{ theme_obj.primary_400|default:"#F87060" }} !important;
     }
     body.dark #sidebarFlyout a.sidebar-subnav-link.oh-sidebar-active-link {
-        background-color: color-mix(in srgb, {{ theme_obj.primary_600|default:"#E54F38" }} 25%, transparent) !important;
-        color: {{ theme_obj.primary_400|default:"#F87060" }} !important;
-        border-left: 3px solid {{ theme_obj.primary_400|default:"#F87060" }};
-        padding-left: calc(0.75rem - 3px) !important;
+        background-color: var(--sidebar-accent-dark) !important;
+        color: #ffffff !important;
+        font-weight: 600;
+        box-shadow: 0 4px 14px -4px rgba(20, 20, 30, 0.25);
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -740,6 +743,15 @@
             $(`#unselect_${id}, #export_${id}, #bulk_udate_${id}`).addClass(
                 "d-none"
             );
+        }
+        // "Select (N)" is redundant once every row is already selected --
+        // toggle it opposite of Unselect instead of leaving it shown
+        // unconditionally, which previously left both actions visible at
+        // once whenever the user had selected everything.
+        var $selectBadge = $(`#select_${id}`);
+        if ($selectBadge.length) {
+            var total = parseInt($selectBadge.attr("data-total"), 10) || 0;
+            $selectBadge.toggleClass("d-none", count > 0 && count >= total);
         }
     }
 

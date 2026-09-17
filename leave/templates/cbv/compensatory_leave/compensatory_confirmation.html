@@ -13,7 +13,7 @@
                 <ion-icon name="checkmark-outline"></ion-icon>
             </a>
         {% else %}
-            <a type="submit" href="#" title="{% trans 'Approve' %}"
+            <a type="submit" title="{% trans 'Approve' %}" tabindex="-1" aria-disabled="true"
                 class="oh-btn oh-btn--success oh-btn--disabled oh-btn--sq-sm">
                 <ion-icon name="checkmark-outline"></ion-icon>
             </a>
@@ -28,7 +28,7 @@
                 <ion-icon name="close-circle-outline"></ion-icon>
             </a>
         {% else %}
-            <a type="submit" href="#" title="{% trans 'Reject' %}"
+            <a type="submit" title="{% trans 'Reject' %}" tabindex="-1" aria-disabled="true"
                 class="oh-btn oh-btn--danger oh-btn--disabled oh-btn--sq-sm">
                 <ion-icon name="close-circle-outline"></ion-icon>
             </a>

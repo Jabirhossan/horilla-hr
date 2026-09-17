@@ -65,7 +65,7 @@
         <span class="text-md font-semibold">{{ candidate }}'s {% trans "Notes" %}</span>
 
         {% if notes.paginator.num_pages > 1 %}
-            <div class="hlv-pagination inline-flex items-center h-8 gap-0.5 bg-white border border-[#e6e6e6] rounded-md px-1 flex-shrink-0">
+            <div class="hlv-pagination inline-flex items-center h-8 gap-0.5 bg-white border border-primary-500 rounded-md px-1 flex-shrink-0">
                 <button
                     type="button"
                     class="w-7 h-7 flex items-center justify-center rounded text-xs leading-none transition duration-300 {% if notes.has_previous %}text-[#666] hover:bg-[#f5f5f5]{% else %}text-[#ccc] cursor-not-allowed{% endif %}"

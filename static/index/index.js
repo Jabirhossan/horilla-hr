@@ -729,6 +729,55 @@ function reloadSelectedCount(targetElement, storeKey = "selectedInstances") {
     }
 }
 
+// Safety net for the "Select (N)" toolbar button: on a fresh load of a list
+// that already has every row selected (a selection restored from
+// localStorage by selectSelected()), the Select button was observed staying
+// visible even though reloadSelectedCount() above had already hidden it a
+// moment earlier -- something ~200-300ms after this same settle re-touches
+// the button and puts it back to the server-rendered default (always
+// visible when the list has rows). Root cause not pinned down (not this
+// file's own afterSwap/afterSettle handlers, not a second
+// /rotating-list-view/-style request, not htmxSelect2.js's unrelated
+// .oh-select sweep) despite extensive tracing -- re-assert the correct
+// state instead, both right away and again once that mystery window has
+// passed. Cheap (one comparison per select_* button) and idempotent, so
+// running it repeatedly is harmless.
+function resyncSelectButtons() {
+    $('[id^="select_"][data-total-count]').each(function () {
+        var $btn = $(this);
+        var viewId = $btn.attr("id").replace(/^select_/, "");
+        // The button's real storeKey is not always "selectedInstances" (e.g.
+        // the roster grid uses "rosterEmployeeInstances"), so read it from
+        // data-store-key rather than assuming the default -- which silently
+        // no-ops this whole resync for any view with a custom store key.
+        // Fall back to scraping onclick for older/custom markup that predates
+        // the attribute.
+        var storeKey = $btn.attr("data-store-key");
+        if (!storeKey) {
+            storeKey = "selectedInstances";
+            var onclick = $btn.attr("onclick") || "";
+            var match = onclick.match(/reloadSelectedCount\([^,]+,\s*['"]([^'"]+)['"]/)
+                || onclick.match(/hlvSelectAllRecords\([^,]+,[^,]+,\s*['"]([^'"]+)['"]/);
+            if (match) {
+                storeKey = match[1];
+            }
+        }
+        var count = JSON.parse(
+            ensureSelectionStore(storeKey).attr("data-ids") || "[]"
+        ).length;
+        var total = parseInt($btn.attr("data-total-count"), 10) || 0;
+        $btn.toggleClass("d-none", total > 0 && count >= total);
+        if (count) {
+            $(`#unselect_${viewId}, #export_${viewId}, #bulk_udate_${viewId}`).removeClass("d-none");
+            $(`#count_${viewId}`).html(count);
+        }
+    });
+}
+$(document).on("htmx:afterSettle", function () {
+    resyncSelectButtons();
+    setTimeout(resyncSelectButtons, 400);
+});
+
 function removeHighlight() {
     setTimeout(function () {
         $(".toggle-highlight").removeClass("toggle-highlight");

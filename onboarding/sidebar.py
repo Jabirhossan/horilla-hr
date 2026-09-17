@@ -26,13 +26,23 @@ SUBMENUS = [
         # The "Create" button on this page links to recruitment's standalone
         # candidate-create/ page (a sibling URL under a different app prefix,
         # not a sub-path of candidates-view/), so it needs an explicit prefix
-        # here for the sidebar's path-based active-link highlighting to match it.
-        "match_prefixes": ["/recruitment/candidate-create/"],
+        # here for the sidebar's path-based active-link highlighting to match
+        # it. onboarding-cand-detail-view/<pk>/ and candidate-single-view/<pk>/
+        # are likewise sibling candidate detail pages under this app.
+        "match_prefixes": [
+            "/recruitment/candidate-create/",
+            "/onboarding/onboarding-cand-detail-view/",
+            "/onboarding/candidate-single-view/",
+        ],
     },
     {
         "menu": _("Onboarding Tasks"),
         "redirect": reverse("cbv-pipeline-onboarding") + "?closed=false",
         "accessibility": "onboarding.sidebar.onboarding_view_accessibility",
+        # onboarding-pipeline-shell/<rec_id>/ is a sibling URL (not a sub-path
+        # of cbv-pipeline-onboarding/), so it needs an explicit prefix for the
+        # sidebar's path-based active-link highlighting to match it.
+        "match_prefixes": ["/onboarding/onboarding-pipeline-shell/"],
     },
 ]
 

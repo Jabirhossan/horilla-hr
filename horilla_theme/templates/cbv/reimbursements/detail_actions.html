@@ -1,6 +1,11 @@
 {% load static i18n %}
 
-<div class="flex items-center gap-2 flex-wrap">
+<div
+    class="flex items-center gap-2 flex-wrap"
+    hx-get="{% url 'detail-view-reimbursement' instance.id %}"
+    hx-trigger="reloadPayrollReimbursements from:body"
+    hx-target="#genericModalBody"
+>
     {% if perms.payroll.change_reimbursement or request.user == instance.employee_id.employee_user_id %}
         {% if instance.status == 'requested' %}
             <button

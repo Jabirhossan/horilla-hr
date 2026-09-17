@@ -29,11 +29,19 @@ SUBMENUS = [
         "menu": _("Recruitment Pipeline"),
         "redirect": reverse("cbv-pipeline"),
         "accessibility": "recruitment.sidebar.pipeline_accessibility",
+        # recruitment-pipeline-shell/<rec_id>/ is a sibling URL (not a sub-path
+        # of cbv-pipeline/), so it needs an explicit prefix for the sidebar's
+        # path-based active-link highlighting to match it.
+        "match_prefixes": ["/recruitment/recruitment-pipeline-shell/"],
     },
     {
         "menu": _("Open Recruitments"),
         "redirect": reverse("open-recruitments"),
         "accessibility": "recruitment.sidebar.recruitment_accessibility",
+        # recruitment-details/<id>/ is a sibling URL (not a sub-path of
+        # open-recruitments/), so it needs an explicit prefix for the sidebar's
+        # path-based active-link highlighting to match it.
+        "match_prefixes": ["/recruitment/recruitment-details/"],
     },
     {
         "menu": _("Candidates"),
@@ -48,11 +56,19 @@ SUBMENUS = [
         "menu": _("Interviews"),
         "redirect": reverse("interview-view"),
         "accessibility": "recruitment.sidebar.interview_accessibility",
+        # interview-detail-view/<pk>/ is a sibling URL (not a sub-path of
+        # interview-view/), so it needs an explicit prefix for the sidebar's
+        # path-based active-link highlighting to match it.
+        "match_prefixes": ["/recruitment/interview-detail-view/"],
     },
     {
         "menu": _("Job Openings"),
         "redirect": reverse("recruitment-view"),
         "accessibility": "recruitment.sidebar.recruitment_accessibility",
+        # recruitment-detail-view/<pk>/ is a sibling URL (not a sub-path of
+        # recruitment-view/), so it needs an explicit prefix for the sidebar's
+        # path-based active-link highlighting to match it.
+        "match_prefixes": ["/recruitment/recruitment-detail-view/"],
     },
     {
         "menu": _("Recruitment Survey"),

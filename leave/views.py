@@ -5232,8 +5232,15 @@ if apps.is_installed("attendance"):
         and reload the list view of compensatory leave requests.
         """
         try:
-            comp_leave_req = CompensatoryLeaveRequest.objects.get(id=comp_id).delete()
-            messages.success(request, _("Compensatory leave request deleted."))
+            comp_leave_req = CompensatoryLeaveRequest.objects.get(id=comp_id)
+            if comp_leave_req.status == "approved":
+                messages.info(
+                    request,
+                    _("An approved compensatory leave request cannot be deleted."),
+                )
+            else:
+                comp_leave_req.delete()
+                messages.success(request, _("Compensatory leave request deleted."))
 
         except:
             messages.error(request, _("Sorry, something went wrong!"))

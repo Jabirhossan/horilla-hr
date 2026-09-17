@@ -17,6 +17,13 @@ SUBMENUS = [
     {
         "menu": _("Tickets"),
         "redirect": reverse_lazy("ticket-view"),
+        # ticket-detail/<id>/ and ticket-individual-view/<id>/ are sibling URLs
+        # (not sub-paths of ticket-view/), so they need explicit prefixes for
+        # the sidebar's path-based active-link highlighting to match them.
+        "match_prefixes": [
+            "/helpdesk/ticket-detail/",
+            "/helpdesk/ticket-individual-view/",
+        ],
     },
     {
         "menu": _("FAQs"),

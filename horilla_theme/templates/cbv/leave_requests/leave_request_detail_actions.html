@@ -1,7 +1,12 @@
 {% load i18n static basefilters %}
 {% is_manager_of request.user instance as can_manage %}
 {% with can_change=perms.leave.change_leaverequest can_delete=perms.leave.delete_leaverequest can_penalty=perms.base.change_penaltyaccounts leave_manager=request.user|is_leave_approval_manager %}
-<div class="flex items-center gap-2 flex-wrap">
+<div
+    class="flex items-center gap-2 flex-wrap"
+    hx-get="{% url 'leave-requests-detail-view' instance.id %}"
+    hx-trigger="reloadLeaveRequestList from:body"
+    hx-target="#genericModalBody"
+>
 
     {# Penalty Button #}
     {% if can_manage or can_penalty or leave_manager %}

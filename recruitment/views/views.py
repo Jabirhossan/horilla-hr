@@ -781,6 +781,8 @@ def recruitment_archive(request, rec_id):
     except (Recruitment.DoesNotExist, OverflowError):
         messages.error(request, _("Recruitment Does not exists.."))
     if request.META.get("HTTP_HX_REQUEST") == "true":
+        if request.GET.get("context") == "modal":
+            return HttpResponse("")
         return HttpResponse(
             "<script>"
             "$('#applyFilter').click();"

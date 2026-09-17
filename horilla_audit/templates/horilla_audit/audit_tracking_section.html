@@ -1,5 +1,19 @@
 {% load i18n %}
 
+<style>
+    /* The model_paths widget renders `height:200px` on the underlying
+       (hidden) <select>, but Select2 doesn't apply it to the chip box it
+       replaces that with -- the chip box grows unbounded as items are
+       selected/wrap onto new lines, pushing all following settings content
+       down each time and jumping the panel's scroll position to keep the
+       still-focused search caret in view. Cap it at the intended height and
+       scroll internally instead. */
+    #id_model_paths + .select2-container .select2-selection--multiple {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+</style>
+
 <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
     <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">
         {% trans "Audit Tracking" %}
@@ -99,5 +113,56 @@
         $('select[name="model_paths"]')
             .removeClass('select2-hidden-accessible')
             .addClass('oh-select oh-select-2');
+
+        // Opening this dropdown -- including the reopen after each pick,
+        // since closeOnSelect keeps the field focused -- makes the browser
+        // scroll this whole Settings panel to bring the newly rendered
+        // dropdown/search field into view, as part of native focus
+        // handling that completes before any JS event (mousedown, focus,
+        // select2:open, scroll...) reaches a listener -- there's no event
+        // to react to in time to stop the jump landing at all. Holding the
+        // panel at its pre-open scroll position for a short window after
+        // each open (a rAF loop re-asserting scrollTop every frame) snaps
+        // it back on the very next frame instead, which is fast enough
+        // that it isn't visually distinguishable from having been
+        // prevented outright.
+        //
+        // Delegated from the panel itself (a stable ancestor Select2never
+        // replaces) rather than bound directly to the .select2-container
+        // span or to individual .select2-results__option elements:
+        // Select2 rebuilds both of those during normal use (the container
+        // on re-init, the options list on every dropdown open), which
+        // would silently drop a directly-bound listener -- confirmed by
+        // testing, where a direct binding measured zero listeners still
+        // attached shortly after setup despite the bind call itself
+        // reporting success against the right element.
+        var panel = document.querySelector("#settingsContainer .overflow-y-auto");
+        if (panel) {
+            var holdUntil = 0;
+            var holdAt = 0;
+            var rafId = null;
+            function startHold() {
+                holdAt = panel.scrollTop;
+                holdUntil = performance.now() + 800;
+                if (rafId === null) {
+                    rafId = requestAnimationFrame(tick);
+                }
+            }
+            function tick(now) {
+                if (panel.scrollTop !== holdAt) {
+                    panel.scrollTop = holdAt;
+                }
+                if (now < holdUntil) {
+                    rafId = requestAnimationFrame(tick);
+                } else {
+                    rafId = null;
+                }
+            }
+            $(panel).on(
+                "mousedown",
+                "#id_model_paths + .select2-container, .select2-results__option",
+                startHold
+            );
+        }
     });
 </script>

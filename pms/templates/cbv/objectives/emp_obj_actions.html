@@ -1,7 +1,7 @@
 {% load i18n static %}
 {% if perms.pms.change_employeeobjective or instance|is_manager:request.user %}
     <a
-        class="oh-btn oh-btn--light-bkg oh-btn--secondary w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
+        class="oh-btn oh-btn--light-bkg w-24 px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
         style="font-size: 0.75rem"
         hx-get='{% url "update-employee-objective" instance.id %}'
         hx-target="#genericModalBody"

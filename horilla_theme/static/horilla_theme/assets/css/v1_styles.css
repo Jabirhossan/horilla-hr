@@ -1509,6 +1509,7 @@ table .oh-btn-group a {
 .oh-btn--disabled {
   opacity: 0.5;
   cursor: not-allowed !important;
+  pointer-events: none;
 }
 
 .oh-btn--disabled:focus,

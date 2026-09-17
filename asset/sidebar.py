@@ -23,11 +23,20 @@ SUBMENUS = [
         "menu": _("Assets"),
         "redirect": reverse("asset-category-view"),
         "accessibility": "asset.sidebar.dashboard_accessibility",
+        # asset-detail-view/<pk>/ and asset-list/<cat_id>/ are sibling URLs
+        # (not sub-paths of asset-category-view/), so they need explicit
+        # prefixes for the sidebar's path-based active-link highlighting to
+        # match them.
+        "match_prefixes": ["/asset/asset-detail-view/", "/asset/asset-list/"],
     },
     {
         "menu": _("Asset Batches"),
         "redirect": reverse("asset-batch-view"),
         "accessibility": "asset.sidebar.lot_accessibility",
+        # asset-batch-detail-view/<pk>/ is a sibling URL (not a sub-path of
+        # asset-batch-view/), so it needs an explicit prefix for the sidebar's
+        # path-based active-link highlighting to match it.
+        "match_prefixes": ["/asset/asset-batch-detail-view/"],
     },
     {
         "menu": _("Requests & Allocation"),
@@ -42,6 +51,14 @@ SUBMENUS = [
         "menu": _("Asset History"),
         "redirect": reverse("asset-history"),
         "accessibility": "asset.sidebar.history_accessibility",
+        # asset-history-detail-view/<pk>/ and asset-history-single-view/<id>/
+        # are sibling URLs (not sub-paths of asset-history/), so they need
+        # explicit prefixes for the sidebar's path-based active-link
+        # highlighting to match them.
+        "match_prefixes": [
+            "/asset/asset-history-detail-view/",
+            "/asset/asset-history-single-view/",
+        ],
     },
 ]
 

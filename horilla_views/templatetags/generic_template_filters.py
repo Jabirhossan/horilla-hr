@@ -79,6 +79,14 @@ def cell_tooltip(value) -> str:
     text = str(value)
     if re.search(r"<\s*(select|input|textarea|button|form)\b", text, re.IGNORECASE):
         return ""
+    # strip_tags removes tag markup but not the text content of <style>/<script>
+    # blocks, so drop those elements entirely before stripping the rest.
+    text = re.sub(
+        r"<\s*(style|script)\b[^>]*>.*?<\s*/\s*\1\s*>",
+        "",
+        text,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
     return re.sub(r"\s+", " ", strip_tags(text)).strip()
 
 

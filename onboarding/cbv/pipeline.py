@@ -1087,10 +1087,22 @@ class AssignTask(View):
 
         messages.success(self.request, _("Status updated"))
 
+        # Re-render just this cell instead of clicking `.reload-record`
+        # (which re-fetches and outerHTML-swaps the *entire* candidate
+        # list): that full-table swap is what caused the visible flicker
+        # on every status change, and this dropdown's own hx-target
+        # already scopes the response to `#taskContainer{task_id}{cand_pk}`.
+        # `#reloadMessagesButton` is unrelated to the list table (it just
+        # refreshes the messages panel), so it's kept to still surface the
+        # "Status updated" toast.
+        cell = render_template(
+            "cbv/pipeline/onboarding/tasks.html",
+            {
+                "instance": candidate,
+                "task": candidate_task,
+                "task_id": kwargs["task_id"],
+            },
+        )
         return HttpResponse(
-            f"""
-            <div id="taskHidden{candidate_task.pk}"></div>
-            <script>$('#taskHidden{candidate_task.pk}').closest('.hlv-container').find(".reload-record").click();</script>
-            <script>$('#reloadMessagesButton').click();</script>
-            """
+            cell + "<script>$('#reloadMessagesButton').click();</script>"
         )

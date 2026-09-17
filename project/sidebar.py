@@ -29,16 +29,32 @@ SUBMENUS = [
         "menu": _("Projects"),
         "redirect": reverse("project-view"),
         "accessibility": "project.sidebar.project_accessibility",
+        # project-detailed-view/<pk>/ and task-view/<project_id>/ (a
+        # project's own task board) are sibling URLs (not sub-paths of
+        # project-view/), so they need explicit prefixes for the sidebar's
+        # path-based active-link highlighting to match them.
+        "match_prefixes": [
+            "/project/project-detailed-view/",
+            "/project/task-view/",
+        ],
     },
     {
         "menu": _("Tasks"),
         "redirect": reverse("task-all"),
         "accessibility": "project.sidebar.task_accessibility",
+        # task-detail-view/<pk>/ is a sibling URL (not a sub-path of task-all/),
+        # so it needs an explicit prefix for the sidebar's path-based
+        # active-link highlighting to match it.
+        "match_prefixes": ["/project/task-detail-view/"],
     },
     {
         "menu": _("Timesheet"),
         "redirect": reverse("view-time-sheet"),
         "accessibility": "project.sidebar.timesheet_accessibility",
+        # time-sheet-detail-view/<pk>/ is a sibling URL (not a sub-path of
+        # view-time-sheet/), so it needs an explicit prefix for the sidebar's
+        # path-based active-link highlighting to match it.
+        "match_prefixes": ["/project/time-sheet-detail-view/"],
     },
 ]
 

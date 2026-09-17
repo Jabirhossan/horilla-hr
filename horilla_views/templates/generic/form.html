@@ -56,10 +56,10 @@
                         id="id_{{ field.name }}_parent_div"
                         style="padding-right: 0"
                     >
-                        <div class="oh-label__info" for="id_{{ field.name }}">
+                        <div class="oh-label__info" for="{{ field.id_for_label }}">
                             <label
                                 class="oh-label {% if field.field.required %} required-star{% endif %}"
-                                for="id_{{ field.name }}"
+                                for="{{ field.id_for_label }}"
                             >{% trans field.label %}</label>
                             {% if field.help_text != '' %}
                                 <span class="oh-info mr-2" title="{{ field.help_text }}"></span>

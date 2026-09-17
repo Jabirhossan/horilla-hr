@@ -23,15 +23,31 @@ SUBMENUS = [
     {
         "menu": _("My Attendances"),
         "redirect": reverse_lazy("view-my-attendance"),
+        # my-attendance-detail/<pk>/ is a sibling URL (not a sub-path of
+        # view-my-attendance/), so it needs an explicit prefix for the
+        # sidebar's path-based active-link highlighting to match it.
+        "match_prefixes": ["/attendance/my-attendance-detail/"],
     },
     {
         "menu": _("Attendances"),
         "redirect": reverse_lazy("attendance-view"),
         "accessibility": "attendance.sidebar.attendances_accessibility",
+        # These tabs' detail views are sibling URLs (not sub-paths of
+        # attendance-view/), so they need explicit prefixes for the
+        # sidebar's path-based active-link highlighting to match them.
+        "match_prefixes": [
+            "/attendance/validate-detail-view/",
+            "/attendance/ot-detail-view/",
+            "/attendance/validated-detail-view/",
+        ],
     },
     {
         "menu": _("Attendance Requests"),
         "redirect": reverse_lazy("request-attendance-view"),
+        # attendances-tab-detail-view/<pk>/ is a sibling URL (not a sub-path
+        # of request-attendance-view/), so it needs an explicit prefix for
+        # the sidebar's path-based active-link highlighting to match it.
+        "match_prefixes": ["/attendance/attendances-tab-detail-view/"],
     },
     {
         "menu": _("Daily Work Status"),
@@ -41,11 +57,21 @@ SUBMENUS = [
     {
         "menu": _("Check-in / Check-out Log"),
         "redirect": reverse_lazy("attendance-activity-view"),
+        # attendance-activity-single-view/<pk>/ is a sibling URL (not a
+        # sub-path of attendance-activity-view/), so it needs an explicit
+        # prefix for the sidebar's path-based active-link highlighting to
+        # match it.
+        "match_prefixes": ["/attendance/attendance-activity-single-view/"],
     },
     {
         "menu": _("Late Arrival & Early Departure"),
         "redirect": reverse_lazy("late-come-early-out-view"),
         "accessibility": "attendance.sidebar.tracking_accessibility",
+        # late-in-early-out-single-view/<pk>/ is a sibling URL (not a
+        # sub-path of late-come-early-out-view/), so it needs an explicit
+        # prefix for the sidebar's path-based active-link highlighting to
+        # match it.
+        "match_prefixes": ["/attendance/late-in-early-out-single-view/"],
     },
     {
         "menu": _("Monthly Summary"),

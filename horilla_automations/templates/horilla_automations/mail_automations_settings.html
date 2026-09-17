@@ -6,14 +6,14 @@
 
     {% include "generic/components.html" %}
 
-    <div class="mb-4">
+    <div class="mb-2" id="mailAutomationsHeader">
         <h4 class="text-base font-semibold text-[#333]">{% trans "Mail Automations" %}</h4>
-        <p class="text-xs text-gray-500 mt-1">
+        <p class="text-xs text-gray-500 mt-0.5">
             {% trans "Configure automated email triggers based on model events and conditions." %}
         </p>
     </div>
 
-    <div class="border border-[#ebebeb] rounded-md mb-5">
+    <div class="border border-[#ebebeb] rounded-md overflow-hidden">
         <div hx-get="{% url 'mail-automations-nav' %}" hx-trigger="load"></div>
 
         <div
@@ -32,6 +32,30 @@
         >
         </div>
     </div>
+
+    <style id="mailAutomationsHeightFix">
+        /* The shared settings.html shell caps the whole page body at a fixed
+           height (100vh - 190px), and the generic list table (rendered
+           inside #listContainer) independently caps itself at
+           (100vh - 260px) via the .heightContainer class — those two
+           budgets only line up when nothing but the nav/badge/table sits
+           between them (as on simpler settings pages). This page also
+           stacks its own title+description block above the table, so the
+           table's fixed cap no longer fits what's left of the outer
+           shell's budget, and the outer shell ends up scrolling/growing
+           instead of just the table. Override .heightContainer's max-height
+           here with a page-specific budget that subtracts this extra
+           header's own height too. Needs !important: the app's Tailwind
+           runtime (horilla_theme/assets/js/tailwind.js) recompiles
+           arbitrary-value classes like max-h-[calc(...)] into an inline
+           style on every htmx swap, and a plain inline style always beats a
+           plain stylesheet rule -- only "!important" in CSS outranks it.
+        */
+        #listContainer .heightContainer {
+            max-height: calc(100vh - 260px - 42px) !important;
+            min-height: 0 !important;
+        }
+    </style>
 
     <script src="{% static '/automation/automation.js' %}"></script>
     <script>

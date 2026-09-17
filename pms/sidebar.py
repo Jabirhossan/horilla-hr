@@ -20,32 +20,56 @@ SUBMENUS = [
     {
         "menu": _("Objectives"),
         "redirect": reverse_lazy("objective-list-view"),
+        # objective-detailed-view/<id>/ is a sibling URL (not a sub-path of
+        # objective-list-view/), so it needs an explicit prefix for the sidebar's
+        # path-based active-link highlighting to match it.
+        "match_prefixes": ["/pms/objective-detailed-view/"],
     },
     {
         "menu": _("Key Results"),
         "redirect": reverse_lazy("view-key-result"),
         "accessibility": "pms.sidebar.key_result_accessibility",
+        # key-result-detail-view/<pk>/ is a sibling URL (not a sub-path of
+        # view-key-result/), so it needs an explicit prefix for the sidebar's
+        # path-based active-link highlighting to match it.
+        "match_prefixes": ["/pms/key-result-detail-view/"],
     },
     {
         "menu": _("360 Feedback"),
         "redirect": reverse_lazy("feedback-view"),
-        # feedback-creation/ is a sibling URL (not a sub-path of feedback-view/),
-        # so it needs an explicit prefix for the sidebar's path-based active-link
-        # highlighting to match it.
-        "match_prefixes": ["/pms/feedback-creation/"],
+        # feedback-creation/ and feedback-detailed-view/<id>/ are sibling URLs
+        # (not sub-paths of feedback-view/), so they need explicit prefixes
+        # for the sidebar's path-based active-link highlighting to match them.
+        "match_prefixes": [
+            "/pms/feedback-creation/",
+            "/pms/feedback-detailed-view/",
+        ],
     },
     {
         "menu": _("Meetings"),
         "redirect": reverse_lazy("view-meetings"),
+        # meetings-detail-view/<pk>/ is a sibling URL (not a sub-path of
+        # view-meetings/), so it needs an explicit prefix for the sidebar's
+        # path-based active-link highlighting to match it.
+        "match_prefixes": ["/pms/meetings-detail-view/"],
     },
     {
         "menu": _("Bonus Points"),
         "redirect": reverse_lazy("employee-bonus-point"),
+        # update-employee-bonus-point/<pk>/ is a sibling URL (not a sub-path of
+        # employee-bonus-point/), so it needs an explicit prefix for the sidebar's
+        # path-based active-link highlighting to match it.
+        "match_prefixes": ["/pms/update-employee-bonus-point/"],
     },
     {
         "menu": _("Configuration"),
         "redirect": reverse_lazy("performance-settings-view"),
         "accessibility": "pms.sidebar.performance_settings_accessibility",
+        # question-template-detailed-view/<id>/ is a sibling URL (not a
+        # sub-path of performance-settings-view/), so it needs an explicit
+        # prefix for the sidebar's path-based active-link highlighting to
+        # match it.
+        "match_prefixes": ["/pms/question-template-detailed-view/"],
     },
 ]
 

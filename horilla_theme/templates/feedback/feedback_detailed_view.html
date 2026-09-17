@@ -117,7 +117,7 @@
         {% if perms.pms.change_feedback or perms.pms.delete_feedback or request.user.employee_get == feedback.created_by %}
           {% if not feedback_started and perms.pms.change_feedback or request.user.employee_get == feedback.created_by %}
             <button data-toggle="oh-modal-toggle"
-                class="w-8 h-8 flex justify-center items-center bg-white border border-info-500 hover:border-info-600 rounded-md"
+                class="oh-btn oh-btn--light-bkg oh-btn--sq-sm"
                 data-target="#genericModal"
                 hx-get="{% url 'feedback-update' feedback.id %}"
                 hx-target="#genericModalBody"
@@ -229,14 +229,13 @@
       <div class="mytab flex sticky top-0 bg-white" role="tablist">
           <button
             class="tab-button px-4 py-2 text-sm font-medium text-blue-600 w-1/2 active"
-            onclick="switchTab(event);"
             data-target="#feedback-answers"
             data-tab="feedback-answers">
             {% trans 'Feedback Answers' %}
           </button>
           <button
             class="tab-button px-4 py-2 text-sm font-medium w-1/2"
-            onclick="switchTab(event); $('#feedback-overview-button').click()"
+            onclick="$('#feedback-overview-button').click()"
             data-target="#feedback-overview"
             data-tab='feedback-overview'>
             {% trans 'Feedback Overview' %}

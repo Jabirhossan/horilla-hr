@@ -54,10 +54,10 @@
     {% if perms.recruitment.delete_recruitment %}
         {% if instance.is_active %}
             <a
-                hx-get="{% url 'recruitment-archive' instance.id %}"
+                hx-get="{% url 'recruitment-archive' instance.id %}?context=modal"
                 hx-swap="none"
                 hx-confirm="{% trans 'Are you sure you want to archive this recruitment?' %}"
-                hx-on::after-request="if(event.detail.successful){$('#applyFilter').click();$('#reloadMessagesButton').click();}"
+                hx-on-htmx-after-request="$('#reloadMessagesButton').click();htmx.ajax('GET', '{% url 'recruitment-detail-view' instance.id %}', {target: '#genericModalBody'});"
                 class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
                 title="{% trans 'Archive' %}"
             >
@@ -66,10 +66,10 @@
             </a>
         {% else %}
             <a
-                hx-get="{% url 'recruitment-archive' instance.id %}"
+                hx-get="{% url 'recruitment-archive' instance.id %}?context=modal"
                 hx-swap="none"
                 hx-confirm="{% trans 'Are you sure you want to unarchive this recruitment?' %}"
-                hx-on::after-request="if(event.detail.successful){$('#applyFilter').click();$('#reloadMessagesButton').click();}"
+                hx-on-htmx-after-request="$('#reloadMessagesButton').click();htmx.ajax('GET', '{% url 'recruitment-detail-view' instance.id %}', {target: '#genericModalBody'});"
                 class="oh-btn oh-btn--light-bkg px-4 py-2 rounded-md text-xs flex items-center justify-center gap-2 transition duration-300"
                 title="{% trans 'Unarchive' %}"
             >

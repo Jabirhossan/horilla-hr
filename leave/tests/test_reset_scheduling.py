@@ -47,9 +47,7 @@ class ResetSchedulerTests(TestCase):
         from leave.models import AvailableLeave, LeaveType
 
         company = make_company("Reset Scheduler Co")
-        self.employee = make_employee(
-            company=company, email="reset-sched@test.horilla"
-        )
+        self.employee = make_employee(company=company, email="reset-sched@test.horilla")
         self.LeaveType = LeaveType
         self.AvailableLeave = AvailableLeave
 

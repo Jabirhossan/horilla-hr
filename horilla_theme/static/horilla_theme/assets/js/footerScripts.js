@@ -1,11 +1,36 @@
 $(function () {
-    $(document).tooltip({
+    // While a scroll is in progress, rows/cells passing under a stationary
+    // cursor still fire mouseenter, which opens a jQuery UI tooltip that
+    // then has to keep repositioning itself against the content still
+    // scrolling underneath it -- that's the visible flicker in scrollable
+    // panels like Settings. Disabling the widget for the scroll's duration
+    // stops it from reacting to those synthetic hovers; "scroll" doesn't
+    // bubble from a nested scroll container to document, so this needs a
+    // capture-phase listener.
+    var $tooltipRoot = $(document).tooltip({
         position: {
             my: "right top+8",
             at: "right bottom",
             collision: "flipfit"
         }
     });
+    var scrollSettleTimer = null;
+
+    document.addEventListener(
+        "scroll",
+        function () {
+            if (scrollSettleTimer === null) {
+                $tooltipRoot.tooltip("close");
+                $tooltipRoot.tooltip("disable");
+            }
+            clearTimeout(scrollSettleTimer);
+            scrollSettleTimer = setTimeout(function () {
+                scrollSettleTimer = null;
+                $tooltipRoot.tooltip("enable");
+            }, 200);
+        },
+        true
+    );
 });
 
 Toast = Swal.mixin({

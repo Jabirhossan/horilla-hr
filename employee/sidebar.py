@@ -29,7 +29,11 @@ SUBMENUS = [
         # employee creation wizard (employee-view-new/), a sibling URL rather
         # than a sub-path of employee-view/, so it needs an explicit prefix
         # for the sidebar's path-based active-link highlighting to match it.
-        "match_prefixes": ["/employee/employee-view-new/"],
+        # employee-view-update/<id>/ is likewise a sibling edit page.
+        "match_prefixes": [
+            "/employee/employee-view-new/",
+            "/employee/employee-view-update/",
+        ],
     },
     {
         "menu": _("Organization Chart"),
@@ -48,6 +52,11 @@ SUBMENUS = [
     {
         "menu": _("Policies & Discipline"),
         "redirect": reverse_lazy("policies-discipline-view"),
+        # disciplinary-actions-detail-view/<pk>/ is a sibling URL (not a
+        # sub-path of policies-discipline-view/), so it needs an explicit
+        # prefix for the sidebar's path-based active-link highlighting to
+        # match it.
+        "match_prefixes": ["/employee/disciplinary-actions-detail-view/"],
     },
     {
         "menu": _("Configuration"),

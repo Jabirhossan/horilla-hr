@@ -22,30 +22,63 @@ SUBMENUS = [
     {
         "menu": _("My Leave Requests"),
         "redirect": reverse_lazy("user-request-view"),
+        # my-leave-request-detail-view/<pk>/ is a sibling URL (not a sub-path
+        # of user-request-view/), so it needs an explicit prefix for the
+        # sidebar's path-based active-link highlighting to match it.
+        "match_prefixes": ["/leave/my-leave-request-detail-view/"],
     },
     {
         "menu": _("Compensatory Leave Requests"),
         "redirect": reverse_lazy("view-compensatory-leave"),
         "accessibility": "leave.sidebar.componstory_accessibility",
+        # compensatory-leave-individual-view/<id>/ is a sibling URL (not a
+        # sub-path of view-compensatory-leave/), so it needs an explicit
+        # prefix for the sidebar's path-based active-link highlighting to
+        # match it.
+        "match_prefixes": ["/leave/compensatory-leave-individual-view/"],
     },
     {
         "menu": _("Leave Requests"),
         "redirect": reverse_lazy("request-view"),
         "accessibility": "leave.sidebar.leave_request_accessibility",
+        # one-request-view/<id>/ and leave-requests-detail-view/<pk>/ are
+        # sibling URLs (not sub-paths of request-view/), so they need
+        # explicit prefixes for the sidebar's path-based active-link
+        # highlighting to match them.
+        "match_prefixes": [
+            "/leave/one-request-view/",
+            "/leave/leave-requests-detail-view/",
+        ],
     },
     {
         "menu": _("Leave Allocation Request"),
         "redirect": reverse_lazy("leave-allocation-request-view"),
+        # These are sibling URLs (not sub-paths of
+        # leave-allocation-request-view/), so they need explicit prefixes for
+        # the sidebar's path-based active-link highlighting to match them.
+        "match_prefixes": [
+            "/leave/leave-allocation-request-single-view/",
+            "/leave/detail-leave-allocation-request/",
+            "/leave/leave-allocation-request-detail-view/",
+        ],
     },
     {
         "menu": _("Leave Balances"),
         "redirect": reverse_lazy("assign-view"),
         "accessibility": "leave.sidebar.assign_accessibility",
+        # available-leave-single-view/<pk>/ is a sibling URL (not a sub-path
+        # of assign-view/), so it needs an explicit prefix for the sidebar's
+        # path-based active-link highlighting to match it.
+        "match_prefixes": ["/leave/available-leave-single-view/"],
     },
     {
         "menu": _("Restricted Leave Periods"),
         "redirect": reverse_lazy("restrict-view"),
         "accessibility": "leave.sidebar.restrict_leave_accessibility",
+        # restricted-days-detail-view/<pk>/ is a sibling URL (not a sub-path
+        # of restrict-view/), so it needs an explicit prefix for the
+        # sidebar's path-based active-link highlighting to match it.
+        "match_prefixes": ["/leave/restricted-days-detail-view/"],
     },
     {
         "menu": _("Public Holidays"),

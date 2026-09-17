@@ -114,6 +114,17 @@
         max-height: calc(100vh - 260px) !important;
         overflow-y: auto !important;
     }
+
+    /* The 360 Feedback list (pms) is likewise its own page's primary list
+       nested under .oh-tabs__content (one tab per Self/Requested/Review/
+       Anonymous feedback), with no extra ancestor scroll wrapper - same
+       situation as the pipeline pages above. Restore the cap so the table
+       scrolls internally instead of stretching the whole page (id starts
+       with "feedbackTabs", set via HorillaTabView's tabs_root_id). */
+    [id^="feedbackTabs"] .heightContainer {
+        max-height: calc(100vh - 260px) !important;
+        overflow-y: auto !important;
+    }
 </style>
 <script>
     document.addEventListener("DOMContentLoaded", function () {

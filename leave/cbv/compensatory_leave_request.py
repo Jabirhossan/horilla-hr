@@ -370,6 +370,16 @@ class CompensatoryForm(HorillaFormView):
     def form_valid(self, form: CompensatoryLeaveForm) -> HttpResponse:
         if form.is_valid():
             if form.instance.pk:
+                if form.instance.status != "requested":
+                    messages.info(
+                        self.request,
+                        _(
+                            "Only a compensatory leave request in the 'requested' status can be edited."
+                        ),
+                    )
+                    return self.HttpResponse(
+                        "<script>window.location.reload()</script>"
+                    )
                 message = _("Compensatory Leave Updated")
             else:
                 comp_req = form.save()

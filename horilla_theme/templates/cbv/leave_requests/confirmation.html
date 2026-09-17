@@ -88,7 +88,7 @@
                 </a>
             {% endif %}
 
-            {% if instance.status == 'requested' or instance.status != 'rejected' and instance.end_date >= current_date %}
+            {% if instance.status != 'rejected' and instance.end_date >= current_date %}
                 <a
                     type="button"
                     data-toggle="oh-modal-toggle"
