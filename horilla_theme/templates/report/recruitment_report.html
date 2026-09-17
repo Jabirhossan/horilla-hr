@@ -1,7 +1,6 @@
 {% extends "index.html" %}
 {% block content %}
-    {% load static %}
-    {% load i18n %}
+    {% load static i18n horillafilters %}
 
     <div class="oh-wrapper mt-3">
         <div class="d-flex mt-3 mb-3" style="justify-content: space-between; align-items: center">
@@ -200,7 +199,9 @@
             <select id="model-select" class="oh-select oh-select--sm ml-2 mb-2" style="width: 200px">
                 <option value="candidate">{% trans "Candidate" %}</option>
                 <option value="recruitment">{% trans "Recruitment" %}</option>
-                <option value="onboarding">{% trans "Onboarding" %}</option>
+                {% if "onboarding"|app_installed %}
+                    <option value="onboarding">{% trans "Onboarding" %}</option>
+                {% endif %}
             </select>
         </div>
 
@@ -210,8 +211,8 @@
              control up here instead (see relocateRendererSelect() in the
              script below), so it reads as a page-level "view as" setting
              rather than one more cramped field inside the builder grid. -->
-        <div id="oh-report-view-slot" class="oh-report-view-slot oh-report--multi-model">
-            <label>{% trans "View As" %} :</label>
+        <div id="oh-report-view-slot" class="oh-report-view-slot oh-report--multi-model flex items-center gap-2 my-2" style="width: 350px">
+            <label class="w-[50%]">{% trans "View As" %} :</label>
         </div>
         <p class="oh-report-drag-hint">{% trans "Drag fields between the boxes below to change how this report is grouped." %}</p>
         <div id="pivot-container" class="mb-5" style="width: 100%; overflow-x: auto">
@@ -614,7 +615,7 @@
             var $select = $("#pivot-container .pvtUi select.pvtRenderer");
             if (!$slot.length || !$select.length) return;
             $slot.find("select.pvtRenderer").remove();
-            $slot.append($select);
+            $slot.append($select.addClass("oh-select"));
         }
 
         // PivotTable.js always labels the grand-total row/column header
