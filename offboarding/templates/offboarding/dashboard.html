@@ -32,7 +32,9 @@
 
     .ob-layout { display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
     .ob-main { min-width: 0; }
-    .ob-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 90px; }
+    .ob-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 90px; max-height: calc(100vh - 90px - 24px); overflow-y: auto; }
+    .ob-sidebar::-webkit-scrollbar { width: 3px; }
+    .ob-sidebar::-webkit-scrollbar-thumb { border-radius: 3px; background: rgba(128,128,128,0.2); }
 
     .ob-chart-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
     .ob-chart-card { border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); overflow: visible; }
@@ -48,7 +50,7 @@
     @keyframes ob-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     .ob-skeleton--kpi { height: 110px; }
 
-    .ob-info-panel { border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); overflow: hidden; display: flex; flex-direction: column; }
+    .ob-info-panel { border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); overflow: hidden; display: flex; flex-direction: column; flex-shrink: 0; }
     .dark .ob-info-panel { background: #242424; border-color: rgba(255,255,255,0.08); }
     .ob-info-panel__header { padding: 14px 16px 10px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-bottom: 1px solid rgba(128,128,128,0.08); }
     .ob-info-panel__title { font-size: 13px; font-weight: 700; }
@@ -128,7 +130,7 @@
 
 
     /* Responsive */
-    @media (max-width: 1280px) { .ob-layout { grid-template-columns: 1fr; } .ob-sidebar { position: static; display: grid; grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 1280px) { .ob-layout { grid-template-columns: 1fr; } .ob-sidebar { position: static; display: grid; grid-template-columns: 1fr 1fr; max-height: none; overflow-y: visible; } }
     @media (max-width: 1024px) { .ob-kpi-grid { grid-template-columns: repeat(2, 1fr); } .ob-chart-grid { grid-template-columns: 1fr; } .ob-chart-card--wide { grid-column: span 1; } .ob-sidebar { grid-template-columns: 1fr; } }
     @media (max-width: 640px) { .ob-kpi-grid { grid-template-columns: 1fr; } }
 </style>
@@ -241,6 +243,10 @@
     const cardBg = isDark ? '#242424' : '#ffffff';
     const COLORS = ['#E54F38','#22c55e','#f59e0b','#ef4444','#3b82f6','#a855f7','#06b6d4','#ec4899','#14b8a6','#f97316'];
     const emptyHtml = (msg) => `<div class="ob-empty"><img src="/static/images/ui/no_records.svg" alt="">${msg}</div>`;
+    const resignationUrl = "{% url 'resignation-request-view' %}";
+    const resignationUrlFor = id => id ? `${resignationUrl}?employee_id=${id}` : '#';
+    const assetAllocationUrl = "{% url 'asset-request-allocation-view' %}";
+    const assetAllocationUrlFor = id => id ? `${assetAllocationUrl}?assigned_to_employee_id=${id}&open_tab=2` : '#';
 
     document.getElementById('ob-date').textContent = new Date().toLocaleDateString('en-US', {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -613,7 +619,7 @@
                 if (e.status === 'ended') badge = '<span class="ob-badge ob-badge--red">{% trans "Ended"|escapejs %}</span>';
                 else if (e.status === 'ending') badge = `<span class="ob-badge ob-badge--amber">${e.days_left}d</span>`;
                 else badge = `<span class="ob-badge ob-badge--green">${e.days_left}d</span>`;
-                return `<a href="/employee/employee-view/${e.id}/" class="ob-list-item">
+                return `<a href="${resignationUrlFor(e.id)}" class="ob-list-item">
                     <div class="ob-list-item__avatar">${avatarInner}</div>
                     <div class="ob-list-item__info">
                         <div class="ob-list-item__name">${e.name}</div>
@@ -634,7 +640,7 @@
             const el = document.getElementById('ob-assets');
             if (!data.assets.length) { el.innerHTML = '<div class="ob-info-panel__empty">{% trans "All assets returned"|escapejs %}</div>'; return; }
             el.innerHTML = data.assets.map(a => {
-                return `<a href="/employee/employee-view/${a.id}/" class="ob-list-item">
+                return `<a href="${assetAllocationUrlFor(a.id)}" class="ob-list-item">
                     <div class="ob-list-item__info">
                         <div class="ob-list-item__name">${a.employee}</div>
                         <div class="ob-list-item__detail">${a.asset} · ${a.category}</div>

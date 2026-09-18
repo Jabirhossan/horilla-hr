@@ -49,7 +49,9 @@
     /* Layout */
     .pd-layout { display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
     .pd-main { min-width: 0; }
-    .pd-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 90px; }
+    .pd-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 90px; max-height: calc(100vh - 90px - 24px); overflow-y: auto; }
+    .pd-sidebar::-webkit-scrollbar { width: 3px; }
+    .pd-sidebar::-webkit-scrollbar-thumb { border-radius: 3px; background: rgba(128,128,128,0.2); }
 
     /* Chart Grid */
     .pd-chart-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
@@ -68,7 +70,7 @@
     .pd-skeleton--kpi { height: 100px; }
 
     /* Sidebar panels */
-    .pd-info-panel { border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); overflow: hidden; display: flex; flex-direction: column; }
+    .pd-info-panel { border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); overflow: hidden; display: flex; flex-direction: column; flex-shrink: 0; }
     .dark .pd-info-panel { background: #242424; border-color: rgba(255,255,255,0.08); }
     .pd-info-panel__header { padding: 14px 16px 10px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-bottom: 1px solid rgba(128,128,128,0.08); }
     .pd-info-panel__title { font-size: 13px; font-weight: 700; }
@@ -152,7 +154,7 @@
 
 
     /* Responsive */
-    @media (max-width: 1280px) { .pd-kpi-grid { grid-template-columns: repeat(3, 1fr); } .pd-layout { grid-template-columns: 1fr; } .pd-sidebar { position: static; display: grid; grid-template-columns: 1fr 1fr 1fr; } }
+    @media (max-width: 1280px) { .pd-kpi-grid { grid-template-columns: repeat(3, 1fr); } .pd-layout { grid-template-columns: 1fr; } .pd-sidebar { position: static; display: grid; grid-template-columns: 1fr 1fr 1fr; max-height: none; overflow-y: visible; } }
     @media (max-width: 1024px) { .pd-kpi-grid { grid-template-columns: repeat(2, 1fr); } .pd-chart-grid { grid-template-columns: 1fr; } .pd-chart-card--wide { grid-column: span 1; } .pd-sidebar { grid-template-columns: 1fr; } .pd-pipeline { flex-wrap: wrap; } .pd-pipeline-step { min-width: 70px; } }
     @media (max-width: 640px) { .pd-kpi-grid { grid-template-columns: 1fr; } }
 </style>
@@ -284,8 +286,12 @@
     const COLORS = ['#E54F38','#22c55e','#f59e0b','#ef4444','#3b82f6','#a855f7','#06b6d4','#ec4899','#14b8a6','#f97316'];
     const emptyHtml = (msg) => `<div class="pd-empty"><img src="/static/images/ui/no_records.svg" alt="">${msg}</div>`;
     const fmt = v => Number(v).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-    const empViewUrl = "{% url 'employee-view-individual' obj_id=0 %}";
-    const empUrlFor = id => id ? empViewUrl.replace('/0/', '/' + id + '/') : '#';
+    const payslipUrl = "{% url 'view-payslip' %}";
+    const payslipUrlFor = id => id ? `${payslipUrl}?employee_id=${id}` : '#';
+    const contractUrl = "{% url 'view-contract' %}";
+    const contractUrlFor = id => id ? `${contractUrl}?employee_id=${id}` : '#';
+    const loanUrl = "{% url 'view-loan' %}";
+    const loanUrlFor = id => id ? `${loanUrl}?employee_id=${id}` : '#';
 
     document.getElementById('pd-date').textContent = new Date().toLocaleDateString('en-US', {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -667,7 +673,7 @@
             el.innerHTML = data.earners.map(e => {
                 const initials = e.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
                 const avatarInner = e.avatar ? `<img src="${e.avatar}" alt="">` : initials;
-                return `<a href="${empUrlFor(e.id)}" class="pd-list-item">
+                return `<a href="${payslipUrlFor(e.id)}" class="pd-list-item">
                     <div class="pd-list-item__avatar">${avatarInner}</div>
                     <div class="pd-list-item__info">
                         <div class="pd-list-item__name">${e.name}</div>
@@ -692,7 +698,7 @@
                 const badge = c.type === 'ending'
                     ? `<span class="pd-badge pd-badge--amber">${c.days_left}d</span>`
                     : `<span class="pd-badge pd-badge--red">{% trans "Expired"|escapejs %}</span>`;
-                return `<a href="/employee/employee-view/${c.id}/" class="pd-list-item">
+                return `<a href="${contractUrlFor(c.id)}" class="pd-list-item">
                     <div class="pd-list-item__info">
                         <div class="pd-list-item__name">${c.name}</div>
                         <div class="pd-list-item__detail">${c.contract} · ${c.end_date}</div>
@@ -712,7 +718,7 @@
             const el = document.getElementById('pd-loans');
             if (!data.loans.length) { el.innerHTML = '<div class="pd-info-panel__empty">{% trans "No active loans"|escapejs %}</div>'; return; }
             el.innerHTML = data.loans.map(l => {
-                return `<a href="${empUrlFor(l.employee_id)}" class="pd-list-item">
+                return `<a href="${loanUrlFor(l.employee_id)}" class="pd-list-item">
                     <div class="pd-list-item__info">
                         <div class="pd-list-item__name">${l.employee}</div>
                         <div class="pd-list-item__detail">${l.title} · ${l.type}</div>

@@ -65,6 +65,15 @@
             top: 90px;
             flex-direction: column;
             gap: 16px;
+            max-height: calc(100vh - 90px - 24px);
+            overflow-y: auto;
+        }
+        .am-sidebar::-webkit-scrollbar {
+            width: 3px;
+        }
+        .am-sidebar::-webkit-scrollbar-thumb {
+            border-radius: 3px;
+            background: rgba(128, 128, 128, 0.2);
         }
 
         /* ── KPI ── */
@@ -339,6 +348,7 @@
         .am-info-panel {
             display: flex;
             flex-direction: column;
+            flex-shrink: 0;
             overflow: hidden;
             border: 1px solid rgba(128, 128, 128, 0.12);
             border-radius: 12px;
@@ -742,6 +752,8 @@
             }
             .am-sidebar {
                 position: static;
+                max-height: none;
+                overflow-y: visible;
             }
             .am-info-panel__body {
                 max-height: 300px;
@@ -1287,6 +1299,10 @@
 
             const emptyHtml = (msg) =>
                 `<div class="am-empty"><img src="/static/images/ui/no_records.svg" alt="">${msg}</div>`;
+
+            const attendanceUrl = "{% url 'attendance-view' %}";
+            const attendanceUrlFor = (id) =>
+                id ? `${attendanceUrl}?employee_id=${id}` : "#";
 
             const todayISO = new Date().toISOString().split("T")[0];
 
@@ -3057,7 +3073,7 @@
                                     ? `<img src="${a.avatar}" alt="" onerror="this.parentElement.textContent='${initials}'">`
                                     : initials;
                                 return `
-                    <a href="/employee/employee-view/${a.id}/" class="am-absentee-item">
+                    <a href="${attendanceUrlFor(a.id)}" class="am-absentee-item">
                         <div class="am-absentee-item__avatar">${avatarInner}</div>
                         <div class="am-absentee-item__info">
                             <div class="am-absentee-item__name">${a.name}</div>

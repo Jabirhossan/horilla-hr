@@ -64,7 +64,9 @@
     /* Layout */
     .ld-layout { display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
     .ld-main { min-width: 0; }
-    .ld-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 90px; }
+    .ld-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 90px; max-height: calc(100vh - 90px - 24px); overflow-y: auto; }
+    .ld-sidebar::-webkit-scrollbar { width: 3px; }
+    .ld-sidebar::-webkit-scrollbar-thumb { border-radius: 3px; background: rgba(128,128,128,0.2); }
 
     /* Chart Grid */
     .ld-chart-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
@@ -84,7 +86,7 @@
     .ld-skeleton--kpi { height: 110px; }
 
     /* Sidebar panels */
-    .ld-info-panel { border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); overflow: hidden; display: flex; flex-direction: column; }
+    .ld-info-panel { border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); overflow: hidden; display: flex; flex-direction: column; flex-shrink: 0; }
     .dark .ld-info-panel { background: #242424; border-color: rgba(255,255,255,0.08); }
     .ld-info-panel__header { padding: 14px 16px 10px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-bottom: 1px solid rgba(128,128,128,0.08); }
     .ld-info-panel__title { font-size: 13px; font-weight: 700; }
@@ -188,7 +190,7 @@
     /* Responsive */
     @media (max-width: 1280px) {
         .ld-layout { grid-template-columns: 1fr; }
-        .ld-sidebar { position: static; display: grid; grid-template-columns: 1fr 1fr 1fr; }
+        .ld-sidebar { position: static; display: grid; grid-template-columns: 1fr 1fr 1fr; max-height: none; overflow-y: visible; }
     }
     @media (max-width: 1024px) {
         .ld-kpi-grid { grid-template-columns: repeat(2, 1fr); }
@@ -340,6 +342,8 @@
     const cardBg = isDark ? '#242424' : '#ffffff';
     const COLORS = ['#E54F38','#22c55e','#f59e0b','#ef4444','#3b82f6','#a855f7','#06b6d4','#ec4899','#14b8a6','#f97316'];
     const emptyHtml = (msg) => `<div class="ld-empty"><img src="/static/images/ui/no_records.svg" alt="">${msg}</div>`;
+    const leaveRequestUrl = "{% url 'request-view' %}";
+    const leaveRequestUrlFor = id => id ? `${leaveRequestUrl}?employee_id=${id}` : '#';
 
     document.getElementById('ld-date').textContent = new Date().toLocaleDateString('en-US', {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -703,7 +707,7 @@
             el.innerHTML = data.employees.map(e => {
                 const initials = e.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
                 const avatarInner = e.avatar ? `<img src="${e.avatar}" alt="">` : initials;
-                return `<a href="/employee/employee-view/${e.id}/" class="ld-leave-item">
+                return `<a href="${leaveRequestUrlFor(e.id)}" class="ld-leave-item">
                     <div class="ld-leave-item__avatar">${avatarInner}</div>
                     <div class="ld-leave-item__info">
                         <div class="ld-leave-item__name">${e.name}</div>
@@ -729,7 +733,7 @@
                 const badge = u.days_away === 1
                     ? '<span class="ld-badge ld-badge--amber">{% trans "Tomorrow"|escapejs %}</span>'
                     : `<span class="ld-badge ld-badge--green">${u.days_away}d</span>`;
-                return `<a href="/employee/employee-view/${u.id}/" class="ld-leave-item">
+                return `<a href="${leaveRequestUrlFor(u.id)}" class="ld-leave-item">
                     <div class="ld-leave-item__avatar">${avatarInner}</div>
                     <div class="ld-leave-item__info">
                         <div class="ld-leave-item__name">${u.name}</div>
@@ -753,7 +757,7 @@
             el.innerHTML = data.takers.map(t => {
                 const initials = t.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
                 const avatarInner = t.avatar ? `<img src="${t.avatar}" alt="">` : initials;
-                return `<a href="/employee/employee-view/${t.id}/" class="ld-leave-item">
+                return `<a href="${leaveRequestUrlFor(t.id)}" class="ld-leave-item">
                     <div class="ld-leave-item__avatar">${avatarInner}</div>
                     <div class="ld-leave-item__info">
                         <div class="ld-leave-item__name">${t.name}</div>

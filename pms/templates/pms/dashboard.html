@@ -186,6 +186,15 @@
             top: 90px;
             flex-direction: column;
             gap: 16px;
+            max-height: calc(100vh - 90px - 24px);
+            overflow-y: auto;
+        }
+        .pm-sidebar::-webkit-scrollbar {
+            width: 3px;
+        }
+        .pm-sidebar::-webkit-scrollbar-thumb {
+            border-radius: 3px;
+            background: rgba(128, 128, 128, 0.2);
         }
 
         .pm-chart-grid {
@@ -262,6 +271,7 @@
         .pm-info-panel {
             display: flex;
             flex-direction: column;
+            flex-shrink: 0;
             overflow: hidden;
             border: 1px solid rgba(128, 128, 128, 0.12);
             border-radius: 12px;
@@ -769,6 +779,8 @@
                 display: grid;
                 position: static;
                 grid-template-columns: 1fr 1fr 1fr;
+                max-height: none;
+                overflow-y: visible;
             }
         }
         @media (max-width: 1024px) {
@@ -994,6 +1006,10 @@
             const COLORS = ['#E54F38','#22c55e','#f59e0b','#ef4444','#3b82f6','#a855f7','#06b6d4','#ec4899','#14b8a6','#f97316'];
             const statusColors = { 'Not Started': '#94a3b8', 'On Track': '#22c55e', 'Behind': '#f59e0b', 'At Risk': '#ef4444', 'Closed': '#E54F38' };
             const emptyHtml = (msg) => `<div class="pm-empty"><img src="/static/images/ui/no_records.svg" alt="">${msg}</div>`;
+            const objectiveDetailUrl = "{% url 'objective-detailed-view' obj_id=0 %}";
+            const objectiveDetailUrlFor = id => id ? objectiveDetailUrl.replace('/0/', '/' + id + '/') : '#';
+            const objectiveListUrl = "{% url 'objective-list-view' %}";
+            const objectiveListUrlFor = id => id ? `${objectiveListUrl}?employee_id=${id}` : '#';
 
             document.getElementById('pm-date').textContent = new Date().toLocaleDateString('en-US', {
                 weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -1391,7 +1407,7 @@
                         const initials = o.employee.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
                         const avatarInner = o.avatar ? `<img src="${o.avatar}" alt="">` : initials;
                         const color = o.status === 'At Risk' ? '#ef4444' : '#f59e0b';
-                        return `<a href="/employee/employee-view/${o.employee_id}/" class="pm-risk-item">
+                        return `<a href="${objectiveDetailUrlFor(o.id)}" class="pm-risk-item">
                     <div class="pm-risk-item__avatar">${avatarInner}</div>
                     <div class="pm-risk-item__info">
                         <div class="pm-risk-item__name">${o.objective}</div>
@@ -1417,7 +1433,7 @@
                     el.innerHTML = data.performers.map(p => {
                         const initials = p.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
                         const avatarInner = p.avatar ? `<img src="${p.avatar}" alt="">` : initials;
-                        return `<a href="/employee/employee-view/${p.id}/" class="pm-performer-item">
+                        return `<a href="${objectiveListUrlFor(p.id)}" class="pm-performer-item">
                     <div class="pm-performer-item__avatar">${avatarInner}</div>
                     <div class="pm-performer-item__info">
                         <div class="pm-performer-item__name">${p.name}</div>

@@ -83,7 +83,9 @@
     /* Layout — main + sticky sidebar, ported from pd-layout */
     .pr-layout { display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
     .pr-main { min-width: 0; }
-    .pr-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 90px; }
+    .pr-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 90px; max-height: calc(100vh - 90px - 24px); overflow-y: auto; }
+    .pr-sidebar::-webkit-scrollbar { width: 3px; }
+    .pr-sidebar::-webkit-scrollbar-thumb { border-radius: 3px; background: rgba(128,128,128,0.2); }
 
     /* Chart grid */
     .pr-chart-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
@@ -104,7 +106,7 @@
     @keyframes pr-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
     /* Sidebar info panels — ported from pd-info-panel */
-    .pr-info-panel { border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); overflow: hidden; display: flex; flex-direction: column; }
+    .pr-info-panel { border-radius: 12px; background: #ffffff; border: 1px solid rgba(128,128,128,0.12); overflow: hidden; display: flex; flex-direction: column; flex-shrink: 0; }
     .dark .pr-info-panel { background: #242424; border-color: rgba(255,255,255,0.08); }
     .pr-info-panel__header { padding: 14px 16px 10px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-bottom: 1px solid rgba(128,128,128,0.08); }
     .pr-info-panel__title { font-size: 13px; font-weight: 700; }
@@ -136,7 +138,7 @@
     .pr-legend__count { opacity: 0.55; }
 
     /* Responsive */
-    @media (max-width: 1280px) { .pr-kpi-grid { grid-template-columns: repeat(2, 1fr); } .pr-layout { grid-template-columns: 1fr; } .pr-sidebar { position: static; display: grid; grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 1280px) { .pr-kpi-grid { grid-template-columns: repeat(2, 1fr); } .pr-layout { grid-template-columns: 1fr; } .pr-sidebar { position: static; display: grid; grid-template-columns: 1fr 1fr; max-height: none; overflow-y: visible; } }
     @media (max-width: 1024px) { .pr-chart-grid { grid-template-columns: 1fr; } .pr-chart-card--wide { grid-column: span 1; } .pr-sidebar { grid-template-columns: 1fr; } .pr-pipeline { flex-wrap: wrap; } .pr-pipeline-step { min-width: 70px; } }
     @media (max-width: 640px) { .pr-kpi-grid { grid-template-columns: 1fr; } }
 </style>
@@ -255,8 +257,7 @@
     const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
     const cardBg = isDark ? '#242424' : '#ffffff';
     const emptyHtml = (msg) => `<div class="pr-empty"><img src="/static/images/ui/no_records.svg" alt="">${msg}</div>`;
-    const empViewUrl = "{% url 'employee-view-individual' obj_id=0 %}";
-    const empUrlFor = id => id ? empViewUrl.replace('/0/', '/' + id + '/') : '#';
+    const taskAllUrlFor = id => id ? `{% url 'task-all' %}?task_members=${id}` : '#';
 
     const PR_URLS = {
         kpi:          "{% url 'project-dashboard-kpi' %}",
@@ -464,7 +465,7 @@
             el.innerHTML = d.contributors.map(c => {
                 const initials = c.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
                 const avatarInner = c.avatar ? `<img src="${c.avatar}" alt="">` : initials;
-                return `<a href="${empUrlFor(c.id)}" class="pr-list-item">
+                return `<a href="${taskAllUrlFor(c.id)}" class="pr-list-item">
                     <div class="pr-list-item__avatar">${avatarInner}</div>
                     <div class="pr-list-item__info">
                         <div class="pr-list-item__name">${c.name}</div>

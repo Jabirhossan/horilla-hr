@@ -253,10 +253,20 @@
             top: 90px;
             flex-direction: column;
             gap: 16px;
+            max-height: calc(100vh - 90px - 24px);
+            overflow-y: auto;
+        }
+        .em-sidebar::-webkit-scrollbar {
+            width: 3px;
+        }
+        .em-sidebar::-webkit-scrollbar-thumb {
+            border-radius: 3px;
+            background: rgba(128, 128, 128, 0.2);
         }
 
         /* Sidebar panels */
         .em-panel {
+            flex-shrink: 0;
             overflow: hidden;
             border: 1px solid rgba(128, 128, 128, 0.12);
             border-radius: 12px;
@@ -427,6 +437,8 @@
             }
             .em-sidebar {
                 position: static;
+                max-height: none;
+                overflow-y: visible;
             }
             .em-chart-grid {
                 grid-template-columns: 1fr;

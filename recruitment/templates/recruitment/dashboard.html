@@ -483,11 +483,21 @@
             top: 90px;
             flex-direction: column;
             gap: 16px;
+            max-height: calc(100vh - 90px - 24px);
+            overflow-y: auto;
+        }
+        .rd-sidebar::-webkit-scrollbar {
+            width: 3px;
+        }
+        .rd-sidebar::-webkit-scrollbar-thumb {
+            border-radius: 3px;
+            background: rgba(128, 128, 128, 0.2);
         }
 
         .rd-info-panel {
             display: flex;
             flex-direction: column;
+            flex-shrink: 0;
             overflow: hidden;
             border: 1px solid rgba(128, 128, 128, 0.12);
             border-radius: 12px;
@@ -825,6 +835,8 @@
                 display: grid;
                 position: static;
                 grid-template-columns: 1fr 1fr;
+                max-height: none;
+                overflow-y: visible;
             }
         }
         @media (max-width: 1280px) {
