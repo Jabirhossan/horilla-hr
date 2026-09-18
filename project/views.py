@@ -723,7 +723,6 @@ def task_view(request, project_id, **kwargs):
     form = TaskAllFilter().form
     for field, value in form.fields.items():
         if form.fields.get(field) and form.fields[field].widget.attrs.get("id"):
-            del form.fields[field].widget.attrs["id"]
             form.fields[field].widget.attrs["class"] = "w-100 oh-select oh-select2"
     view_type = "card"
     project = Project.objects.get(id=project_id)
