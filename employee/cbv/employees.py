@@ -623,7 +623,6 @@ class EmployeeNav(HorillaNavView):
                     data-target="#employeeExport"
                     hx-get="{reverse('employees-export')}"
                     hx-target="#employeeExportForm"
-                    hx-vals='js:{{"has_selection": (JSON.parse(document.getElementById("selectedInstances")?.getAttribute("data-ids")||"[]").length>0)}}'
                     style="cursor: pointer;"
                     """,
                 }
@@ -772,7 +771,6 @@ class ExportView(TemplateView):
         export_filter = EmployeeFilter(queryset=employee)
         context["export_form"] = export_form
         context["export_filter"] = export_filter
-        context["hide_export_filters"] = self.request.GET.get("has_selection") == "true"
         return context
 
 
