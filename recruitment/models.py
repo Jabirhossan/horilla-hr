@@ -935,9 +935,9 @@ class Candidate(HorillaModel):
             context={"instance": self},
         )
 
-    def options(self):
+    def actions_col(self):
         """
-        This method for get custom coloumn for options.
+        This method for get custom column for actions.
         """
 
         request = getattr(_thread_locals, "request", None)
@@ -952,18 +952,8 @@ class Candidate(HorillaModel):
         )
 
         return render_template(
-            path="cbv/candidates/option.html",
-            context={"instance": self, "emp_list": emp_list},
-        )
-
-    def actions_col(self):
-        """
-        This method for get custom column for actions.
-        """
-
-        return render_template(
             path="cbv/candidates/actions.html",
-            context={"instance": self},
+            context={"instance": self, "emp_list": emp_list},
         )
 
     def get_profile_url(self):
