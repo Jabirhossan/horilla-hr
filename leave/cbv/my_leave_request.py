@@ -646,13 +646,11 @@ class MyLeaveRequestSingleForm(HorillaFormView):
                             redirect=reverse("request-view")
                             + f"?id={leave_request.id}",
                         )
-                        return HorillaRedirect(self.request)
-                    if len(
-                        LeaveRequest.objects.filter(employee_id=employee)
-                    ) == 1 or self.request.META.get("HTTP_REFERER").endswith(
-                        "employee-profile/"
-                    ):
-                        return HorillaRedirect(self.request)
+                    if self.request.META.get("HTTP_HX_REQUEST"):
+                        return self.HttpResponse(
+                            targets_to_reload=["#userRequestReload"]
+                        )
+                    return HorillaRedirect(self.request)
                 else:
                     form.add_error(
                         None,
