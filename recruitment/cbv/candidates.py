@@ -153,10 +153,7 @@ class ListCandidates(HorillaListView):
         super().__init__(**kwargs)
         self.export_fields = []
         self.search_url = reverse("list-candidate")
-        if self.request.user.has_perm("recruitment.change_candidate"):
-            self.option_method = "options"
-        else:
-            self.option_method = None
+        self.option_method = None
         self.action_method = "actions_col"
 
         unique_questions = RecruitmentSurvey.objects.values("question").annotate(
@@ -196,11 +193,8 @@ class ListCandidates(HorillaListView):
     default_columns = columns
 
     header_attrs = {
-        "option": """
-                   style ="width : 180px !important;"
-                   """,
         "action": """
-                   style ="width : 150px !important;"
+                   style ="width : 260px !important;"
                    """,
         "email": """
                    style ="width : 200px !important;"
@@ -710,7 +704,6 @@ class CandidateNav(HorillaNavView):
                  data-target="#genericModal"
                  hx-get="{reverse('export')}"
                  hx-target="#genericModalBody"
-                 hx-vals='js:{{"has_selection": (JSON.parse(document.getElementById("selectedInstances")?.getAttribute("data-ids")||"[]").length>0)}}'
                  """,
                 }
             )
@@ -840,7 +833,6 @@ class ExportView(TemplateView):
         export_filter = CandidateFilter(queryset=candidates)
         context["export_column"] = export_column
         context["export_filter"] = export_filter
-        context["hide_export_filters"] = self.request.GET.get("has_selection") == "true"
         return context
 
 

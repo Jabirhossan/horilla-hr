@@ -147,7 +147,6 @@ class HourAccountNav(HorillaNavView):
                 data-target="#hourAccountExport"
                 hx-get="{reverse('hour-account-export')}"
                 hx-target="#hourAccountExportModalBody"
-                hx-vals='js:{{"has_selection": (JSON.parse(document.getElementById("selectedInstances")?.getAttribute("data-ids")||"[]").length>0)}}'
                 style="cursor: pointer;"
                 """,
                 }
@@ -209,7 +208,6 @@ class HourExportView(TemplateView):
         export_obj = AttendanceOverTimeFilter(queryset=attendances)
         context["export_fields"] = export_fields
         context["export_obj"] = export_obj
-        context["hide_export_filters"] = self.request.GET.get("has_selection") == "true"
         return context
 
 

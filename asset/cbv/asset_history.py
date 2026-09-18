@@ -105,7 +105,6 @@ class AssetHistoryNavView(HorillaNavView):
                     data-target="#assetHistoryExport"
                     hx-get="{reverse('asset-history-export-form')}"
                     hx-target="#assetHistoryExportForm"
-                    hx-vals='js:{{"has_selection": (JSON.parse(document.getElementById("selectedInstances")?.getAttribute("data-ids")||"[]").length>0)}}'
                     style="cursor: pointer;"
                     """,
                 },
@@ -155,7 +154,6 @@ class AssetHistoryExportFormView(TemplateView):
         context["export_filter"] = AssetHistoryFilter(
             queryset=AssetAssignment.objects.all()
         )
-        context["hide_export_filters"] = self.request.GET.get("has_selection") == "true"
         return context
 
 
