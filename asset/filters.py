@@ -125,6 +125,21 @@ class AssetFilter(CustomFilterSet):
     search = django_filters.CharFilter(method="search_method")
     category = django_filters.CharFilter(field_name="asset_category_id")
     expired = django_filters.BooleanFilter(method="filter_expired")
+    # Purchase date range is also reachable through the Advanced "+ Add
+    # filter" builder (custom_field/custom_lookup/custom_value), but that
+    # needs two parallel-array rows for a from/till pair -- fragile to
+    # build a plain URL for, and the nav's own filter-form re-submission
+    # only round-tripped one of the two rows in practice. These plain
+    # fields give dashboard-style "?asset_purchase_date__gte=...&
+    # asset_purchase_date__lte=..." links a single-value param that
+    # survives the nav form intact, same pattern as PayslipFilter's
+    # start_date_from/till.
+    asset_purchase_date__gte = django_filters.DateFilter(
+        field_name="asset_purchase_date", lookup_expr="gte"
+    )
+    asset_purchase_date__lte = django_filters.DateFilter(
+        field_name="asset_purchase_date", lookup_expr="lte"
+    )
 
     # HorillaFilterSet.ajax_fields (generic AJAX-loaded combobox mechanism)
     # -- Asset Batch Number and Category opt into AJAX-searched comboboxes
@@ -451,6 +466,17 @@ class AssetAllocationFilter(CustomFilterSet):
     """
 
     search = django_filters.CharFilter(method="search_method")
+
+    # Meta.fields = "__all__" below only auto-generates filters for
+    # AssetAssignment's own direct fields -- it doesn't reach through
+    # assigned_to_employee_id into the employee's work info, which the
+    # "Assets by Department" dashboard chart's click-through needs to
+    # narrow the allocation list down to one department.
+    assigned_to_employee_id__employee_work_info__department_id = (
+        django_filters.NumberFilter(
+            field_name="assigned_to_employee_id__employee_work_info__department_id"
+        )
+    )
 
     # HorillaFilterSet.ajax_fields (generic AJAX-loaded combobox mechanism)
     # -- Allocated User, Asset, and Allocated By opt into AJAX-searched

@@ -31,6 +31,23 @@ def _parse_period(request):
     return from_date, to_date
 
 
+def _expiring_period(request):
+    """Like _parse_period, but defaults to a forward-looking window.
+
+    Assets "expiring soon" are inherently forward-looking -- _parse_period's
+    generic [month-start, today] default (built for the dashboard's other,
+    backward-looking "purchased this period" widgets) can never show an
+    asset expiring in the future, even though expiry dates are naturally
+    ahead of today. Only applies when neither from_date nor to_date was
+    explicitly requested, so an actual date-range-picker selection is still
+    honored exactly as before.
+    """
+    if not request.GET.get("from_date") and not request.GET.get("to_date"):
+        today = date.today()
+        return today, today + timedelta(days=30)
+    return _parse_period(request)
+
+
 def _assets_in_period(request):
     """Return Asset queryset filtered to assets purchased in the picker range."""
     from asset.models import Asset
@@ -140,6 +157,7 @@ def asset_status_distribution(request):
 def asset_by_category(request):
     """Asset count by category with in-use breakdown, for assets purchased in the picker range."""
     categories = []
+    from_date, to_date = _parse_period(request)
 
     try:
         data = (
@@ -168,7 +186,17 @@ def asset_by_category(request):
     except Exception:
         pass
 
-    return JsonResponse({"categories": categories})
+    # Echoed back so this chart's click-through can filter to the exact
+    # same purchase-date range the counts above were computed from --
+    # without it, "category=<id>" alone shows every asset in that
+    # category ever purchased, not just the "4" this bar actually counted.
+    return JsonResponse(
+        {
+            "categories": categories,
+            "period_from_date": from_date.isoformat(),
+            "period_to_date": to_date.isoformat(),
+        }
+    )
 
 
 @login_required
@@ -206,6 +234,7 @@ def asset_request_status(request):
 def asset_value_by_category(request):
     """Total asset value by category, for assets purchased in the picker range."""
     categories = []
+    from_date, to_date = _parse_period(request)
 
     try:
         data = (
@@ -234,7 +263,13 @@ def asset_value_by_category(request):
     except Exception:
         pass
 
-    return JsonResponse({"categories": categories})
+    return JsonResponse(
+        {
+            "categories": categories,
+            "period_from_date": from_date.isoformat(),
+            "period_to_date": to_date.isoformat(),
+        }
+    )
 
 
 @login_required
@@ -242,7 +277,7 @@ def asset_expiring_soon(request):
     """Assets with expiry date within the selected period."""
     from asset.models import Asset
 
-    from_date, to_date = _parse_period(request)
+    from_date, to_date = _expiring_period(request)
     today = date.today()
     assets = []
 
@@ -326,18 +361,23 @@ def asset_recent_allocations(request):
 
 @login_required
 def asset_department_distribution(request):
-    """Assets distributed by department (via assigned employees), assigned in the picker range."""
+    """Assets currently held, distributed by department (via assigned employees).
+
+    This is a snapshot of who holds what right now, not "assigned this
+    period" activity -- unlike the Total Value/By Category charts (which
+    intentionally track purchases in the picker range), filtering this by
+    assigned_date hid every currently-held asset whose assignment just
+    happened to be recorded outside the current month, understating each
+    department's real current holdings.
+    """
     from asset.models import AssetAssignment
 
-    from_date, to_date = _parse_period(request)
     departments = []
 
     try:
         data = (
             AssetAssignment.objects.filter(
                 return_status__isnull=True,
-                assigned_date__gte=from_date,
-                assigned_date__lte=to_date,
             )
             .values(
                 "assigned_to_employee_id__employee_work_info__department_id",
@@ -368,7 +408,18 @@ def asset_department_distribution(request):
 
 @login_required
 def asset_age_distribution(request):
-    """Asset age distribution by purchase year (assets purchased within the selected period)."""
+    """Age distribution of the entire current asset fleet.
+
+    Same fix as asset_department_distribution: this is a snapshot of how
+    old the assets we currently own are, not "assets purchased this
+    period" activity. Scoping it to _assets_in_period made it collapse to
+    a single "< 1 year" bucket every month by construction -- anything
+    bought in the current period is by definition under a month old, so
+    the fleet's real age spread (most assets purchased years ago) never
+    showed up at all.
+    """
+    from asset.models import Asset
+
     today = date.today()
     brackets = []
     try:
@@ -379,7 +430,7 @@ def asset_age_distribution(request):
             "3–5 years": 0,
             "5+ years": 0,
         }
-        for a in _assets_in_period(request).filter(asset_purchase_date__isnull=False):
+        for a in Asset.objects.filter(asset_purchase_date__isnull=False):
             age_years = (today - a.asset_purchase_date).days / 365.25
             if age_years < 1:
                 bracket_map["< 1 year"] += 1

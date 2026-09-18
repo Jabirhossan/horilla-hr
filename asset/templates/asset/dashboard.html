@@ -185,6 +185,15 @@
             top: 90px;
             flex-direction: column;
             gap: 16px;
+            max-height: calc(100vh - 90px - 24px);
+            overflow-y: auto;
+        }
+        .as-sidebar::-webkit-scrollbar {
+            width: 3px;
+        }
+        .as-sidebar::-webkit-scrollbar-thumb {
+            border-radius: 3px;
+            background: rgba(128, 128, 128, 0.2);
         }
         .as-chart-grid {
             display: grid;
@@ -258,6 +267,7 @@
         .as-info-panel {
             display: flex;
             flex-direction: column;
+            flex-shrink: 0;
             overflow: hidden;
             border: 1px solid rgba(128, 128, 128, 0.12);
             border-radius: 12px;
@@ -651,6 +661,8 @@
                 display: grid;
                 position: static;
                 grid-template-columns: 1fr 1fr;
+                max-height: none;
+                overflow-y: visible;
             }
         }
         @media (max-width: 1024px) {
@@ -844,6 +856,8 @@
             const COLORS = ['#E54F38','#22c55e','#f59e0b','#ef4444','#3b82f6','#a855f7','#06b6d4','#ec4899','#14b8a6','#f97316'];
             const emptyHtml = (msg) => `<div class="as-empty"><img src="/static/images/ui/no_records.svg" alt="">${msg}</div>`;
             const fmt = v => Number(v).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            const assetAllocationUrl = "{% url 'asset-request-allocation-view' %}";
+            const assetAllocationUrlFor = id => id ? `${assetAllocationUrl}?assigned_to_employee_id=${id}&open_tab=2` : '#';
 
             document.getElementById('as-date').textContent = new Date().toLocaleDateString('en-US', {
                 weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -1009,7 +1023,7 @@
                     <div class="as-kpi-card__value">${data.pending_requests}</div>
                     <div class="as-kpi-card__sub">${data.return_requests > 0 ? '<span class="as-badge as-badge--red">' + data.return_requests + ' {% trans "return req"|escapejs %}</span>' : '{% trans "Awaiting approval"|escapejs %}'}</div>
                 </a>
-                <a href="{% url 'asset-category-view' %}?asset_purchase_date_from=${data.period_from_date}&asset_purchase_date_till=${data.period_to_date}&filter_applied=1" class="as-kpi-card">
+                <a href="{% url 'asset-category-view' %}?asset_purchase_date__gte=${data.period_from_date}&asset_purchase_date__lte=${data.period_to_date}&filter_applied=1" class="as-kpi-card">
                     <div class="as-kpi-card__icon as-kpi-card__icon--green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
                     <div class="as-kpi-card__label">{% trans "Total Value"|escapejs %}</div>
                     <div class="as-kpi-card__value">${fmt(data.total_value)}</div>
@@ -1095,7 +1109,18 @@
                             events: { dataPointSelection: (e, ctx, config) => {
                                 const cat = data.categories[config.dataPointIndex];
                                 const base = "{% url 'asset-category-view' %}";
-                                window.location.href = cat && cat.category ? base + "?search=" + encodeURIComponent(cat.category) : base;
+                                // "category" is an exact asset_category_id match; the
+                                // free-text "search" field this used to send matches
+                                // asset_name/asset_tracking_id too, so e.g. "Car" also
+                                // caught a laptop named "...X1 Carbon". Also pass the
+                                // same purchase-date range the bar's own count came
+                                // from -- category alone shows every asset ever bought
+                                // in that category, not just the ones this bar counted.
+                                window.location.href = cat && cat.category_id != null
+                                    ? base + "?category=" + cat.category_id +
+                                        "&asset_purchase_date__gte=" + data.period_from_date +
+                                        "&asset_purchase_date__lte=" + data.period_to_date + "&filter_applied=1"
+                                    : base;
                             }}
                         },
                         colors: ['#3b82f6', '#22c55e'],
@@ -1124,7 +1149,11 @@
                             events: { dataPointSelection: (e, ctx, config) => {
                                 const cat = data.categories[config.dataPointIndex];
                                 const base = "{% url 'asset-category-view' %}";
-                                window.location.href = cat && cat.category ? base + "?search=" + encodeURIComponent(cat.category) : base;
+                                window.location.href = cat && cat.category_id != null
+                                    ? base + "?category=" + cat.category_id +
+                                        "&asset_purchase_date__gte=" + data.period_from_date +
+                                        "&asset_purchase_date__lte=" + data.period_to_date + "&filter_applied=1"
+                                    : base;
                             }}
                         },
                         labels: data.categories.map(c => c.category),
@@ -1151,7 +1180,14 @@
                             events: { dataPointSelection: (e, ctx, config) => {
                                 const deptId = data.departments[config.dataPointIndex] && data.departments[config.dataPointIndex].department_id;
                                 const url = "{% url 'asset-request-allocation-view' %}";
-                                window.location.href = deptId ? url + "?assigned_to_employee_id__employee_work_info__department_id=" + deptId : url;
+                                // open_tab=3 -- "Asset Allocation" is the destination's
+                                // 3rd tab; without it, whichever tab was last active
+                                // there (persisted per user) wins instead, landing on
+                                // "Asset" or "Asset Request" where this filter means
+                                // nothing.
+                                window.location.href = deptId
+                                    ? url + "?open_tab=3&assigned_to_employee_id__employee_work_info__department_id=" + deptId + "&filter_applied=1"
+                                    : url + "?open_tab=3";
                             }}
                         },
                         colors: COLORS,
@@ -1179,7 +1215,30 @@
                         series: [{ name: '{% trans "Assets"|escapejs %}', data: data.brackets.map(b => b.count) }],
                         chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit',
                             events: { dataPointSelection: (e, ctx, config) => {
-                                window.location.href = "{% url 'asset-category-view' %}";
+                                const base = "{% url 'asset-category-view' %}";
+                                const b = data.brackets[config.dataPointIndex];
+                                // Bracket boundaries (in days-ago) mirror the backend's
+                                // own age_years = (today - purchase_date).days / 365.25
+                                // bucketing exactly, so the destination's date range
+                                // matches the bar that was actually clicked instead of
+                                // dumping every asset regardless of age.
+                                const bracketDays = {
+                                    '< 1 year': [0, 365], '1–2 years': [365, 730],
+                                    '2–3 years': [730, 1095], '3–5 years': [1095, 1825],
+                                    '5+ years': [1825, null],
+                                };
+                                const range = b && bracketDays[b.bracket];
+                                if (!range) { window.location.href = base; return; }
+                                const today = new Date();
+                                const till = new Date(today); till.setDate(till.getDate() - range[0]);
+                                const params = new URLSearchParams();
+                                params.append('asset_purchase_date__lte', till.toISOString().slice(0, 10));
+                                if (range[1] !== null) {
+                                    const from = new Date(today); from.setDate(from.getDate() - range[1]);
+                                    params.append('asset_purchase_date__gte', from.toISOString().slice(0, 10));
+                                }
+                                params.append('filter_applied', '1');
+                                window.location.href = base + "?" + params.toString();
                             }}
                         },
                         colors: ageColors.slice(0, data.brackets.length),
@@ -1208,13 +1267,13 @@
                         if (a.days_left <= 7) badge = `<span class="as-badge as-badge--red">${a.days_left}d</span>`;
                         else if (a.days_left <= 30) badge = `<span class="as-badge as-badge--amber">${a.days_left}d</span>`;
                         else badge = `<span class="as-badge as-badge--green">${a.days_left}d</span>`;
-                        return `<a href="/asset/asset-information/${a.id}/" class="as-list-item">
+                        return `<div class="as-list-item">
                     <div class="as-list-item__info">
                         <div class="as-list-item__name">${a.name}</div>
                         <div class="as-list-item__detail">${a.category} · ${a.tracking_id}</div>
                     </div>
                     <div class="as-list-item__badge">${badge}</div>
-                </a>`;
+                </div>`;
                     }).join('');
                 }).catch(() => { document.getElementById('as-expiring').innerHTML = '<div class="as-info-panel__empty">{% trans "No data"|escapejs %}</div>'; });
             }
@@ -1230,7 +1289,7 @@
                     el.innerHTML = data.allocations.map(a => {
                         const initials = a.employee.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
                         const avatarInner = a.avatar ? `<img src="${a.avatar}" alt="">` : initials;
-                        return `<a href="/employee/employee-view/${a.id}/" class="as-list-item">
+                        return `<a href="${assetAllocationUrlFor(a.id)}" class="as-list-item">
                     <div class="as-list-item__avatar">${avatarInner}</div>
                     <div class="as-list-item__info">
                         <div class="as-list-item__name">${a.employee}</div>
