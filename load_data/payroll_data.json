@@ -188,8 +188,8 @@
    "created_by": 1,
    "modified_by": 1,
    "is_active": true,
-   "title": "Emergency Loan - 2025-07-01",
-   "one_time_date": "2025-07-01",
+   "title": "Emergency Loan - 2025-02-01",
+   "one_time_date": "2025-02-01",
    "include_active_employees": false,
    "is_tax": false,
    "is_pretax": true,
@@ -229,8 +229,8 @@
    "created_by": 1,
    "modified_by": 1,
    "is_active": true,
-   "title": "Emergency Loan - 2025-07-01",
-   "one_time_date": "2025-07-01",
+   "title": "Emergency Loan - 2025-03-01",
+   "one_time_date": "2025-03-01",
    "include_active_employees": false,
    "is_tax": false,
    "is_pretax": true,
@@ -270,8 +270,8 @@
    "created_by": 1,
    "modified_by": 1,
    "is_active": true,
-   "title": "Emergency Loan - 2025-07-01",
-   "one_time_date": "2025-07-01",
+   "title": "Emergency Loan - 2025-04-01",
+   "one_time_date": "2025-04-01",
    "include_active_employees": false,
    "is_tax": false,
    "is_pretax": true,
@@ -311,8 +311,8 @@
    "created_by": 1,
    "modified_by": 1,
    "is_active": true,
-   "title": "Emergency Loan - 2025-02-01",
-   "one_time_date": "2025-02-01",
+   "title": "Emergency Loan - 2025-05-01",
+   "one_time_date": "2025-05-01",
    "include_active_employees": false,
    "is_tax": false,
    "is_pretax": true,
@@ -352,8 +352,8 @@
    "created_by": 1,
    "modified_by": 1,
    "is_active": true,
-   "title": "Emergency Loan - 2025-07-01",
-   "one_time_date": "2025-07-01",
+   "title": "Emergency Loan - 2025-06-01",
+   "one_time_date": "2025-06-01",
    "include_active_employees": false,
    "is_tax": false,
    "is_pretax": true,
@@ -393,8 +393,8 @@
    "created_by": 1,
    "modified_by": 1,
    "is_active": true,
-   "title": "Emergency Loan - 2025-04-01",
-   "one_time_date": "2025-04-01",
+   "title": "Emergency Loan - 2025-07-01",
+   "one_time_date": "2025-07-01",
    "include_active_employees": false,
    "is_tax": false,
    "is_pretax": true,
@@ -6458,8 +6458,8 @@
     "contract_wage": 15000.0,
     "basic_pay": 15000.000000000002,
     "gross_pay": 15675.000000000002,
-    "taxable_gross_pay": 13762.500000000002,
-    "net_pay": 13762.500000000002,
+    "taxable_gross_pay": 5762.500000000002,
+    "net_pay": 5762.500000000002,
     "allowances": [
      {
       "allowance_id": 1,
@@ -6496,12 +6496,19 @@
       "employer_contribution_rate": 2.25,
       "based_on": "basic_pay",
       "employer_contribution_amount": 337.50000000000006
+     },
+     {
+      "deduction_id": 1018,
+      "title": "Professional Certification Loan - installment 1 of 6",
+      "is_pretax": true,
+      "amount": 8000.0,
+      "employer_contribution_rate": 0.0
      }
     ],
     "post_tax_deductions": [],
     "tax_deductions": [],
     "net_deductions": [],
-    "total_deductions": 1912.5000000000002,
+    "total_deductions": 9912.5000000000002,
     "loss_of_pay": 0.0,
     "custom_leave_deduction": 0.0,
     "custom_leave_breakdown": [],
@@ -6513,8 +6520,8 @@
    "contract_wage": 15000.0,
    "basic_pay": 15000.0,
    "gross_pay": 15675.0,
-   "deduction": 1912.5,
-   "net_pay": 13762.5,
+   "deduction": 9912.5,
+   "net_pay": 5762.5,
    "status": "paid",
    "sent_to_employee": false,
    "installment_ids": [1018]
@@ -6578,8 +6585,8 @@
       "employer_contribution_amount": 337.50000000000006
      },
      {
-      "deduction_id": 7,
-      "title": "Emergency Loan - 2026-02-01",
+      "deduction_id": 4,
+      "title": "Emergency Loan - 2025-02-01",
       "is_pretax": true,
       "amount": 3000.0,
       "employer_contribution_rate": 0.0
@@ -8878,8 +8885,8 @@
     "contract_wage": 15000.0,
     "basic_pay": 13750.0,
     "gross_pay": 14368.75,
-    "taxable_gross_pay": 12615.625,
-    "net_pay": 12615.625,
+    "taxable_gross_pay": 4615.625,
+    "net_pay": 4615.625,
     "allowances": [
      {
       "allowance_id": 1,
@@ -8916,12 +8923,19 @@
       "employer_contribution_rate": 2.25,
       "based_on": "basic_pay",
       "employer_contribution_amount": 309.375
+     },
+     {
+      "deduction_id": 1019,
+      "title": "Professional Certification Loan - installment 2 of 6",
+      "is_pretax": true,
+      "amount": 8000.0,
+      "employer_contribution_rate": 0.0
      }
     ],
     "post_tax_deductions": [],
     "tax_deductions": [],
     "net_deductions": [],
-    "total_deductions": 1753.125,
+    "total_deductions": 9753.125,
     "loss_of_pay": 0.0,
     "custom_leave_deduction": 0.0,
     "custom_leave_breakdown": [],
@@ -8933,8 +8947,8 @@
    "contract_wage": 15000.0,
    "basic_pay": 13750.0,
    "gross_pay": 14368.75,
-   "deduction": 1753.12,
-   "net_pay": 12615.62,
+   "deduction": 9753.12,
+   "net_pay": 4615.62,
    "status": "paid",
    "sent_to_employee": false,
    "installment_ids": [1019]
@@ -8959,7 +8973,7 @@
     "basic_pay": 13750.0,
     "gross_pay": 14368.75,
     "taxable_gross_pay": 12615.625,
-    "net_pay": 12615.625,
+    "net_pay": 9615.625,
     "allowances": [
      {
       "allowance_id": 1,
@@ -8996,12 +9010,19 @@
       "employer_contribution_rate": 2.25,
       "based_on": "basic_pay",
       "employer_contribution_amount": 309.375
+     },
+     {
+      "deduction_id": 5,
+      "title": "Emergency Loan - 2025-03-01",
+      "is_pretax": true,
+      "amount": 3000.0,
+      "employer_contribution_rate": 0.0
      }
     ],
     "post_tax_deductions": [],
     "tax_deductions": [],
     "net_deductions": [],
-    "total_deductions": 1753.125,
+    "total_deductions": 4753.125,
     "loss_of_pay": 0.0,
     "custom_leave_deduction": 0.0,
     "custom_leave_breakdown": [],
@@ -9013,8 +9034,8 @@
    "contract_wage": 15000.0,
    "basic_pay": 13750.0,
    "gross_pay": 14368.75,
-   "deduction": 1753.12,
-   "net_pay": 12615.62,
+   "deduction": 4753.12,
+   "net_pay": 9615.62,
    "status": "paid",
    "sent_to_employee": false,
    "installment_ids": [5]
@@ -11291,8 +11312,8 @@
     "contract_wage": 15000.0,
     "basic_pay": 13750.0,
     "gross_pay": 14368.75,
-    "taxable_gross_pay": 12615.625,
-    "net_pay": 12615.625,
+    "taxable_gross_pay": 4615.625,
+    "net_pay": 4615.625,
     "allowances": [
      {
       "allowance_id": 1,
@@ -11329,12 +11350,19 @@
       "employer_contribution_rate": 2.25,
       "based_on": "basic_pay",
       "employer_contribution_amount": 309.375
+     },
+     {
+      "deduction_id": 1020,
+      "title": "Professional Certification Loan - installment 3 of 6",
+      "is_pretax": true,
+      "amount": 8000.0,
+      "employer_contribution_rate": 0.0
      }
     ],
     "post_tax_deductions": [],
     "tax_deductions": [],
     "net_deductions": [],
-    "total_deductions": 1753.125,
+    "total_deductions": 9753.125,
     "loss_of_pay": 0.0,
     "custom_leave_deduction": 0.0,
     "custom_leave_breakdown": [],
@@ -11346,8 +11374,8 @@
    "contract_wage": 15000.0,
    "basic_pay": 13750.0,
    "gross_pay": 14368.75,
-   "deduction": 1753.12,
-   "net_pay": 12615.62,
+   "deduction": 9753.12,
+   "net_pay": 4615.62,
    "status": "paid",
    "sent_to_employee": false,
    "installment_ids": [1020]
@@ -11411,8 +11439,8 @@
       "employer_contribution_amount": 309.375
      },
      {
-      "deduction_id": 9,
-      "title": "Emergency Loan - 2026-04-01",
+      "deduction_id": 6,
+      "title": "Emergency Loan - 2025-04-01",
       "is_pretax": true,
       "amount": 3000.0,
       "employer_contribution_rate": 0.0
@@ -13711,8 +13739,8 @@
     "contract_wage": 15000.0,
     "basic_pay": 13750.0,
     "gross_pay": 14368.75,
-    "taxable_gross_pay": 12615.625,
-    "net_pay": 12615.625,
+    "taxable_gross_pay": 4615.625,
+    "net_pay": 4615.625,
     "allowances": [
      {
       "allowance_id": 1,
@@ -13749,12 +13777,19 @@
       "employer_contribution_rate": 2.25,
       "based_on": "basic_pay",
       "employer_contribution_amount": 309.375
+     },
+     {
+      "deduction_id": 1021,
+      "title": "Professional Certification Loan - installment 4 of 6",
+      "is_pretax": true,
+      "amount": 8000.0,
+      "employer_contribution_rate": 0.0
      }
     ],
     "post_tax_deductions": [],
     "tax_deductions": [],
     "net_deductions": [],
-    "total_deductions": 1753.125,
+    "total_deductions": 9753.125,
     "loss_of_pay": 0.0,
     "custom_leave_deduction": 0.0,
     "custom_leave_breakdown": [],
@@ -13766,8 +13801,8 @@
    "contract_wage": 15000.0,
    "basic_pay": 13750.0,
    "gross_pay": 14368.75,
-   "deduction": 1753.12,
-   "net_pay": 12615.62,
+   "deduction": 9753.12,
+   "net_pay": 4615.62,
    "status": "paid",
    "sent_to_employee": false,
    "installment_ids": [1021]
@@ -13831,8 +13866,8 @@
       "employer_contribution_amount": 309.375
      },
      {
-      "deduction_id": 10,
-      "title": "Emergency Loan - 2026-05-01",
+      "deduction_id": 7,
+      "title": "Emergency Loan - 2025-05-01",
       "is_pretax": true,
       "amount": 3000.0,
       "employer_contribution_rate": 0.0
@@ -16242,7 +16277,7 @@
     "basic_pay": 13750.0,
     "gross_pay": 14368.75,
     "taxable_gross_pay": 12615.625,
-    "net_pay": 12615.625,
+    "net_pay": 9615.625,
     "allowances": [
      {
       "allowance_id": 1,
@@ -16279,12 +16314,19 @@
       "employer_contribution_rate": 2.25,
       "based_on": "basic_pay",
       "employer_contribution_amount": 309.375
+     },
+     {
+      "deduction_id": 8,
+      "title": "Emergency Loan - 2025-06-01",
+      "is_pretax": true,
+      "amount": 3000.0,
+      "employer_contribution_rate": 0.0
      }
     ],
     "post_tax_deductions": [],
     "tax_deductions": [],
     "net_deductions": [],
-    "total_deductions": 1753.125,
+    "total_deductions": 4753.125,
     "loss_of_pay": 0.0,
     "custom_leave_deduction": 0.0,
     "custom_leave_breakdown": [],
@@ -16296,8 +16338,8 @@
    "contract_wage": 15000.0,
    "basic_pay": 13750.0,
    "gross_pay": 14368.75,
-   "deduction": 1753.12,
-   "net_pay": 12615.62,
+   "deduction": 4753.12,
+   "net_pay": 9615.62,
    "status": "paid",
    "sent_to_employee": false,
    "installment_ids": [8]
@@ -18696,8 +18738,8 @@
     "contract_wage": 15000.0,
     "basic_pay": 13200.0,
     "gross_pay": 67794.0,
-    "taxable_gross_pay": 48111.0,
-    "net_pay": 48111.0,
+    "taxable_gross_pay": 63111.0,
+    "net_pay": 63111.0,
     "allowances": [
      {
       "allowance_id": 1,
@@ -18742,43 +18784,8 @@
       "employer_contribution_amount": 297.0
      },
      {
-      "deduction_id": 4,
-      "title": "Emergency Loan - 2026-07-01",
-      "is_pretax": true,
-      "amount": 3000.0,
-      "employer_contribution_rate": 0.0
-     },
-     {
-      "deduction_id": 5,
-      "title": "Emergency Loan - 2026-07-01",
-      "is_pretax": true,
-      "amount": 3000.0,
-      "employer_contribution_rate": 0.0
-     },
-     {
-      "deduction_id": 6,
-      "title": "Emergency Loan - 2026-07-01",
-      "is_pretax": true,
-      "amount": 3000.0,
-      "employer_contribution_rate": 0.0
-     },
-     {
-      "deduction_id": 8,
-      "title": "Emergency Loan - 2026-07-01",
-      "is_pretax": true,
-      "amount": 3000.0,
-      "employer_contribution_rate": 0.0
-     },
-     {
-      "deduction_id": 11,
-      "title": "Emergency Loan - 2026-07-01",
-      "is_pretax": true,
-      "amount": 3000.0,
-      "employer_contribution_rate": 0.0
-     },
-     {
-      "deduction_id": 12,
-      "title": "Emergency Loan - 2026-07-01",
+      "deduction_id": 9,
+      "title": "Emergency Loan - 2025-07-01",
       "is_pretax": true,
       "amount": 3000.0,
       "employer_contribution_rate": 0.0
@@ -18787,7 +18794,7 @@
     "post_tax_deductions": [],
     "tax_deductions": [],
     "net_deductions": [],
-    "total_deductions": 19683.0,
+    "total_deductions": 4683.0,
     "loss_of_pay": 0.0,
     "custom_leave_deduction": 0.0,
     "custom_leave_breakdown": [],
@@ -18799,8 +18806,8 @@
    "contract_wage": 15000.0,
    "basic_pay": 13200.0,
    "gross_pay": 67794.0,
-   "deduction": 19683.0,
-   "net_pay": 48111.0,
+   "deduction": 4683.0,
+   "net_pay": 63111.0,
    "status": "review_ongoing",
    "sent_to_employee": false,
    "installment_ids": [9]
