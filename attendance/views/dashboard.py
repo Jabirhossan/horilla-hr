@@ -316,6 +316,11 @@ def generate_data_set(request, start_date, type, end_date, dept):
     data = {}
     if on_time or late_come_obj or early_out_obj:
         data = {
+            # id alongside label so callers can link back to this exact
+            # department by pk instead of re-matching on its name -- the
+            # main dashboard's Attendance Overview chart drills into the
+            # employee list that way when a bar is clicked.
+            "id": dept.pk,
             "label": dept.department,
             "data": [on_time, len(late_come_obj), len(early_out_obj)],
         }

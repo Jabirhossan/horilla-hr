@@ -158,7 +158,12 @@ class ModernDashboardFetchInventoryTests(SimpleTestCase):
 
         text = Path("templates/dashboard.html").read_text(encoding="utf-8")
         self.assertIn("status=approved&today_leave=true&filter_applied=on", text)
-        self.assertIn("attendance_date={% now 'Y-m-d' %}&filter_applied=on", text)
+        # Present Today drills into the employee directory -- the people who
+        # have an attendance record today -- not into attendance-view's
+        # per-record list.
+        self.assertIn(
+            "present_on={% now 'Y-m-d' %}&is_active=True&filter_applied=on", text
+        )
         self.assertIn("is_active=True&filter_applied=on", text)
         self.assertIn("closed=false&filter_applied=on", text)
         self.assertIn("asset_request_status=Requested&filter_applied=1", text)
@@ -179,6 +184,17 @@ class ModernDashboardFetchInventoryTests(SimpleTestCase):
         self.assertNotIn("approved=false&canceled=false", text)
         self.assertNotIn("is_validate_request=true", text)
         self.assertNotIn("dashboard-compliance-strip", text)
+        # Attendance Overview bars drill into the employee directory too,
+        # carrying department + date + how they attended. The statuses are
+        # indexed positionally because data.labels is gettext'd, so matching
+        # on its text would break under any non-English locale.
+        self.assertIn("['on_time', 'late_come', 'early_out']", text)
+        self.assertIn("attendance_status: status", text)
+        self.assertIn("employee_work_info__department_id: deptId", text)
+        # Both former attendance destinations are gone from the dashboard.
+        self.assertNotIn("late-come-early-out-view", text)
+        self.assertNotIn("url 'attendance-view'", text)
+
         # Home no longer surfaces report pin / suggested pack UI
         for removed in (
             "standard-report-suggested-pack",
