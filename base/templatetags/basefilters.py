@@ -301,6 +301,19 @@ def has_content(value):
     return True
 
 
+@register.filter(name="unique_breadcrumbs")
+def unique_breadcrumbs(breadcrumbs):
+    """Drop later breadcrumbs that share a name with an earlier one."""
+    seen = set()
+    unique = []
+    for crumb in breadcrumbs:
+        name = crumb.get("name")
+        if name not in seen:
+            seen.add(name)
+            unique.append(crumb)
+    return unique
+
+
 @register.filter(name="readable")
 def readable(value):
     try:
