@@ -183,17 +183,25 @@ def recruitment_stage_summary(request):
 
 @login_required
 def recruitment_pipeline_data(request):
-    """Hiring pipeline — candidates per stage per recruitment."""
+    """Hiring pipeline — candidates per stage per recruitment.
+
+    Unlike the KPI cards (which deliberately track "hired this month"-style
+    period activity), this is a snapshot of where every candidate
+    currently sits in the funnel -- filtering it to _candidates_in_period's
+    created_at window hid candidates who applied earlier and are still
+    sitting in Interview/Cancelled/etc, making those columns look emptier
+    than the recruitment's actual pipeline.
+    """
     if not _has_recruitment_permission(request):
         return JsonResponse({"no_permission": True})
-    from recruitment.models import Recruitment, Stage
+    from recruitment.models import Candidate, Recruitment, Stage
 
     recruitments = Recruitment.objects.filter(closed=False)
-    period_candidates = _candidates_in_period(request)
+    all_candidates = Candidate.objects.filter(is_active=True)
     pipeline = []
 
     for rec in recruitments:
-        rec_cands = period_candidates.filter(recruitment_id=rec)
+        rec_cands = all_candidates.filter(recruitment_id=rec)
         total = rec_cands.count()
         if not total:
             continue
