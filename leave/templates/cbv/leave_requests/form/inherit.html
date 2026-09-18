@@ -32,7 +32,7 @@
     test.find("button[type=submit]").hide();
     var button = `
     <div class="oh-modal__dialog-footer p-0 mt-3">
-      <button id="buttonID" class="oh-btn oh-btn--secondary oh-btn--shadow">{% trans 'Save'|escapejs %}</button>
+      <button type="button" id="buttonID" class="oh-btn oh-btn--secondary oh-btn--shadow">{% trans 'Save'|escapejs %}</button>
     </div>
     `;
     test.find(".d-flex").after(button);
@@ -40,7 +40,6 @@
     $("#buttonID").on("click", function (event) {
         var zeroDaysFlag = $("#requestedDaysZeroFlag").val();
         if (zeroDaysFlag === "true") {
-            event.preventDefault();
             event.stopImmediatePropagation();
             Swal.fire({
                 title: "{% trans 'Cannot submit leave request'|escapejs %}",
@@ -50,13 +49,15 @@
             });
             return false;
         }
+
+        {% if not "recruitment"|app_installed %}
+            test.find("[type=submit]:not([name=save_and_add_another])").click();
+        {% endif %}
     });
 
     {% if "recruitment"|app_installed %}
     $(document).ready(function () {
-        $("#buttonID").on("click", function () {
-            event.preventDefault();
-            event.stopPropagation();
+        $("#buttonID").on("click", function (event) {
             var startDate = test.find("[name=start_date]").val();
             var endDate = test.find("[name=end_date]").val();
             var parentForm = $(this).closest('form');
@@ -94,13 +95,13 @@
                                 confirmButtonText: i18nMessages.confirm,
                             }).then(function (result) {
                                 if (result.isConfirmed) {
-                                    test.find("[type=submit]").show();
+                                    test.find("[type=submit]:not([name=save_and_add_another])").show();
                                     $("#buttonID").hide();
-                                test.find("[type=submit]").click();
+                                test.find("[type=submit]:not([name=save_and_add_another])").click();
                             }
                         });
                     } else {
-                        test.find("[type=submit]").click();
+                        test.find("[type=submit]:not([name=save_and_add_another])").click();
                     }
                 },
             });
