@@ -274,11 +274,6 @@ class TicketTabView(HorillaTabView):
                 }
             )
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["show_filter_tags"] = True
-        return context
-
 
 @method_decorator(login_required, name="dispatch")
 class TicketListBase(HorillaListView):
