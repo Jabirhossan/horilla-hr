@@ -1499,7 +1499,6 @@ def asset_excel(_request):
 
 
 @login_required
-@hx_request_required
 @permission_required("asset.view_assetcategory")
 def asset_export_excel(request):
     """asset export view"""
