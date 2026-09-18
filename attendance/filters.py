@@ -1273,6 +1273,73 @@ def get_working_today(queryset, _name, value):
     return queryset
 
 
+def get_present_on(queryset, _name, value):
+    """
+    Employees marked present on ``value`` -- i.e. those with an attendance
+    record for that date, whether or not they have already clocked out.
+
+    This is the set the dashboard's "Present Today" KPI counts, so the card
+    links here. Deliberately NOT the same as get_working_today above: that
+    one is "clocked in right now" (the green Online dot), which drops
+    everyone who already went home for the day.
+
+    distinct() because an employee can have more than one attendance record
+    for a single date (split shifts, a re-check-in after clocking out).
+    """
+    return queryset.filter(employee_attendances__attendance_date=value).distinct()
+
+
+ATTENDANCE_STATUS_CHOICES = [
+    ("on_time", _("On Time")),
+    ("late_come", _("Late Arrival")),
+    ("early_out", _("Early Departure")),
+]
+
+
+def filter_attendance_status(self, queryset, _name, value):
+    """
+    Narrows employees by *how* they attended -- on time, arrived late, or
+    left early. This is what the dashboard's Attendance Overview chart
+    links into: each bar is one department's count for one of these three.
+
+    Scoped to the "Present On" date when one is set; the two fields are
+    designed to be used together. With no date it spans every record, so
+    "Late Arrival" alone reads as "has ever been flagged late".
+
+    Reads present_on off self.data rather than carrying its own date, so
+    the filter panel keeps a single date field instead of one per status.
+    That needs the filterset instance, hence a bound method attached to
+    EmployeeFilter below -- unlike the plain functions above, which
+    django-filter calls as f(queryset, name, value) with no self.
+    """
+    on_date = (self.data or {}).get("present_on") or None
+
+    if value == "on_time":
+        # On time == attended, and not flagged late for that attendance.
+        # Mirrors the chart, which derives its On Time bar the same way:
+        # total attendance minus the late-come rows (see generate_data_set
+        # in attendance/views/dashboard.py).
+        present = (
+            queryset.filter(employee_attendances__attendance_date=on_date)
+            if on_date
+            else queryset.filter(employee_attendances__isnull=False)
+        )
+        late = AttendanceLateComeEarlyOut.objects.filter(type="late_come")
+        if on_date:
+            late = late.filter(attendance_id__attendance_date=on_date)
+        return present.exclude(
+            id__in=late.values_list("employee_id", flat=True)
+        ).distinct()
+
+    lookups = {"late_come_early_out__type": value}
+    if on_date:
+        lookups["late_come_early_out__attendance_id__attendance_date"] = on_date
+    return queryset.filter(**lookups).distinct()
+
+
+EmployeeFilter.filter_attendance_status = filter_attendance_status
+
+
 og_init = EmployeeFilter.__init__
 
 
@@ -1284,6 +1351,26 @@ def online_init(self, *args, **kwargs):
     self.filters["working_today"] = custom_field
     self.form.fields["working_today"] = custom_field.field
     self.form.fields["working_today"].widget.attrs.update(
+        {
+            "class": "oh-select oh-select-2 w-100",
+        }
+    )
+    present_field = django_filters.DateFilter(
+        label=_("Present On"),
+        method=get_present_on,
+        widget=forms.DateInput(attrs={"type": "date", "class": "oh-input w-100"}),
+    )
+    self.filters["present_on"] = present_field
+    self.form.fields["present_on"] = present_field.field
+    status_field = django_filters.ChoiceFilter(
+        label=_("Attendance Status"),
+        choices=ATTENDANCE_STATUS_CHOICES,
+        method="filter_attendance_status",
+    )
+    status_field.parent = self
+    self.filters["attendance_status"] = status_field
+    self.form.fields["attendance_status"] = status_field.field
+    self.form.fields["attendance_status"].widget.attrs.update(
         {
             "class": "oh-select oh-select-2 w-100",
         }

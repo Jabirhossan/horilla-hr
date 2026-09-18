@@ -107,6 +107,16 @@
             top: 90px;
             flex-direction: column;
             gap: 16px;
+            max-height: calc(100vh - 90px - 24px);
+            overflow-y: auto;
+        }
+
+        .md-sidebar::-webkit-scrollbar {
+            width: 3px;
+        }
+        .md-sidebar::-webkit-scrollbar-thumb {
+            border-radius: 3px;
+            background: rgba(128, 128, 128, 0.2);
         }
 
         /* KPI Grid */
@@ -448,6 +458,7 @@
         .md-info-panel {
             display: flex;
             flex-direction: column;
+            flex-shrink: 0;
             overflow: hidden;
             border: 1px solid rgba(128, 128, 128, 0.12);
             border-radius: 12px;
@@ -1213,6 +1224,8 @@
                 display: grid;
                 position: static;
                 grid-template-columns: 1fr 1fr;
+                max-height: none;
+                overflow-y: visible;
             }
             .md-info-panel__body {
                 max-height: 300px;
@@ -1453,7 +1466,7 @@
                                     <div class="md-chart-card__subtitle">{% trans "Daily leaves — current week" %}</div>
                                 </div>
                                 <a
-                                    class="md-link"
+                                    class="md-link text-xs"
                                     href="{% url 'leave-dashboard' %}"
                                 >{% trans "Open Leave dashboard" %}</a>
                             </div>
@@ -1475,7 +1488,7 @@
                                 <div class="md-chart-card__subtitle">{% trans "Active vs Inactive" %}</div>
                             </div>
                             <a
-                                class="md-link"
+                                class="md-link text-xs"
                                 href="{% url 'employee-dashboard' %}"
                             >{% trans "Open Employee dashboard" %}</a>
                         </div>
@@ -2352,7 +2365,7 @@
                         const recruSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>';
                         document.getElementById('md-kpi-grid').innerHTML =
                             kpiCard("{% url 'employee-view' %}?is_active=True&filter_applied=on",   PERM.employee,    'md-kpi-card__icon--indigo', empSvg,   '{% trans "Total Employees"|escapejs %}',   data.total_employees,   data.new_joiners > 0 ? '<span class="md-badge md-badge--green">+' + data.new_joiners + ' {% trans "this month"|escapejs %}</span>' : '<span style="opacity:0.5">{% trans "No new joiners"|escapejs %}</span>') +
-                            kpiCard("{% url 'attendance-view' %}?attendance_date={% now 'Y-m-d' %}&filter_applied=on",  PERM.attendance,  'md-kpi-card__icon--green',  attSvg,   '{% trans "Present Today"|escapejs %}',     data.present_today,     '<span class="md-badge ' + (data.attendance_rate >= 80 ? 'md-badge--green' : 'md-badge--amber') + '">' + data.attendance_rate + '% {% trans "of expected"|escapejs %}</span>' + (data.not_checked_in > 0 ? ' <span class="md-badge md-badge--amber">' + data.not_checked_in + ' {% trans "not checked in"|escapejs %}</span>' : '')) +
+                            kpiCard("{% url 'employee-view' %}?present_on={% now 'Y-m-d' %}&is_active=True&filter_applied=on",  PERM.employee,    'md-kpi-card__icon--green',  attSvg,   '{% trans "Present Today"|escapejs %}',     data.present_today,     '<span class="md-badge ' + (data.attendance_rate >= 80 ? 'md-badge--green' : 'md-badge--amber') + '">' + data.attendance_rate + '% {% trans "of expected"|escapejs %}</span>' + (data.not_checked_in > 0 ? ' <span class="md-badge md-badge--amber">' + data.not_checked_in + ' {% trans "not checked in"|escapejs %}</span>' : '')) +
                             kpiCard(`{% url 'request-view' %}?status=approved&today_leave=true&filter_applied=on`,     PERM.leave,       'md-kpi-card__icon--amber',  leaveSvg, '{% trans "On Leave"|escapejs %}',           data.on_leave,          data.pending_leaves > 0 ? '<a href="{% url "request-view" %}?status=requested&filter_applied=on" class="md-badge md-badge--amber">' + data.pending_leaves + ' {% trans "pending"|escapejs %}</a>' : '<span style="opacity:0.5">{% trans "No pending"|escapejs %}</span>') +
                             (PERM.recruitment ? kpiCard("{% url 'recruitment-view' %}?closed=false&filter_applied=on", true, 'md-kpi-card__icon--purple', recruSvg, '{% trans "Open Recruitments"|escapejs %}', data.open_recruitments, '<span style="opacity:0.5">{% trans "Active hiring"|escapejs %}</span>') : '');
                     });
@@ -2634,14 +2647,25 @@
                         series: data.dataSet.map(d => ({ name: d.label, data: d.data })),
                         chart: { type: 'bar', height: 320, toolbar: { show: false }, background: 'transparent', fontFamily: 'inherit', stacked: false, animations: ANIM,
                             events: { dataPointSelection: (e, ctx, config) => {
-                                if (!PERM.attendance) return;
-                                const dept = data.labels[config.dataPointIndex];
-                                const seriesLabel = data.dataSet[config.seriesIndex]?.label || '';
-                                if (seriesLabel.toLowerCase().includes('late') || seriesLabel.toLowerCase().includes('early')) {
-                                    window.location.href = "{% url 'late-come-early-out-view' %}?department=" + encodeURIComponent(dept);
-                                } else {
-                                    window.location.href = "{% url 'attendance-view' %}?department=" + encodeURIComponent(dept);
-                                }
+                                if (!PERM.employee) return;
+                                // A series is a DEPARTMENT and a data point is a STATUS --
+                                // see generate_data_set in attendance/views/dashboard.py:
+                                // labels are the three statuses, dataSet has one entry per
+                                // department. Indexing the statuses (rather than matching
+                                // data.labels text) also keeps this working under
+                                // translation, since those labels are gettext'd.
+                                const ATT_STATUS = ['on_time', 'late_come', 'early_out'];
+                                const deptId = data.dataSet[config.seriesIndex]?.id;
+                                const status = ATT_STATUS[config.dataPointIndex];
+                                if (!deptId || !status) return;
+                                const params = new URLSearchParams({
+                                    present_on: '{% now "Y-m-d" %}',
+                                    attendance_status: status,
+                                    employee_work_info__department_id: deptId,
+                                    is_active: 'True',
+                                    filter_applied: 'on',
+                                });
+                                window.location.href = "{% url 'employee-view' %}?" + params.toString();
                             }}
                         },
                         colors: ['#22c55e', '#f59e0b', '#ef4444'],

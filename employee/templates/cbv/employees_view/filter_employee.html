@@ -108,6 +108,35 @@
                         {{form.working_today}}
                     </div>
                 </div>
+                {% comment %}
+                    present_on is patched onto EmployeeFilter by
+                    attendance/filters.py alongside working_today, for the
+                    same reason: "had an attendance record on this date"
+                    is attendance's concern. It's the set the dashboard's
+                    "Present Today" KPI counts -- everyone who checked in
+                    that day, including those who already checked out --
+                    so that card links straight to this filter, unlike
+                    Currently Working which is only the still-clocked-in.
+                {% endcomment %}
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{form.present_on.id_for_label}}">{% trans "Present On" %}</label>
+                        {{form.present_on}}
+                    </div>
+                </div>
+                {% comment %}
+                    Pairs with Present On above: it narrows that day's
+                    attendees to how they attended. Left on its own it
+                    spans all dates ("has ever been late"). This is what
+                    the dashboard's Attendance Overview chart links into,
+                    one bar at a time -- department + date + status.
+                {% endcomment %}
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{form.attendance_status.id_for_label}}">{% trans "Attendance Status" %}</label>
+                        {{form.attendance_status}}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
