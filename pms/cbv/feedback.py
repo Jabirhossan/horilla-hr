@@ -438,19 +438,11 @@ class _FeedbackTabNavBase(HorillaNavView):
     tab.
     """
 
+    template_name = "generic/inline_nav.html"
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.actions = [
-            {
-                "action": _("Add Anonymous"),
-                "attrs": f"""
-                    data-toggle = "oh-modal-toggle"
-                    data-target = "#genericModal"
-                    hx-target="#genericModalBody"
-                    hx-get ="{reverse('add-anonymous-feedback')}"
-                    style="cursor: pointer;"
-                """,
-            },
             {
                 "action": _("Archive"),
                 "attrs": """
@@ -559,6 +551,13 @@ class AnonymousFeedbackNav(_FeedbackTabNavBase):
         super().__init__(**kwargs)
         self.search_url = reverse("anonymous-feedback-tab")
         self.search_swap_target = "#anonymousFeedbackListContainer"
+        self.create_attrs = f"""
+            data-toggle="oh-modal-toggle"
+            data-target="#genericModal"
+            hx-target="#genericModalBody"
+            hx-get="{reverse('add-anonymous-feedback')}"
+            style="cursor: pointer;"
+        """
 
 
 class SelfFeedbackTabShell(AttendanceTabContentShell):
