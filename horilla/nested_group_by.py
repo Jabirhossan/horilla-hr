@@ -52,6 +52,17 @@ def _related_model_for_field(model, group_field):
     return model_copy
 
 
+def _display_map_for_field(model, group_field, values):
+    """Map each raw value of a non-FK field to its display label."""
+    display_method = f"get_{group_field}_display"
+    if not hasattr(model, display_method):
+        return {value: value for value in values}
+    return {
+        value: getattr(model(**{group_field: value}), display_method)()
+        for value in values
+    }
+
+
 def nested_group_by_queryset(
     queryset, group_fields, page=None, page_name="page", records_per_page=None
 ):
@@ -122,7 +133,7 @@ def nested_group_by_queryset(
                 resolved = [_strip_redundant_context(r) for r in resolved]
             label_cache[field] = dict(zip(fk_values, resolved))
         else:
-            label_cache[field] = {v: v for v in fk_values}
+            label_cache[field] = _display_map_for_field(model, field, fk_values)
         if None in distinct_values:
             label_cache[field][None] = _("Not specified")
 
