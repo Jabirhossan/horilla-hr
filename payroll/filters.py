@@ -12,6 +12,7 @@ import uuid
 import django_filters
 from django import forms
 from django.db.models import Q
+from django.http import QueryDict
 from django.utils.translation import gettext_lazy as _
 
 from base.filters import FilterSet
@@ -48,6 +49,15 @@ class ContractFilter(HorillaFilterSet):
     """
 
     search = django_filters.CharFilter(method="filter_by_contract")
+    # Multiple-choice (not the plain single-value ChoiceFilter Meta.fields
+    # would otherwise auto-generate) so the panel can default to showing
+    # Active + Draft together on first load -- see __init__ below -- while
+    # still letting the user pick any other combination, including a
+    # single status or every status.
+    contract_status = django_filters.MultipleChoiceFilter(
+        choices=Contract.CONTRACT_STATUS_CHOICES,
+        label=_("Status"),
+    )
     contract_start_date_from = django_filters.DateFilter(
         widget=forms.DateInput(attrs={"type": "date"}),
         field_name="contract_start_date",
@@ -165,6 +175,14 @@ class ContractFilter(HorillaFilterSet):
         ]
 
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        # No data submitted at all (a genuinely fresh page load, not the
+        # filter panel's own "Any"/clear, which submits contract_status=[]
+        # explicitly) -- default the multi-select to Active + Draft so
+        # that's what actually gets filtered for once the panel
+        # auto-submits, not just what the widget happens to show pre-checked.
+        if not data:
+            data = QueryDict(mutable=True)
+            data.setlist("contract_status", ["active", "draft"])
         super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)
         for field in self.form.fields.keys():
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
