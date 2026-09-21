@@ -4,8 +4,11 @@
 
 {% block content %}
     <meta name="csrf-token" content="{{ csrf_token }}">
-    {# Panel sizing for the tabs on this page is handled by the site-wide #}
-    {# script in horilla_theme/components/header_scripts.html. #}
+    <style>
+        #attendances-tab .heightContainer {
+            height: calc(100vh - 320px);
+        }
+    </style>
     {% include "generic/components.html" %}
     <button
         type="button"
