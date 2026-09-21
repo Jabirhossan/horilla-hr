@@ -4756,6 +4756,38 @@ def view_clashes(request, leave_request_id):
     )
 
 
+def _get_or_create_compensatory_leave_type(selected_company):
+    """
+    Return the single Compensatory Leave Type row, creating one only if
+    none exists at all under the current company scope.
+
+    LeaveType.objects.get_or_create(is_compensatory_leave=True,
+    company_id_id=selected_company, ...) used to be called directly here --
+    but that extra company_id_id lookup ignores an already-existing
+    *shared* (company_id=None) compensatory leave type, which
+    HorillaCompanyManager's own scoping would otherwise find under any
+    company. The result: visiting this settings page under a specific
+    company minted a brand new per-company duplicate every time, even
+    though a perfectly usable shared one already existed -- exactly the
+    "2 Compensatory Leave Type rows" bug. Checking for any existing row
+    first (letting the manager's normal scoping run) reuses it instead.
+    """
+    existing = LeaveType.objects.filter(is_compensatory_leave=True).first()
+    if existing:
+        return existing, False
+    if selected_company != "all":
+        return LeaveType.objects.get_or_create(
+            is_compensatory_leave=True,
+            company_id_id=selected_company,
+            defaults={"name": "Compensatory Leave Type", "payment": "paid"},
+        )
+    return LeaveType.objects.get_or_create(
+        is_compensatory_leave=True,
+        company_id=None,
+        defaults={"name": "Compensatory Leave Type", "payment": "paid"},
+    )
+
+
 @login_required
 @permission_required("leave.view_leavegeneralsetting")
 def compensatory_leave_settings_view(request):
@@ -4767,21 +4799,12 @@ def compensatory_leave_settings_view(request):
             .first()
             .compensatory_leave
         )
-        leave_type, create = LeaveType.objects.get_or_create(
-            is_compensatory_leave=True,
-            company_id_id=selected_company,
-            defaults={"name": "Compensatory Leave Type", "payment": "paid"},
-        )
     else:
         enabled_compensatory = (
             LeaveGeneralSetting.objects.exists()
             and LeaveGeneralSetting.objects.first().compensatory_leave
         )
-        leave_type, create = LeaveType.objects.get_or_create(
-            is_compensatory_leave=True,
-            company_id=None,
-            defaults={"name": "Compensatory Leave Type", "payment": "paid"},
-        )
+    leave_type, create = _get_or_create_compensatory_leave_type(selected_company)
     request.session["ordered_ids_leavetype"] = []
     context = {"enabled_compensatory": enabled_compensatory, "leave_type": leave_type}
     return render(request, "compensatory_settings.html", context)
@@ -4835,11 +4858,6 @@ def leave_rules_settings_view(request):
             .first()
             .compensatory_leave
         )
-        leave_type, _create = LeaveType.objects.get_or_create(
-            is_compensatory_leave=True,
-            company_id_id=selected_company,
-            defaults={"name": "Compensatory Leave Type", "payment": "paid"},
-        )
         enabled_restriction = EmployeePastLeaveRestrict.objects.filter(
             company_id_id=selected_company
         ).first()
@@ -4852,11 +4870,6 @@ def leave_rules_settings_view(request):
             LeaveGeneralSetting.objects.exists()
             and LeaveGeneralSetting.objects.first().compensatory_leave
         )
-        leave_type, _create = LeaveType.objects.get_or_create(
-            is_compensatory_leave=True,
-            company_id=None,
-            defaults={"name": "Compensatory Leave Type", "payment": "paid"},
-        )
         enabled_restriction = EmployeePastLeaveRestrict.objects.filter(
             company_id__isnull=True
         ).first()
@@ -4864,6 +4877,7 @@ def leave_rules_settings_view(request):
             enabled_restriction = EmployeePastLeaveRestrict.objects.create(
                 enabled=True, company_id=None
             )
+    leave_type, _create = _get_or_create_compensatory_leave_type(selected_company)
     request.session["ordered_ids_leavetype"] = []
     context = {
         "enabled_compensatory": enabled_compensatory,
