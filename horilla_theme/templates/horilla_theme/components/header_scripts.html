@@ -2,9 +2,6 @@
 {% load horillafilters %}
 {% get_company as theme_obj %}
 <style>
-    /* Legacy (non-Tailwind) primary CTA button — used by most Save/Create
-       forms across the app. Recolor it to follow the selected company
-       theme, same as the Tailwind 'brand'/'primary' color below. */
     .oh-btn--secondary,
     .oh-btn--secondary:disabled {
         background-color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
@@ -27,8 +24,6 @@
         color: {{ theme_obj.primary_700|default:"#ce4732" }} !important;
     }
 
-    /* Active-filter chip bar ("Filters:" label + each filter's remove-X,
-       e.g. "Is active: Yes"). Follow the selected company theme too. */
     .oh-titlebar__tag--custom {
         background-color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
     }
@@ -42,9 +37,6 @@
         border-color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
     }
 
-    /* "Save And Add Another" — secondary CTA next to Save on create forms.
-       Uses a lighter tint of the theme color so it stays visually distinct
-       from the solid "Save" button while still following the theme. */
     .oh-btn--add-another {
         background-color: {{ theme_obj.primary_500|default:"#F7C8C1" }} !important;
         color: #ffffff !important;
@@ -57,13 +49,10 @@
         border-color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
     }
 
-    /* Checkmark bullet on "Changes" list items (e.g. Employee > History tab). */
     .list-checked li:before {
         color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
     }
 
-    /* Legacy light icon button (e.g. the "View Comment" icon on Shift/Work
-       Type/Document request lists). Icon color follows the theme too. */
     .oh-btn--light {
         color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
     }
@@ -73,54 +62,22 @@
         color: {{ theme_obj.primary_700|default:"#ce4732" }} !important;
     }
 
-    /* Tab pills inside "custom" modal dialogs (e.g. leave Allocation). The
-       plain, unscoped .oh-general__tab-link--active rule in v1_styles.css
-       already follows the theme via index.html's remap, but this selector's
-       extra .oh-modal__dialog--custom .oh-general__tab ancestor prefix gives
-       it higher specificity, so its own hardcoded #e54f38 always wins over
-       that remap regardless of load order. */
     .oh-modal__dialog--custom .oh-general__tab .oh-general__tab-link--active {
         background-color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
         border-color: {{ theme_obj.primary_600|default:"#E54F38" }} !important;
     }
 
-    /* Tab panels on detail/profile pages (e.g. Employee > Mail Log/History,
-       and the self "My Profile" page) reuse the plain list view's table
-       wrapper, which caps its own height and scrolls internally
-       (.heightContainer, "max-h-[calc(100vh_-_260px)] overflow-y-auto").
-       That offset only fits a page where the table starts near the top of
-       the viewport. Nested under a tab bar (and, on the profile page, an
-       extra "#...profileTab" scroll wrapper on top of that), the table sits
-       much lower, so its own scrollbar shows up stacked next to the
-       ancestor's. Drop the inner height cap so only the outer wrapper
-       scrolls. */
     .oh-tabs__content .heightContainer,
     [id$="profileTab"] .heightContainer {
         max-height: none !important;
         overflow-y: visible !important;
     }
 
-    /* Recruitment/Onboarding/Offboarding pipeline pages also nest their
-       per-job/per-offboarding stage tables under .oh-tabs__content (their
-       own tab bar, one tab per job/offboarding), so they picked up the
-       rule above too - but unlike the profile/detail tabs it was written
-       for, the pipeline page's own body scrolls (there's no extra ancestor
-       wrapper providing an outer scrollbar), so dropping the inner cap
-       just let each stage's table grow to its full row count instead of
-       scrolling internally. Restore the cap for tables inside a pipeline
-       tab's content (id starts with "pipelineTabContent", shared by all
-       three apps' *_pipeline_shell.html). */
     [id^="pipelineTabContent"] .heightContainer {
         max-height: calc(100vh - 260px) !important;
         overflow-y: auto !important;
     }
 
-    /* The 360 Feedback list (pms) is likewise its own page's primary list
-       nested under .oh-tabs__content (one tab per Self/Requested/Review/
-       Anonymous feedback), with no extra ancestor scroll wrapper - same
-       situation as the pipeline pages above. Restore the cap so the table
-       scrolls internally instead of stretching the whole page (id starts
-       with "feedbackTabs", set via HorillaTabView's tabs_root_id). */
     [id^="feedbackTabs"] .heightContainer {
         max-height: calc(100vh - 260px) !important;
         overflow-y: auto !important;
@@ -143,8 +100,6 @@
         })
         .then(response => {
         if (response.status === 204) {
-            // Since server stored the new theme, we just mirror it in the UI
-
             const isDark = document.documentElement.classList.toggle("dark");
             document.body.classList.toggle("dark", isDark);
 
@@ -185,9 +140,6 @@
                     900: '{{ theme_obj.primary_900 | default:"#672419" }}',
                 },
 
-                /* 'brand' = primary CTA color (Create/Save/Submit). Mirrors the
-                   company's selected theme color so CTAs follow the theme, same
-                   as 'primary'. 'info' = fixed blue for Edit/View/Details. */
                 brand: {
                     50:  '{{ theme_obj.primary_50  | default:"#f6f6f6" }}',
                     100: '{{ theme_obj.primary_100 | default:"#FFF5F1" }}',
@@ -285,64 +237,6 @@
 {% endblock header_scripts %}
 
 <script>
-    // Site-wide: keep tabbed list panels (e.g. Attendance To Validate / OT /
-    // Validated, Requested / All Attendances) the same size as a plain list
-    // view (e.g. Employees) regardless of how many rows a given tab has.
-    // Uses a single MutationObserver on <body> rather than specific htmx
-    // event names, so it keeps working no matter which code path swaps the
-    // content in (declarative hx-get, htmx.ajax(), a raw jQuery fallback, or
-    // a full SPA page navigation that replaces #listContainer itself).
-    (function () {
-        var BOTTOM_MARGIN = 20; // matches the plain list view's own bottom gap
-        var SELECTOR = "#listContainer .heightContainer, #listContainer .attendance-request-scroll";
-        var pending = null;
-
-        function sizeVisibleScrollContainers() {
-            var containers = document.querySelectorAll(SELECTOR);
-            for (var i = 0; i < containers.length; i++) {
-                var container = containers[i];
-                if (container.offsetParent === null) {
-                    continue; // hidden (inactive tab) - leave it alone
-                }
-                var top = container.getBoundingClientRect().top;
-                var height = window.innerHeight - top - BOTTOM_MARGIN;
-                if (height > 100) {
-                    container.style.maxHeight = height + "px";
-                    container.style.minHeight = height + "px";
-                }
-            }
-        }
-
-        function scheduleResize() {
-            if (pending) {
-                clearTimeout(pending);
-            }
-            pending = setTimeout(sizeVisibleScrollContainers, 30);
-        }
-
-        window.addEventListener("resize", scheduleResize);
-        document.addEventListener("DOMContentLoaded", function () {
-            scheduleResize();
-            if (window.MutationObserver) {
-                new MutationObserver(function (mutations) {
-                    for (var i = 0; i < mutations.length; i++) {
-                        if (mutations[i].addedNodes.length) {
-                            scheduleResize();
-                            return;
-                        }
-                    }
-                }).observe(document.body, { childList: true, subtree: true });
-            }
-        });
-        scheduleResize();
-    })();
-</script>
-
-<script>
-    // Keep grouped list accordions open across HTMX reloads (nested pagination,
-    // filters, etc.). List containers often get a fresh DOM node via outerHTML
-    // swap, so in-memory state keyed by element id is unreliable — persist by
-    // data-list-path in sessionStorage and re-apply after settle.
     (function () {
         var STORAGE_PREFIX = "hlv-open-groups:";
 
@@ -393,7 +287,6 @@
             try {
                 sessionStorage.setItem(STORAGE_PREFIX + path, JSON.stringify(indices || []));
             } catch (e) {
-                /* ignore quota / private mode */
             }
         }
 
@@ -417,8 +310,6 @@
             if (!path || !container || !container.querySelectorAll) {
                 return;
             }
-            // Always persist (including []) so closing every group sticks
-            // across the next reload instead of restoring a stale set.
             writeStored(path, openIndicesIn(container));
         }
 
@@ -431,7 +322,6 @@
             if (!container) {
                 return;
             }
-            // Prefer stored open groups over the server's default "first open".
             container.querySelectorAll(".oh-accordion.oh-accordion--show").forEach(function (el) {
                 el.classList.remove("oh-accordion--show");
             });
@@ -458,12 +348,6 @@
             });
         }
 
-        // Public hook for controls that toggle accordions in bulk (e.g. an
-        // "Expand All" / "Collapse All" button) without going through the
-        // per-header click listener below -- those need to persist the new
-        // state explicitly, or the next unrelated htmx settle anywhere on
-        // the page (polling widgets, notification badges, ...) will call
-        // restoreAllKnown() and silently re-open whatever was last stored.
         window.hlvPersistOpenGroups = function (container) {
             var path = listPathFrom(container);
             if (path) {
@@ -471,8 +355,6 @@
             }
         };
 
-        // Capture before the request so nested pagination / filter reloads
-        // keep whichever groups were expanded.
         document.addEventListener("htmx:beforeRequest", function (evt) {
             captureFrom(evt.detail.target);
         });
@@ -486,8 +368,6 @@
             }
         });
 
-        // Persist whenever the user opens/closes a grouped-list accordion.
-        // footerScripts toggles the class first; read state on the next tick.
         document.addEventListener(
             "click",
             function (evt) {
