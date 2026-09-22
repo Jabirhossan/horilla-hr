@@ -290,6 +290,21 @@ class MyLeaveRequestDetailView(HorillaDetailedView):
     ]
     action_method = "detail_leave_actions"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if not self.instance:
+            return context
+        body = list(self.body)
+        if self.instance.multiple_approvals:
+            insert_index = 6
+            body.insert(
+                insert_index,
+                (_("Multiple Approvals"), "multiple_approval_action", True),
+            )
+            self.cols["multiple_approval_action"] = 12
+        context["body"] = body
+        return context
+
 
 @method_decorator(login_required, name="dispatch")
 class MyLeaveRequestForm(HorillaFormView):
