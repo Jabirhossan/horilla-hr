@@ -14,21 +14,22 @@
             </button>
         {% endif %}
         {% if tab != 'all_tickets' %}
-            {% if claim_request or request.user.employee_get in ticket.assigned_to.all %}
-                <a
-                    href="#"
-                    class="
-                        oh-btn oh-btn--info oh-btn--disabled oh-btn--sq-sm
-                        {% if request.user.employee_get in ticket.assigned_to.all %}
-                            bg-success
-                        {% elif claim_request.is_rejected %}
-                            bg-danger
-                        {% endif %}
-                    "
+            {% if request.user.employee_get in ticket.assigned_to.all %}
+                <button
+                    disabled
+                    class="oh-btn oh-btn--success oh-btn--sq-sm"
                     title="{% trans 'Claim' %}"
                 >
                     <ion-icon name="checkmark-done-outline"></ion-icon>
-                </a>
+                </button>
+            {% elif ticket.assigned_to.all %}
+                <button
+                    disabled
+                    class="oh-btn oh-btn--success oh-btn--sq-sm"
+                    title="{% trans 'Claim' %}"
+                >
+                    <ion-icon name="checkmark-done-outline"></ion-icon>
+                </button>
             {% else %}
                 <a
                     type="submit"

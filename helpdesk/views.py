@@ -1447,7 +1447,8 @@ def get_raised_on(request):
 @login_required
 def claim_ticket(request, id):
     """
-    This is a function to create a claim request for requested employee
+    This is a function for an employee to claim an unassigned ticket -
+    assigns them to the ticket immediately, no approval needed.
     """
     ticket = Ticket.find(id)
     if not ticket:
@@ -1455,10 +1456,36 @@ def claim_ticket(request, id):
             request, message=_("No Ticket found matching the query.")
         )
 
-    if not ClaimRequest.objects.filter(
-        employee_id=request.user.employee_get, ticket_id=ticket
-    ).exists():
-        ClaimRequest(employee_id=request.user.employee_get, ticket_id=ticket).save()
+    employee = request.user.employee_get
+    if employee not in ticket.assigned_to.all():
+        ticket.assigned_to.add(employee)
+        ticket.save()
+        try:
+            notify.send(
+                employee,
+                recipient=employee.employee_user_id,
+                verb=gettext_noop("You have been assigned to a new Ticket-%(ticket)s."),
+                verb_params={"ticket": str(ticket)},
+                icon="infinite",
+                redirect=reverse("ticket-detail", kwargs={"ticket_id": ticket.id}),
+            )
+        except Exception as e:
+            logger.error(e)
+        if ticket.employee_id != employee:
+            try:
+                notify.send(
+                    employee,
+                    recipient=ticket.employee_id.employee_user_id,
+                    verb=gettext_noop(
+                        "%(employee)s assigned to your ticket - %(ticket)s."
+                    ),
+                    verb_params={"employee": str(employee), "ticket": str(ticket)},
+                    icon="infinite",
+                    redirect=reverse("ticket-detail", kwargs={"ticket_id": ticket.id}),
+                )
+            except Exception as e:
+                logger.error(e)
+        messages.success(request, _("Ticket claimed successfully."))
     return HorillaRedirect(request)
 
 

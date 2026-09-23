@@ -15,21 +15,18 @@
                 </a>
             </p>
         </li>
-    {% else %}
-        {% if claim_request or request.user.employee_get in ticket.assigned_to.all %}
-        {% else %}
-                <li>
-                    <p
-                        class="w-full text-left px-3 py-1 hover:text-primary-600 font-semibold"
-                    >
-                        <a
-                            href = "{% url 'claim-ticket' ticket.id %}"
-                        >
-                            {% trans "Claim" %}
-                        </a>
-                    </p>
-                </li>
-        {% endif %}
+    {% elif not ticket.assigned_to.all %}
+        <li>
+            <p
+                class="w-full text-left px-3 py-1 hover:text-primary-600 font-semibold"
+            >
+                <a
+                    href = "{% url 'claim-ticket' ticket.id %}"
+                >
+                    {% trans "Claim" %}
+                </a>
+            </p>
+        </li>
     {% endif %}
 {% endif %}
 
