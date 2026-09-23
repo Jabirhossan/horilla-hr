@@ -14,7 +14,7 @@ screen needs an aggregate, it gets its own, so each one stays readable and
 cheap.
 """
 
-from datetime import date
+from datetime import date, datetime
 
 from django.apps import apps
 from django.db.models import Q
@@ -40,6 +40,22 @@ def _todays_activities(employee):
     )
 
 
+def _moment(day, moment):
+    """
+    Rebuild a datetime from the date+time pair rather than reading the
+    nullable DateTimeField beside it.
+
+    AttendanceActivity carries two parallel representations: clock_in_date +
+    clock_in (always written) and in_datetime (nullable, written by a
+    different path), and the same on the way out. A row can therefore carry a
+    clock_out with no out_datetime, which is what demo and imported data look
+    like. attendance.methods.utils.activity_datetime rebuilds from the pairs
+    for this reason; it is not reused here because it insists on both ends of
+    an activity and the last one of a day is usually still open.
+    """
+    return datetime.combine(day, moment) if day and moment else None
+
+
 def _break_seconds(activities):
     """
     Time between clocking out and clocking back in again today.
@@ -51,8 +67,10 @@ def _break_seconds(activities):
     """
     total = 0
     for previous, nxt in zip(activities, activities[1:]):
-        if previous.clock_out and nxt.clock_in:
-            gap = (nxt.in_datetime - previous.out_datetime).total_seconds()
+        left = _moment(previous.clock_out_date, previous.clock_out)
+        right = _moment(nxt.clock_in_date, nxt.clock_in)
+        if left and right:
+            gap = (right - left).total_seconds()
             if gap > 0:
                 total += gap
     return int(total)
@@ -65,7 +83,10 @@ def _punch_block(employee, activities):
         "is_clocked_in": open_activity is not None,
         "clock_in_time": first.clock_in.strftime("%H:%M") if first else None,
         "last_activity_at": (
-            open_activity.in_datetime.isoformat() if open_activity else None
+            _moment(open_activity.clock_in_date, open_activity.clock_in).isoformat()
+            if open_activity
+            and _moment(open_activity.clock_in_date, open_activity.clock_in)
+            else None
         ),
     }
 

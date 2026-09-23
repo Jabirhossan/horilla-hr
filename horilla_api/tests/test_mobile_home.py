@@ -94,6 +94,61 @@ class MobileHomeTests(TestCase):
             "the second activity has no clock_out, so the employee is still in",
         )
 
+    def test_a_clock_out_without_an_out_datetime_does_not_500(self):
+        """
+        clock_out is a TimeField; out_datetime is a separate nullable
+        DateTimeField written by a different code path, so a row can carry one
+        without the other. Every other test here sets both, which is why this
+        went unnoticed until a real server returned 500 on the home screen.
+        """
+        today = date.today()
+        base = timezone.make_aware(datetime.combine(today, datetime.min.time()))
+        AttendanceActivity.objects.create(
+            employee_id=self.employee,
+            attendance_date=today,
+            clock_in_date=today,
+            clock_in=(base + timedelta(hours=9)).time(),
+            in_datetime=base + timedelta(hours=9),
+            clock_out_date=today,
+            clock_out=(base + timedelta(hours=12)).time(),
+            out_datetime=None,
+        )
+        AttendanceActivity.objects.create(
+            employee_id=self.employee,
+            attendance_date=today,
+            clock_in_date=today,
+            clock_in=(base + timedelta(hours=12, minutes=30)).time(),
+            in_datetime=base + timedelta(hours=12, minutes=30),
+        )
+
+        response = self.client.get(HOME_URL)
+        self.assertEqual(response.status_code, 200)
+        # The break is still correct: it is rebuilt from clock_out_date +
+        # clock_out, which are written even when out_datetime is not. Reading
+        # the nullable column instead would report a real 30-minute break as
+        # zero, which is worse than the 500 it replaced -- it looks like data.
+        self.assertEqual(response.data["today"]["break"], "00:30:00")
+
+    def test_an_open_activity_without_an_in_datetime_does_not_500(self):
+        """in_datetime is nullable too, and last_activity_at dereferenced it."""
+        today = date.today()
+        base = timezone.make_aware(datetime.combine(today, datetime.min.time()))
+        AttendanceActivity.objects.create(
+            employee_id=self.employee,
+            attendance_date=today,
+            clock_in_date=today,
+            clock_in=(base + timedelta(hours=9)).time(),
+            in_datetime=None,
+        )
+
+        response = self.client.get(HOME_URL)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data["punch"]["is_clocked_in"])
+        # Rebuilt from the date+time pair rather than reported as absent.
+        self.assertTrue(
+            response.data["punch"]["last_activity_at"].startswith(today.isoformat())
+        )
+
     def test_single_open_activity_means_no_break(self):
         today = date.today()
         base = timezone.make_aware(datetime.combine(today, datetime.min.time()))
