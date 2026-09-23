@@ -50,4 +50,6 @@ urlpatterns = [
     path("offboarding/", include("horilla_api.api_urls.offboarding.urls")),
     path("recruitment/", include("horilla_api.api_urls.recruitment.urls")),
     path("pms/", include("horilla_api.api_urls.pms.urls")),
+    # Screen-shaped aggregates for the mobile client; see api_views/mobile.
+    path("mobile/", include("horilla_api.api_urls.mobile.urls")),
 ]
