@@ -64,6 +64,10 @@ INSTALLED_APPS = [
     "axes",
     "rest_framework",
     "rest_framework_simplejwt",
+    # Backs /auth/logout/ and BLACKLIST_AFTER_ROTATION. Without it a
+    # refresh token stays valid for its full lifetime after logout, and
+    # rotation silently leaves every superseded token usable.
+    "rest_framework_simplejwt.token_blacklist",
     "drf_yasg",
     # Core Horilla apps
     "horilla_auth",
@@ -145,19 +149,25 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
-    # Only ACCESS_TOKEN_LIFETIME was set, so this inherited SimpleJWT's
-    # default of one day by accident rather than by choice. Nothing can
-    # present a refresh token today -- the login endpoint returns only the
-    # access token and there is no refresh route -- so this bounds a token
-    # that is created and discarded. Stated explicitly so that adding a
-    # refresh flow later is a deliberate decision about its lifetime.
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    # Mobile clients cannot ask a person to sign in every hour, so login now
+    # returns a refresh token and /auth/refresh/ exchanges it. 30 days is the
+    # ordinary choice for a phone app; it is safe to make it this long only
+    # because of the two settings below plus CHECK_REVOKE_TOKEN.
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
+    # Each refresh returns a *new* refresh token and blacklists the one just
+    # used. A stolen refresh token is therefore good for one use, and the
+    # moment the legitimate client refreshes again the theft breaks the chain
+    # visibly instead of granting 30 days of silent access.
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
     # Embeds a hash of the user's password in each token and rejects the
     # token once the stored hash no longer matches, so changing or resetting
     # a password revokes every token issued before it. Without this an
     # access token stays valid for its full hour after a password reset,
     # which is the one window a compromised account cannot be closed --
-    # there is no blacklist for access tokens, and no logout endpoint.
+    # there is no blacklist for access tokens. /auth/logout/ blacklists the
+    # refresh token, and the refresh endpoint re-checks this claim, so a
+    # password change stops the chain at the next exchange as well.
     "CHECK_REVOKE_TOKEN": True,
 }
 
