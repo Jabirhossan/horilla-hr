@@ -303,6 +303,7 @@ remove_urls = [
     "get-job-positions",
     "task-view",
     "dashboard",
+    "login",
 ]
 
 user_breadcrumbs = {}
