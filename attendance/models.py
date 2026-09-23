@@ -893,19 +893,16 @@ class Attendance(HorillaModel):
                 },
             )
 
-            AttendanceOverTime.objects.filter(pk=ot.pk).update(
-                hour_account_second=F("hour_account_second") + diff_work,
-                overtime_second=F("overtime_second") + diff_approved_ot,
-                hour_pending_second=F("hour_pending_second") + diff_pending,
-            )
-
-            ot.refresh_from_db(
-                fields=["hour_account_second", "hour_pending_second", "overtime_second"]
-            )
-            ot.worked_hours = format_time(ot.hour_account_second or 0)
-            ot.pending_hours = format_time(ot.hour_pending_second or 0)
-            ot.overtime = format_time(ot.overtime_second or 0)
-            ot.save(update_fields=["worked_hours", "pending_hours", "overtime"])
+            # Approved overtime still moves by this row's delta. Worked and
+            # pending are rebuilt from the month below; a delta against a
+            # counter that demo loads never filled is how a full month showed
+            # up as a few negative hours.
+            if diff_approved_ot:
+                AttendanceOverTime.objects.filter(pk=ot.pk).update(
+                    overtime_second=F("overtime_second") + diff_approved_ot
+                )
+                ot.refresh_from_db(fields=["overtime_second"])
+            self.update_ot(ot)
 
     def serialize(self):
         """
@@ -939,16 +936,18 @@ class Attendance(HorillaModel):
             AttendanceActivity.objects.filter(
                 attendance_date=self.attendance_date, employee_id=self.employee_id
             ).delete()
+        # Call the superclass delete() method to delete the object
+        super().delete(*args, **kwargs)
+
+        # Rebuild after the row is gone. Doing it before left the deleted
+        # day's hours in the month total.
+        with contextlib.suppress(Exception):
             employee_ot = self.employee_id.employee_overtime.filter(
                 month=self.attendance_date.strftime("%B").lower(),
                 year=self.attendance_date.strftime("%Y"),
             )
             if employee_ot.exists():
                 self.update_ot(employee_ot.first())
-        # Call the superclass delete() method to delete the object
-        super().delete(*args, **kwargs)
-
-        # Perform additional operations after deleting the object
 
     def create_ot(self):
         """
@@ -1011,7 +1010,7 @@ class Attendance(HorillaModel):
                 attendance_validated=True,
             )
             .exclude(exclude_condition)
-            .values("minimum_hour", "at_work_second")
+            .values("minimum_hour", "at_work_second", "attendance_worked_hour")
         )
 
         # Calculate hour balance and hours pending in a single loop
@@ -1019,13 +1018,21 @@ class Attendance(HorillaModel):
         minimum_hour_second = 0
         for attendance in month_attendances:
             required_work_second = strtime_seconds(attendance["minimum_hour"])
-            at_work_second = min(required_work_second, attendance["at_work_second"])
+            at_work_second = attendance["at_work_second"]
+            # bulk_create leaves the integer empty and the worked-hour string set.
+            if at_work_second is None:
+                at_work_second = strtime_seconds(
+                    attendance["attendance_worked_hour"] or "00:00"
+                )
+            at_work_second = min(required_work_second, at_work_second)
             hour_balance += at_work_second
             minimum_hour_second += required_work_second
 
         hours_pending = minimum_hour_second - hour_balance
-        employee_ot.worked_hours = format_time(hour_balance)
-        employee_ot.pending_hours = format_time(hours_pending)
+        # save() rewrites the text fields from these integers. Setting only
+        # the text fields is discarded.
+        employee_ot.hour_account_second = hour_balance
+        employee_ot.hour_pending_second = hours_pending
         employee_ot.save()
 
         return employee_ot

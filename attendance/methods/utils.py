@@ -43,10 +43,13 @@ def format_time(seconds):
         seconds : seconds
     """
 
-    hour = int(seconds // 3600)
-    minutes = int((seconds % 3600) // 60)
-    seconds = int((seconds % 3600) % 60)
-    return f"{hour:02d}:{minutes:02d}"
+    # Floor division on a negative value steps to the next hour down and
+    # leaves a positive remainder, so -1:29 was stored as -2:31.
+    sign = "-" if seconds < 0 else ""
+    seconds = abs(int(seconds))
+    hour = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    return f"{sign}{hour:02d}:{minutes:02d}"
 
 
 def strtime_seconds(time):
@@ -56,8 +59,12 @@ def strtime_seconds(time):
         time : time in H:M format
     """
 
+    negative = isinstance(time, str) and time.startswith("-")
+    if negative:
+        time = time[1:]
     ftr = [3600, 60, 1]
-    return sum(a * b for a, b in zip(ftr, map(int, time.split(":"))))
+    total = sum(a * b for a, b in zip(ftr, map(int, time.split(":"))))
+    return -total if negative else total
 
 
 def get_diff_obj(first_instance, other_instance, exclude_fields=None):
