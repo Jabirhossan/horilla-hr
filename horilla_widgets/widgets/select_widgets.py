@@ -51,6 +51,15 @@ class HorillaMultiSelectWidget(forms.Widget):
 
     template_name = "horilla_widgets/horilla_multiselect_widget.html"
 
+    def value_from_datadict(self, data, files, name):
+        # forms.Widget's default returns data.get(name) -- a single scalar,
+        # not the list ModelMultipleChoiceField.clean() requires -- so a real
+        # submission with any option selected failed validation with "Enter
+        # a list of values." and the form just re-rendered instead of saving.
+        if hasattr(data, "getlist"):
+            return data.getlist(name)
+        return data.get(name)
+
     def get_context(self, name, value, attrs):
         # Get the default context from the parent class
         context = super().get_context(name, value, attrs)

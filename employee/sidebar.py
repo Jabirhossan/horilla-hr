@@ -20,16 +20,12 @@ SUBMENUS = [
     {
         "menu": _("My Dashboard"),
         "redirect": reverse_lazy("ess-dashboard"),
+        "accessibility": "employee.sidebar.my_dashboard_accessibility",
     },
     {
         "menu": _("Employees"),
         "redirect": reverse_lazy("employee-view"),
         "accessibility": "employee.sidebar.employee_accessibility",
-        # The "Create" button on the employee list navigates to the standalone
-        # employee creation wizard (employee-view-new/), a sibling URL rather
-        # than a sub-path of employee-view/, so it needs an explicit prefix
-        # for the sidebar's path-based active-link highlighting to match it.
-        # employee-view-update/<id>/ is likewise a sibling edit page.
         "match_prefixes": [
             "/employee/employee-view-new/",
             "/employee/employee-view-update/",
@@ -64,6 +60,13 @@ SUBMENUS = [
         "accessibility": "employee.sidebar.employee_settings_accessibility",
     },
 ]
+
+
+def my_dashboard_accessibility(request, submenu, user_perms, *args, **kwargs):
+    """Hidden for plain employees — the main Dashboard link already shows this."""
+    from base.dashboard_roles import can_see_analytics_home, resolve_home_role
+
+    return can_see_analytics_home(resolve_home_role(request))
 
 
 def document_accessibility(request, submenu, user_perms, *args, **kwargs):

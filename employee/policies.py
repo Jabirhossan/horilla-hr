@@ -10,6 +10,7 @@ from datetime import timedelta
 from urllib.parse import parse_qs
 
 from django.contrib import messages
+from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -38,14 +39,24 @@ from horilla_auth.models import HorillaUser
 from notifications.signals import notify
 
 
+def _visible_policies(request, policies):
+    """
+    Restrict policies to the ones marked visible to all, or specifically
+    targeted at the requesting employee via employees/department/job position.
+    """
+    if request.user.has_perm("employee.view_policy"):
+        return policies
+    employee = Employee.objects.filter(employee_user_id=request.user).first()
+    targeted = Q(filtered_employees=employee) if employee else Q(pk__in=[])
+    return policies.filter(Q(is_visible_to_all=True) | targeted).distinct()
+
+
 @login_required
 def view_policies(request):
     """
     Method is used render template to view all the policy records
     """
-    policies = Policy.objects.all()
-    if not request.user.has_perm("employee.view_policy"):
-        policies = policies.filter(is_visible_to_all=True)
+    policies = _visible_policies(request, Policy.objects.all())
     return render(
         request,
         "policies/view_policies.html",
@@ -116,9 +127,7 @@ def search_policies(request):
     """
     This method is used to search in policies
     """
-    policies = PolicyFilter(request.GET).qs
-    if not request.user.has_perm("employee.view_policy"):
-        policies = policies.filter(is_visible_to_all=True)
+    policies = _visible_policies(request, PolicyFilter(request.GET).qs)
     return render(
         request,
         "policies/records.html",
@@ -136,7 +145,11 @@ def view_policy(request):
     This method is used to view the policy
     """
     instance_id = request.GET.get("instance_id")
-    policy = Policy.objects.filter(id=instance_id).first() if instance_id else None
+    policy = (
+        _visible_policies(request, Policy.objects.filter(id=instance_id)).first()
+        if instance_id
+        else None
+    )
     if not policy:
         messages.error(request, _("Policy not found."))
         return HorillaRedirect(request)
@@ -165,10 +178,8 @@ def delete_policies(request):
     except ValueError:
         messages.error(request, _("Policies Not Found"))
     if request.META.get("HTTP_HX_REQUEST"):
-        policies_qs = Policy.objects.all()
-        if not request.user.has_perm("employee.view_policy"):
-            policies_qs = policies_qs.filter(is_visible_to_all=True)
-        return render(
+        policies_qs = _visible_policies(request, Policy.objects.all())
+        response = render(
             request,
             "policies/records.html",
             {
@@ -176,6 +187,18 @@ def delete_policies(request):
                 "pd": request.GET.urlencode(),
             },
         )
+        # `hx-on::after-request="...reloadMessagesButton...click()..."` on the
+        # delete link (records.html) is the usual way this app surfaces a
+        # message after an htmx swap, but for this element it never actually
+        # fires -- the toast only ever showed up on the next full page load.
+        # A plain inline <script> in the swapped response, like every other
+        # htmx-driven view in this app that reliably shows its message,
+        # sidesteps that and runs immediately.
+        response.content += (
+            b"<script>var b=document.getElementById('reloadMessagesButton');"
+            b"if(b)b.click();</script>"
+        )
+        return response
     return redirect(view_policies)
 
 

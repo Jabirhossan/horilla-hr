@@ -22,6 +22,7 @@ from base.models import (
     DefaultExportPermission,
     PenaltyAccounts,
 )
+from employee.models import Employee, Policy
 from horilla.methods import get_horilla_model_class
 
 
@@ -502,6 +503,31 @@ def filtered_employees(sender, instance, action, **kwargs):
     job_position_ids = list(instance.job_position.values_list("id", flat=True))
 
     employees = instance.model_employee.objects.filter(
+        Q(id__in=employee_ids)
+        | Q(employee_work_info__department_id__in=department_ids)
+        | Q(employee_work_info__job_position_id__in=job_position_ids)
+    )
+
+    instance.filtered_employees.set(employees)
+
+
+@receiver(m2m_changed, sender=Policy.employees.through)
+@receiver(m2m_changed, sender=Policy.department.through)
+@receiver(m2m_changed, sender=Policy.job_position.through)
+def policy_filtered_employees(sender, instance, action, **kwargs):
+    """
+    Recompute Policy.filtered_employees whenever the employees, department
+    or job_position selection changes, mirroring the Announcement targeting
+    above. Left empty (all three unset), a policy has no filtered_employees
+    and callers fall back to treating it as visible to everyone.
+    """
+    if action not in ["post_add", "post_remove", "post_clear"]:
+        return
+    employee_ids = list(instance.employees.values_list("id", flat=True))
+    department_ids = list(instance.department.values_list("id", flat=True))
+    job_position_ids = list(instance.job_position.values_list("id", flat=True))
+
+    employees = Employee.objects.filter(
         Q(id__in=employee_ids)
         | Q(employee_work_info__department_id__in=department_ids)
         | Q(employee_work_info__job_position_id__in=job_position_ids)

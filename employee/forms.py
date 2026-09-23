@@ -721,12 +721,37 @@ class PolicyForm(ModelForm):
     PolicyForm
     """
 
-    cols = {"title": 12, "body": 12, "is_visible_to_all": 12, "company_id": 12}
+    employees = HorillaMultiSelectField(
+        queryset=Employee.objects.all(),
+        required=False,
+        widget=HorillaMultiSelectWidget(
+            filter_route_name="employee-widget-filter",
+            filter_class=EmployeeFilter,
+            filter_instance_context_name="f",
+            filter_template_path="employee_filters.html",
+        ),
+        label=_("Employees"),
+        help_text=_(
+            "Used only when 'Publish' is disabled below -- restricts the "
+            "policy to these employees plus anyone in the selected department(s) "
+            "or job position(s)."
+        ),
+    )
+
+    cols = {
+        "title": 12,
+        "body": 12,
+        "employees": 12,
+        "department": 12,
+        "job_position": 12,
+        "company_id": 12,
+        "is_visible_to_all": 12,
+    }
 
     class Meta:
         model = Policy
         fields = "__all__"
-        exclude = ["attachments", "is_active"]
+        exclude = ["attachments", "is_active", "filtered_employees"]
         widgets = {
             "body": forms.Textarea(
                 attrs={"data-summernote": "", "style": "display:none;"}
@@ -738,6 +763,8 @@ class PolicyForm(ModelForm):
         self.fields["attachment"] = MultipleFileField(
             label="Attachements", required=False
         )
+        # Re-insert at the end so it renders after the attachment field.
+        self.fields["is_visible_to_all"] = self.fields.pop("is_visible_to_all")
 
     def save(self, *args, commit=True, **kwargs):
         attachemnt = []

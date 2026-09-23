@@ -1155,10 +1155,34 @@ class Policy(HorillaModel):
 
     title = models.CharField(max_length=50)
     body = models.TextField()
-    is_visible_to_all = models.BooleanField(default=True)
-    specific_employees = models.ManyToManyField(Employee, blank=True, editable=False)
+    employees = models.ManyToManyField(
+        Employee,
+        related_name="policy_employees",
+        blank=True,
+        help_text=_(
+            "Used only when 'Publish' is disabled below -- restricts the "
+            "policy to these employees plus anyone in the selected department(s) "
+            "or job position(s)."
+        ),
+    )
+    department = models.ManyToManyField(Department, blank=True)
+    job_position = models.ManyToManyField(
+        JobPosition, blank=True, verbose_name=_("Job Position")
+    )
+    filtered_employees = models.ManyToManyField(
+        Employee, related_name="policy_filtered_employees", editable=False
+    )
     attachments = models.ManyToManyField(PolicyMultipleFile, blank=True)
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
+    is_visible_to_all = models.BooleanField(
+        default=True,
+        verbose_name=_("Publish to all"),
+        help_text=_(
+            "When enabled, the policy is visible to every employee in the "
+            "selected company. Disable it to restrict visibility to the "
+            "employees/department/job position selected above."
+        ),
+    )
 
     objects = HorillaCompanyManager("company_id")
 
