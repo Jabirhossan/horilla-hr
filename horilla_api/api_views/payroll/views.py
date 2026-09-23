@@ -5,13 +5,13 @@ from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from base.backends import ConfiguredEmailBackend
 from base.methods import eval_validate
+from horilla_api.api_methods.base.pagination import HorillaPageNumberPagination
 from payroll.filters import (
     AllowanceFilter,
     ContractFilter,
@@ -70,7 +70,7 @@ class PayslipView(APIView):
         if field_name:
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, payslip_filter_queryset)
-        pagination = PageNumberPagination()
+        pagination = HorillaPageNumberPagination()
         page = pagination.paginate_queryset(payslip_filter_queryset, request)
         serializer = PayslipSerializer(page, many=True)
         return pagination.get_paginated_response(serializer.data)
@@ -142,7 +142,7 @@ class ContractView(APIView):
         if field_name:
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, filter_queryset)
-        pagination = PageNumberPagination()
+        pagination = HorillaPageNumberPagination()
         page = pagination.paginate_queryset(filter_queryset, request)
         serializer = ContractSerializer(page, many=True)
         return pagination.get_paginated_response(serializer.data)
@@ -182,7 +182,7 @@ class AllowanceView(APIView):
             return Response(serializer.data, status=200)
         allowance = Allowance.objects.all()
         filter_queryset = AllowanceFilter(request.GET, allowance).qs
-        pagination = PageNumberPagination()
+        pagination = HorillaPageNumberPagination()
         page = pagination.paginate_queryset(filter_queryset, request)
         serializer = AllowanceSerializer(page, many=True)
         return pagination.get_paginated_response(serializer.data)
@@ -222,7 +222,7 @@ class DeductionView(APIView):
             return Response(serializer.data, status=200)
         deduction = Deduction.objects.all()
         filter_queryset = DeductionFilter(request.GET, deduction).qs
-        pagination = PageNumberPagination()
+        pagination = HorillaPageNumberPagination()
         page = pagination.paginate_queryset(filter_queryset, request)
         serializer = DeductionSerializer(page, many=True)
         return pagination.get_paginated_response(serializer.data)
@@ -269,7 +269,7 @@ class LoanAccountView(APIView):
             serializer = LoanAccountSerializer(instance=loan_account)
             return Response(serializer.data, status=200)
         loan_accounts = LoanAccount.objects.all()
-        pagination = PageNumberPagination()
+        pagination = HorillaPageNumberPagination()
         page = pagination.paginate_queryset(loan_accounts, request)
         serializer = LoanAccountSerializer(page, many=True)
         return pagination.get_paginated_response(serializer.data)
@@ -314,7 +314,7 @@ class ReimbursementView(APIView):
             reimbursements = Reimbursement.objects.filter(
                 employee_id=request.user.employee_get
             )
-        pagination = PageNumberPagination()
+        pagination = HorillaPageNumberPagination()
         page = pagination.paginate_queryset(reimbursements, request)
         serializer = self.serializer_class(page, many=True)
         return pagination.get_paginated_response(serializer.data)

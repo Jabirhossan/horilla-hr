@@ -9,12 +9,12 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from base.methods import filtersubordinates
+from horilla_api.api_methods.base.pagination import HorillaPageNumberPagination
 from horilla_api.api_serializers.offboarding.serializers import (
     EmployeeTaskSerializer,
     OffboardingEmployeeSerializer,
@@ -91,7 +91,7 @@ class OffboardingGetCreateAPIView(APIView):
             return groupby_queryset(request, url, field_name, filterset.qs)
 
         # pagination section
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = OffboardingSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -176,7 +176,7 @@ class OffboardingStageGetCreateAPIView(APIView):
             return groupby_queryset(request, url, field_name, filterset.qs)
 
         # pagination section
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = OffboardingStageSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -272,7 +272,7 @@ class OffboardingEmployeeGetCreateAPIView(APIView):
             return groupby_queryset(request, url, field_name, filterset.qs)
 
         # pagination section
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = OffboardingEmployeeSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -362,7 +362,7 @@ class ResignationLetterGetCreateAPIView(APIView):
             return groupby_queryset(request, url, field_name, filterset.qs)
 
         # pagination section
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = ResignationLetterSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -445,7 +445,7 @@ class OffboardingTaskGetCreateAPIView(APIView):
             return Response(serializer.data, status=200)
 
         tasks = self.get_queryset(request, stage_id)
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(tasks, request)
         serializer = OffboardingTaskSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -524,7 +524,7 @@ class EmployeeTaskGetCreateAPIView(APIView):
             return Response(serializer.data, status=200)
 
         employee_tasks = self.get_queryset(request, employee_id, task_id)
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(employee_tasks, request)
         serializer = EmployeeTaskSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -611,7 +611,7 @@ class OffboardingNoteGetCreateAPIView(APIView):
             return Response(serializer.data, status=200)
 
         notes = self.get_queryset(request, employee_id, stage_id)
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(notes, request)
         serializer = OffboardingNoteSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)

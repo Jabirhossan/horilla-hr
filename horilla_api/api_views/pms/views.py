@@ -5,11 +5,11 @@ horilla_api/api_views/pms/views.py
 from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from horilla_api.api_methods.base.pagination import HorillaPageNumberPagination
 from horilla_api.api_serializers.pms.serializers import (
     AnonymousFeedbackSerializer,
     AnswerSerializer,
@@ -105,7 +105,7 @@ class PeriodGetCreateAPIView(APIView):
         periods = self.get_queryset(request)
         filterset = self.filterset_class(request.GET, queryset=periods)
 
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = PeriodSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -179,7 +179,7 @@ class KeyResultGetCreateAPIView(APIView):
         key_results = self.get_queryset(request)
         filterset = self.filterset_class(request.GET, queryset=key_results)
 
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = KeyResultSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -253,7 +253,7 @@ class ObjectiveGetCreateAPIView(APIView):
         objectives = self.get_queryset(request)
         filterset = self.filterset_class(request.GET, queryset=objectives)
 
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = ObjectiveSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -336,7 +336,7 @@ class EmployeeObjectiveGetCreateAPIView(APIView):
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, filterset.qs)
 
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = EmployeeObjectiveSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -433,7 +433,7 @@ class EmployeeKeyResultGetCreateAPIView(APIView):
         )
         filterset = self.filterset_class(request.GET, queryset=employee_key_results)
 
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = EmployeeKeyResultSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -520,7 +520,7 @@ class CommentGetCreateAPIView(APIView):
             return Response(serializer.data, status=200)
 
         comments = self.get_queryset(request, employee_objective_id)
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(comments, request)
         serializer = CommentSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -601,7 +601,7 @@ class QuestionTemplateGetCreateAPIView(APIView):
         templates = self.get_queryset(request)
         filterset = self.filterset_class(request.GET, queryset=templates)
 
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = QuestionTemplateSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -675,7 +675,7 @@ class QuestionGetCreateAPIView(APIView):
             return Response(serializer.data, status=200)
 
         questions = self.get_queryset(request, template_id)
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(questions, request)
         serializer = QuestionSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -754,7 +754,7 @@ class QuestionOptionsGetCreateAPIView(APIView):
             return Response(serializer.data, status=200)
 
         options_list = self.get_queryset(request, question_id)
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(options_list, request)
         serializer = QuestionOptionsSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -837,7 +837,7 @@ class FeedbackGetCreateAPIView(APIView):
         feedbacks = self.get_queryset(request, employee_id)
         filterset = self.filterset_class(request.GET, queryset=feedbacks)
 
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = FeedbackSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -918,7 +918,7 @@ class AnswerGetCreateAPIView(APIView):
             return Response(serializer.data, status=200)
 
         answers = self.get_queryset(request, feedback_id, question_id)
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(answers, request)
         serializer = AnswerSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -1005,7 +1005,7 @@ class KeyResultFeedbackGetCreateAPIView(APIView):
             return Response(serializer.data, status=200)
 
         kr_feedbacks = self.get_queryset(request, feedback_id, key_result_id)
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(kr_feedbacks, request)
         serializer = KeyResultFeedbackSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -1094,7 +1094,7 @@ class MeetingsGetCreateAPIView(APIView):
         meetings = self.get_queryset(request)
         filterset = self.filterset_class(request.GET, queryset=meetings)
 
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = MeetingsSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -1168,7 +1168,7 @@ class MeetingsAnswerGetCreateAPIView(APIView):
             return Response(serializer.data, status=200)
 
         answers = self.get_queryset(request, meeting_id, question_id)
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(answers, request)
         serializer = MeetingsAnswerSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -1259,7 +1259,7 @@ class EmployeeBonusPointGetCreateAPIView(APIView):
         bonus_points = self.get_queryset(request, employee_id)
         filterset = self.filterset_class(request.GET, queryset=bonus_points)
 
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = EmployeeBonusPointSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -1338,7 +1338,7 @@ class BonusPointSettingGetCreateAPIView(APIView):
         settings = self.get_queryset(request)
         filterset = self.filterset_class(request.GET, queryset=settings)
 
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = BonusPointSettingSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -1414,7 +1414,7 @@ class AnonymousFeedbackGetCreateAPIView(APIView):
         feedbacks = self.get_queryset(request)
         filterset = self.filterset_class(request.GET, queryset=feedbacks)
 
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = AnonymousFeedbackSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)

@@ -8,13 +8,13 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext_noop
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from base.methods import filtersubordinates
 from horilla.decorators import check_manager
+from horilla_api.api_methods.base.pagination import HorillaPageNumberPagination
 from horilla_api.api_serializers.leave.serializers import *
 from leave.filters import *
 from leave.methods import filter_conditional_leave_request
@@ -35,7 +35,7 @@ class EmployeeAvailableLeaveGetAPIView(APIView):
     def get(self, request):
         employee = request.user.employee_get
         available_leave = employee.available_leave.all()
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(available_leave, request)
         serializer = GetAvailableLeaveTypeSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -60,7 +60,7 @@ class EmployeeLeaveRequestGetCreateAPIView(APIView):
         employee = request.user.employee_get
         leave_request = employee.leaverequest_set.all().order_by("-id")
         filterset = self.filterset_class(request.GET, queryset=leave_request)
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
@@ -167,7 +167,7 @@ class LeaveTypeGetCreateAPIView(APIView):
     def get(self, request):
         leave_type = LeaveType.objects.all()
         filterset = self.filterset_class(request.GET, queryset=leave_type)
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = LeaveTypeAllGetSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -254,7 +254,7 @@ class LeaveAllocationRequestGetCreateAPIView(APIView):
             request, allocation_requests, "leave.view_leaveallocationrequest"
         )
         filterset = self.filterset_class(request.GET, queryset=queryset)
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
@@ -371,7 +371,7 @@ class AssignLeaveGetCreateAPIView(APIView):
             request, available_leave, "leave.view_availableleave"
         )
         filterset = self.filterset_class(request.GET, queryset=queryset)
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
@@ -480,7 +480,7 @@ class LeaveRequestGetCreateAPIView(APIView):
             | multiple_approvals
         )
         filterset = self.filterset_class(request.GET, queryset=queryset)
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
@@ -590,7 +590,7 @@ class CompanyLeaveGetCreateAPIView(APIView):
     )
     def get(self, request):
         company_leave = CompanyLeaves.objects.all().order_by("-id")
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(company_leave, request)
         serializer = CompanyLeaveSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -655,7 +655,7 @@ class HolidayGetCreateAPIView(APIView):
     )
     def get(self, request):
         holiday = Holidays.objects.all().order_by("-id")
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(holiday, request)
         serializer = HoildaySerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -1057,7 +1057,7 @@ class EmployeeLeaveAllocationGetCreateAPIView(APIView):
         employee = self.get_user(request).employee_get
         allocation_requests = employee.leaveallocationrequest_set.all().order_by("-id")
         filterset = self.filterset_class(request.GET, queryset=allocation_requests)
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         field_name = request.GET.get("groupby_field", None)
         if field_name:
             url = request.build_absolute_uri()
@@ -1153,7 +1153,7 @@ class EmployeeAvailableLeaveTypeGetAPIView(APIView):
         available_leave = employee.available_leave.all()
         leave_type_ids = available_leave.values_list("leave_type_id", flat=True)
         leave_types = LeaveType.objects.filter(id__in=leave_type_ids)
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(leave_types, request)
         serializer = LeaveTypeAllGetSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)

@@ -1,7 +1,9 @@
+import logging
 from datetime import date, datetime, timedelta, timezone
 
 from django import template
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMessage
 from django.db.models import Case, CharField, F, Value, When
 from django.http import QueryDict
@@ -10,7 +12,6 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import gettext_noop
 from rest_framework import status
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -33,6 +34,7 @@ from base.backends import ConfiguredEmailBackend
 from base.methods import generate_pdf, is_reportingmanager, sanitize_mail_template_body
 from base.models import HorillaMailTemplate
 from employee.filters import EmployeeFilter
+from horilla_api.api_methods.base.pagination import HorillaPageNumberPagination
 
 from ...api_decorators.base.decorators import (
     approver_permission_required,
@@ -53,6 +55,64 @@ from ...api_serializers.attendance.serializers import (
 )
 
 # Create your views here.
+
+
+logger = logging.getLogger(__name__)
+
+
+def geofence_denial(request):
+    """
+    Return a denial ``Response`` when the caller's company enforces a geo-fence
+    and the caller is not inside it, or ``None`` when the punch may proceed.
+
+    Fails **closed**. This block previously sat inside a bare ``except: pass``,
+    so a missing company, an absent ``geo_fencing`` relation or a geopy timeout
+    inside the location check silently allowed the punch -- precisely the case
+    the fence exists to stop. An enabled fence that cannot be evaluated now
+    denies instead.
+
+    A company with no ``GeoFencing`` row, or one whose fence is switched off, is
+    not using the feature: there is nothing to enforce and the punch proceeds.
+    """
+    # Each lookup is resolved separately and on its own terms. An earlier
+    # version wrapped the lot in `except (ObjectDoesNotExist, AttributeError)`,
+    # which is barely narrower than the bare except it replaced:
+    # RelatedObjectDoesNotExist subclasses AttributeError, so any unrelated
+    # attribute error in this chain also read as "no fence, carry on" -- the
+    # same fail-open shape, one level down.
+    employee = getattr(request.user, "employee_get", None)
+    if employee is None:
+        # No employee record: nothing downstream can attribute a punch anyway.
+        return None
+
+    company = employee.get_company()
+    if company is None:
+        return None
+
+    try:
+        geo_fencing = company.geo_fencing
+    except ObjectDoesNotExist:
+        # No GeoFencing row for this company: the feature is not in use here.
+        return None
+
+    if not geo_fencing.start:
+        return None
+
+    from geofencing.views import GeoFencingEmployeeLocationCheckAPIView
+
+    try:
+        response = GeoFencingEmployeeLocationCheckAPIView().post(request)
+    except Exception:
+        logger.exception(
+            "Geo-fence location check failed for employee %s; denying the punch",
+            getattr(request.user, "id", None),
+        )
+        return Response(
+            {"error": _("Could not verify your location. Please try again.")},
+            status=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+    return response if response.status_code != 200 else None
 
 
 def query_dict(data):
@@ -78,16 +138,9 @@ class ClockInAPIView(APIView):
 
     def post(self, request):
         if not request.user.employee_get.check_online():
-            try:
-                if request.user.employee_get.get_company().geo_fencing.start:
-                    from geofencing.views import GeoFencingEmployeeLocationCheckAPIView
-
-                    location_api_view = GeoFencingEmployeeLocationCheckAPIView()
-                    response = location_api_view.post(request)
-                    if response.status_code != 200:
-                        return response
-            except:
-                pass
+            denial = geofence_denial(request)
+            if denial is not None:
+                return denial
             employee, work_info = employee_exists(request)
             datetime_now = datetime.now()
             if request.__dict__.get("datetime"):
@@ -161,16 +214,9 @@ class ClockOutAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        try:
-            if request.user.employee_get.get_company().geo_fencing.start:
-                from geofencing.views import GeoFencingEmployeeLocationCheckAPIView
-
-                location_api_view = GeoFencingEmployeeLocationCheckAPIView()
-                response = location_api_view.post(request)
-                if response.status_code != 200:
-                    return response
-        except:
-            pass
+        denial = geofence_denial(request)
+        if denial is not None:
+            return denial
         if request.user.employee_get.check_online():
             current_date = date.today()
             current_time = datetime.now().time()
@@ -269,7 +315,7 @@ class AttendanceView(APIView):
                 request, url, field_name, attendances_filter_queryset
             )
         # pagination workflow
-        paginater = PageNumberPagination()
+        paginater = HorillaPageNumberPagination()
         page = paginater.paginate_queryset(attendances_filter_queryset, request)
         serializer = AttendanceSerializer(page, many=True)
         return paginater.get_paginated_response(serializer.data)
@@ -474,7 +520,7 @@ class AttendanceRequestView(APIView):
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, request_filtered_queryset)
 
-        pagenation = PageNumberPagination()
+        pagenation = HorillaPageNumberPagination()
         page = pagenation.paginate_queryset(request_filtered_queryset, request)
         serializer = self.serializer_class(page, many=True)
         return pagenation.get_paginated_response(serializer.data)
@@ -679,7 +725,7 @@ class AttendanceOverTimeView(APIView):
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, queryset)
 
-        pagenation = PageNumberPagination()
+        pagenation = HorillaPageNumberPagination()
         page = pagenation.paginate_queryset(queryset, request)
         serializer = AttendanceOverTimeSerializer(page, many=True)
         return pagenation.get_paginated_response(serializer.data)
@@ -856,7 +902,7 @@ class OfflineEmployeesListView(APIView):
         # Get leave status for the filtered employees
         leave_status = self.get_leave_status(filtered_qs)
 
-        pagenation = PageNumberPagination()
+        pagenation = HorillaPageNumberPagination()
         page = pagenation.paginate_queryset(leave_status, request)
         return pagenation.get_paginated_response(page)
 
@@ -1103,7 +1149,7 @@ class UserAttendanceView(APIView):
             employee_id=employee_id
         ).order_by("-attendance_date")
 
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         paginator.page_size = 20
         page = paginator.paginate_queryset(attendance_queryset, request)
 

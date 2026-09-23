@@ -9,7 +9,6 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -26,6 +25,7 @@ from helpdesk.models import (
     Ticket,
     TicketType,
 )
+from horilla_api.api_methods.base.pagination import HorillaPageNumberPagination
 from horilla_api.api_serializers.helpdesk.serializers import (
     AttachmentSerializer,
     ClaimRequestSerializer,
@@ -76,7 +76,7 @@ class TicketTypeGetCreateAPIView(APIView):
 
     def get(self, request):
         ticket_types = self.get_queryset()
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(ticket_types, request)
         serializer = TicketTypeSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -139,7 +139,7 @@ class FAQCategoryGetCreateAPIView(APIView):
     def get(self, request):
         faq_categories = self.get_queryset()
         filterset = self.filterset_class(request.GET, queryset=faq_categories)
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = FAQCategorySerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -205,7 +205,7 @@ class FAQGetCreateAPIView(APIView):
         else:
             faqs = self.get_queryset()
         filterset = self.filterset_class(request.GET, queryset=faqs)
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = FAQSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -278,7 +278,7 @@ class TicketGetCreateAPIView(APIView):
         if field_name:
             url = request.build_absolute_uri()
             return groupby_queryset(request, url, field_name, filterset.qs)
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(filterset.qs, request)
         serializer = TicketSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -384,7 +384,7 @@ class CommentGetCreateAPIView(APIView):
         if ticket is None:
             return Response({"error": _("Ticket not found")}, status=404)
         comments = Comment.objects.filter(ticket_id=ticket_id)
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(comments, request)
         serializer = CommentSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -460,7 +460,7 @@ class AttachmentGetCreateAPIView(APIView):
             return Response(
                 {"error": _("ticket_id or comment_id required")}, status=400
             )
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(attachments, request)
         serializer = AttachmentSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -523,7 +523,7 @@ class ClaimRequestGetCreateAPIView(APIView):
         )
         if ticket_id:
             claim_requests = claim_requests.filter(ticket_id=ticket_id)
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(claim_requests, request)
         serializer = ClaimRequestSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -584,7 +584,7 @@ class DepartmentManagerGetCreateAPIView(APIView):
 
     def get(self, request):
         department_managers = self.get_queryset()
-        paginator = PageNumberPagination()
+        paginator = HorillaPageNumberPagination()
         page = paginator.paginate_queryset(department_managers, request)
         serializer = DepartmentManagerSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
