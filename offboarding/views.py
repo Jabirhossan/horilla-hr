@@ -7,6 +7,7 @@ from django.apps import apps
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.utils import IntegrityError
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
@@ -526,10 +527,25 @@ def change_stage(request):
 
     target_state = False if stage.type == "archived" else True
     employee_ids = employees.values_list("employee_id__id", flat=True)
-    Employee.objects.filter(
-        id__in=employee_ids,
-        is_active=not target_state,  # Only update if is_active differs
-    ).update(is_active=target_state)
+    # Saved one at a time rather than through a queryset update(), because
+    # update() skips save() and therefore sync_login_access(). Authentication
+    # reads HorillaUser.is_active, not Employee.is_active, so updating in bulk
+    # archived the employee record while leaving the person's login working --
+    # and the API issues 30-day refresh tokens, so a leaver kept API access for
+    # up to a month. Syncing both directions also means moving someone back out
+    # of the archived stage restores their access.
+    # Atomic because this is now several statements where it used to be one:
+    # Employee.save() runs full_clean(), so one legacy row that no longer
+    # validates would otherwise abort the batch half-applied, leaving some
+    # people archived and others not.
+    with transaction.atomic():
+        for employee_record in Employee.objects.filter(
+            id__in=employee_ids,
+            is_active=not target_state,  # Only touch rows whose state differs
+        ):
+            employee_record.is_active = target_state
+            employee_record.save()
+            employee_record.sync_login_access()
 
     stage_forms = {}
     stage_forms[str(stage.offboarding_id.id)] = StageSelectForm(
@@ -592,9 +608,16 @@ def change_offboarding_stage(request):
         employee.stage_id = stage
         employee.save()
     if stage.type == "archived":
-        Employee.objects.filter(
-            id__in=employees.values_list("employee_id__id", flat=True)
-        ).update(is_active=False)
+        # Same reason as in change_stage: update() would skip save(), and with
+        # it sync_login_access(), leaving the leaver's login enabled.
+        with transaction.atomic():
+            for leaver in Employee.objects.filter(
+                id__in=employees.values_list("employee_id__id", flat=True),
+                is_active=True,
+            ):
+                leaver.is_active = False
+                leaver.save()
+                leaver.sync_login_access()
     stage_forms = {}
     stage_forms[str(stage.offboarding_id.id)] = StageSelectForm(
         offboarding=stage.offboarding_id
