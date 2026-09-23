@@ -3999,6 +3999,101 @@ def encashment_condition_create(request):
 
 
 @login_required
+@hx_request_required
+@permission_required("payroll.change_encashmentgeneralsettings")
+def toggle_leave_encashment(request):
+    """
+    Enable/disable the Leave Encashment section on its own -- kept separate
+    from the redeem-unit form so toggling visibility doesn't depend on (or
+    interfere with) saving the bonus/leave unit amounts.
+    """
+    if not apps.is_installed("payroll"):
+        return HttpResponse("", status=400)
+
+    EncashmentGeneralSettings = get_horilla_model_class(
+        app_label="payroll", model="encashmentgeneralsettings"
+    )
+    instance = EncashmentGeneralSettings.objects.first()
+    if not instance:
+        instance = EncashmentGeneralSettings()
+    instance.leave_encashment_enabled = (
+        request.POST.get("leave_encashment_enabled") == "on"
+    )
+    instance.save()
+    if instance.leave_encashment_enabled:
+        messages.success(request, _("Leave Encashment is enabled successfully!"))
+    else:
+        messages.success(request, _("Leave Encashment is disabled successfully!"))
+    return HttpResponse("")
+
+
+@login_required
+@hx_request_required
+@permission_required("payroll.change_encashmentgeneralsettings")
+def toggle_encashment_apply_to_all(request):
+    """
+    "Apply to all employees" on its own -- an instant toggle like the
+    enable/disable one above, instead of requiring the Employees/Department/
+    Job Position form's Save button.
+    """
+    if not apps.is_installed("payroll"):
+        return HttpResponse("", status=400)
+
+    EncashmentGeneralSettings = get_horilla_model_class(
+        app_label="payroll", model="encashmentgeneralsettings"
+    )
+    instance = EncashmentGeneralSettings.objects.first()
+    if not instance:
+        instance = EncashmentGeneralSettings()
+    instance.is_applicable_to_all = request.POST.get("is_applicable_to_all") == "on"
+    instance.save()
+    if instance.is_applicable_to_all:
+        messages.success(request, _("Leave Encashment now applies to all employees."))
+    else:
+        messages.success(
+            request,
+            _("Leave Encashment now applies only to the selected employees."),
+        )
+    return HttpResponse("")
+
+
+@login_required
+@hx_request_required
+@permission_required("payroll.change_encashmentgeneralsettings")
+def encashment_eligibility_settings(request):
+    """
+    Who Leave Encashment applies to -- saved on its own, separate from both
+    the redeem-unit amounts form and the enable/disable toggle.
+    """
+    if not apps.is_installed("payroll"):
+        return HttpResponse("", status=400)
+
+    from payroll.forms.forms import EncashmentEligibilityForm
+
+    EncashmentGeneralSettings = get_horilla_model_class(
+        app_label="payroll", model="encashmentgeneralsettings"
+    )
+    instance = EncashmentGeneralSettings.objects.first()
+    if not instance:
+        instance = EncashmentGeneralSettings.objects.create()
+
+    if request.method == "POST":
+        eligibility_form = EncashmentEligibilityForm(request.POST, instance=instance)
+        if eligibility_form.is_valid():
+            eligibility_form.save()
+            messages.success(request, _("Leave Encashment eligibility updated."))
+            eligibility_form = EncashmentEligibilityForm(instance=instance)
+    else:
+        eligibility_form = EncashmentEligibilityForm(instance=instance)
+
+    return render(
+        request,
+        "settings/encashment_eligibility.html",
+        {"eligibility_form": eligibility_form},
+    )
+
+
+@login_required
 @permission_required("employee.add_employeegeneralsetting")
 def initial_prefix(request):
     """

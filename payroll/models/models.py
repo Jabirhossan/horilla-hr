@@ -2811,6 +2811,42 @@ class EncashmentGeneralSettings(models.Model):
 
     bonus_amount = models.IntegerField(default=1)
     leave_amount = models.IntegerField(blank=True, null=True, verbose_name="Amount")
+    leave_encashment_enabled = models.BooleanField(
+        default=True,
+        verbose_name=_("Enable Leave Encashment"),
+        help_text=_(
+            "When disabled, employees won't see the Leave Encashments "
+            "section under Reimbursements & Encashments."
+        ),
+    )
+    is_applicable_to_all = models.BooleanField(
+        default=True,
+        verbose_name=_("Apply to all employees"),
+        help_text=_(
+            "When enabled, every employee can use Leave Encashment. Disable "
+            "it to restrict it to the employees/department/job position "
+            "selected below."
+        ),
+    )
+    employees = models.ManyToManyField(
+        Employee,
+        related_name="encashment_settings_employees",
+        blank=True,
+        help_text=_(
+            "Used only when 'Apply to all employees' is disabled -- "
+            "restricts Leave Encashment to these employees plus anyone in "
+            "the selected department(s) or job position(s)."
+        ),
+    )
+    department = models.ManyToManyField(Department, blank=True)
+    job_position = models.ManyToManyField(
+        JobPosition, blank=True, verbose_name=_("Job Position")
+    )
+    filtered_employees = models.ManyToManyField(
+        Employee,
+        related_name="encashment_settings_filtered_employees",
+        editable=False,
+    )
     objects = models.Manager()
 
 

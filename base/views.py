@@ -6097,16 +6097,21 @@ def encashment_general_settings_view(request):
     EncashmentGeneralSettings = get_horilla_model_class(
         app_label="payroll", model="encashmentgeneralsettings"
     )
-    from payroll.forms.forms import EncashmentGeneralSettingsForm
+    from payroll.forms.forms import (
+        EncashmentEligibilityForm,
+        EncashmentGeneralSettingsForm,
+    )
 
     encashment_instance = EncashmentGeneralSettings.objects.first()
     encashment_form = EncashmentGeneralSettingsForm(instance=encashment_instance)
+    eligibility_form = EncashmentEligibilityForm(instance=encashment_instance)
 
     return render(
         request,
         "base/encashment_general_settings.html",
         {
             "encashment_form": encashment_form,
+            "eligibility_form": eligibility_form,
         },
     )
 

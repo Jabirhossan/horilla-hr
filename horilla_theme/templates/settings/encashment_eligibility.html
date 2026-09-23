@@ -1,0 +1,84 @@
+{% load i18n %}
+<div id="encashment_eligibility_container" class="col-span-12">
+    <div class="w-full mb-3">
+        <div class="flex space-x-2 pb-1">
+            <label> {% trans "Enable Leave Encashment" %}</label>
+            <span class="oh-info" title="{% trans 'When disabled, employees will not see the Leave Encashments section.' %}"> </span>
+        </div>
+        <p class="text-xs text-gray-500 mt-1 pb-2">
+            {% trans "Show or hide the Leave Encashments section for employees." %}
+        </p>
+        <div class="oh-switch p-3">
+            <input
+                type="checkbox"
+                name="leave_encashment_enabled"
+                id="leave_encashment_enabled"
+                class="oh-switch__checkbox"
+                hx-post="{% url 'toggle-leave-encashment' %}"
+                hx-trigger="change"
+                hx-swap="none"
+                hx-on-htmx-after-request="setTimeout(reloadMessage, 70);"
+                onchange="document.getElementById('leaveEncashmentEligibilityArea').style.display = this.checked ? '' : 'none';"
+                {% if eligibility_form.instance.leave_encashment_enabled %} checked {% endif %}
+            >
+        </div>
+    </div>
+
+    <div
+        id="leaveEncashmentEligibilityArea"
+        {% if not eligibility_form.instance.leave_encashment_enabled %}style="display:none;"{% endif %}
+    >
+        <div class="w-full mb-3">
+            <div class="flex space-x-2 pb-1">
+                <label> {% trans "Apply to all employees" %}</label>
+                <span class="oh-info" title="{% trans 'When enabled, every employee can use Leave Encashment.' %}"> </span>
+            </div>
+            <div class="oh-switch p-3">
+                <input
+                    type="checkbox"
+                    name="is_applicable_to_all"
+                    id="is_applicable_to_all"
+                    class="oh-switch__checkbox"
+                    hx-post="{% url 'toggle-encashment-apply-to-all' %}"
+                    hx-trigger="change"
+                    hx-swap="none"
+                    hx-on-htmx-after-request="setTimeout(reloadMessage, 70);"
+                    {% if eligibility_form.instance.is_applicable_to_all %} checked {% endif %}
+                >
+            </div>
+        </div>
+
+        <form
+            hx-post="{% url 'encashment-eligibility-settings' %}"
+            hx-target="#encashment_eligibility_container"
+            hx-swap="outerHTML"
+            data-settings-native="true"
+            hx-on-htmx-after-request="setTimeout(reloadMessage, 70);"
+        >
+            {% csrf_token %}
+
+            <p class="text-xs text-gray-500 mb-2">
+                {% trans "Choose which employees can use Leave Encashment." %}
+            </p>
+
+            <div class="w-full mb-3">
+                <label> {% trans "Employees" %}</label>
+                {{ eligibility_form.employees }}
+            </div>
+            <div class="w-full mb-3">
+                <label> {% trans "Department" %}</label>
+                {{ eligibility_form.department }}
+            </div>
+            <div class="w-full mb-3">
+                <label> {% trans "Job Position" %}</label>
+                {{ eligibility_form.job_position }}
+            </div>
+
+            <div class="flex justify-end">
+                <button class="btn mt-3 h-[33px]" type="submit">
+                    {% trans 'Save' %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

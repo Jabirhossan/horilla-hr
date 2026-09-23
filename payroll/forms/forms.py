@@ -10,8 +10,11 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
 from base.forms import Form, ModelForm
+from employee.filters import EmployeeFilter
 from employee.forms import MultipleFileField
 from employee.models import Employee
+from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
+from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from payroll.context_processors import get_active_employees
 from payroll.models.models import (
     Contract,
@@ -162,6 +165,59 @@ class EncashmentGeneralSettingsForm(ModelForm):
     class Meta:
         model = EncashmentGeneralSettings
         fields = "__all__"
+        # Toggled independently via its own hx-post (toggle-leave-encashment)
+        # and its own eligibility form (EncashmentEligibilityForm) below --
+        # excluded here so re-saving the redeem-unit amounts can't silently
+        # reset them (a bare, unchecked BooleanField posts nothing, which
+        # Django would otherwise read as False; an untouched M2M field is
+        # never included in this form's data at all).
+        exclude = [
+            "leave_encashment_enabled",
+            "is_applicable_to_all",
+            "employees",
+            "department",
+            "job_position",
+            "filtered_employees",
+        ]
+
+
+class EncashmentEligibilityForm(ModelForm):
+    """
+    Who Leave Encashment applies to -- saved independently of both the
+    redeem-unit amounts and the enable/disable toggle.
+    """
+
+    employees = HorillaMultiSelectField(
+        queryset=Employee.objects.all(),
+        required=False,
+        widget=HorillaMultiSelectWidget(
+            filter_route_name="employee-widget-filter",
+            filter_class=EmployeeFilter,
+            filter_instance_context_name="f",
+            filter_template_path="employee_filters.html",
+        ),
+        label=_("Employees"),
+        help_text=_(
+            "Used only when 'Apply to all employees' is disabled below -- "
+            "restricts Leave Encashment to these employees plus anyone in "
+            "the selected department(s) or job position(s)."
+        ),
+    )
+
+    cols = {
+        "employees": 12,
+        "department": 12,
+        "job_position": 12,
+    }
+
+    class Meta:
+        model = EncashmentGeneralSettings
+        # is_applicable_to_all is toggled independently via its own hx-post
+        # (toggle-encashment-apply-to-all) -- excluded here so re-saving the
+        # employees/department/job position selection can't silently reset
+        # it (an untouched BooleanField would post nothing and Django would
+        # read that as False).
+        fields = ["employees", "department", "job_position"]
 
 
 class DashboardExport(Form):

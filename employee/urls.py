@@ -762,6 +762,21 @@ urlpatterns = [
         views.encashment_condition_create,
         name="encashment-condition-create",
     ),
+    path(
+        "toggle-leave-encashment/",
+        views.toggle_leave_encashment,
+        name="toggle-leave-encashment",
+    ),
+    path(
+        "toggle-encashment-apply-to-all/",
+        views.toggle_encashment_apply_to_all,
+        name="toggle-encashment-apply-to-all",
+    ),
+    path(
+        "encashment-eligibility-settings/",
+        views.encashment_eligibility_settings,
+        name="encashment-eligibility-settings",
+    ),
     path("initial-prefix/", views.initial_prefix, name="initial-prefix"),
     path(
         "get-first-last-badge-id/",

@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 from attendance.cbv.tab_shell import AttendanceTabContentShell
 from base.methods import filter_own_records
+from horilla.methods import handle_no_permission
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
@@ -17,6 +18,7 @@ from horilla_views.generic.cbv.views import (
     HorillaTabView,
     TemplateView,
 )
+from payroll.decorators import is_leave_encashment_enabled, leave_encashment_visible_to
 from payroll.filters import ReimbursementFilter
 from payroll.forms.component_forms import ReimbursementForm
 from payroll.models.models import Reimbursement
@@ -46,14 +48,18 @@ class ReimbursementsAndEncashmentsTabView(HorillaTabView):
                 "url": f"{reverse('reimbursement-tab-shell')}",
             },
             {
-                "title": _("Leave Encashments"),
-                "url": f"{reverse('leave-encash-tab-shell')}",
-            },
-            {
                 "title": _("Bonus Encashments"),
                 "url": f"{reverse('bonus-encash-tab-shell')}",
             },
         ]
+        if self.request and leave_encashment_visible_to(self.request):
+            self.tabs.insert(
+                1,
+                {
+                    "title": _("Leave Encashments"),
+                    "url": f"{reverse('leave-encash-tab-shell')}",
+                },
+            )
 
     def get_context_data(self, **kwargs):
         from payroll.filters import ReimbursementFilter
@@ -231,6 +237,7 @@ class ReimbursementsListView(ReimbursementsAndEncashmentsListView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(is_leave_encashment_enabled(), name="dispatch")
 class LeaveEncashmentsListView(ReimbursementsAndEncashmentsListView):
 
     def __init__(self, **kwargs: Any) -> None:
@@ -364,6 +371,7 @@ class ReimbursementNav(_ReimbursementTabNavBase):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(is_leave_encashment_enabled(), name="dispatch")
 class LeaveEncashNav(_ReimbursementTabNavBase):
     """
     Independent Nav for the Leave Encashments tab.
@@ -399,6 +407,7 @@ class ReimbursementTabShell(AttendanceTabContentShell):
     tabs_root_id = "reimbursmentContainer"
 
 
+@method_decorator(is_leave_encashment_enabled(), name="dispatch")
 class LeaveEncashTabShell(AttendanceTabContentShell):
     nav_url_name = "leave-encash-nav"
     container_id = "leaveEncashListContainer"
@@ -459,6 +468,7 @@ class ReimbursementsDetailView(HorillaDetailedView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(is_leave_encashment_enabled(), name="dispatch")
 class LeaveEncashmentsDetailedView(ReimbursementsDetailView):
 
     position = 3
@@ -488,6 +498,23 @@ class ReimbursementsFormView(HorillaFormView):
     model = Reimbursement
     form_class = ReimbursementForm
     template_name = "cbv/reimbursements/forms.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        # Shared by all 3 tabs (?type=... on create, instance.type on edit)
+        # -- only the leave_encashment path needs gating here. Eligibility
+        # (as opposed to the plain enabled/disabled check) only applies to a
+        # self-service employee creating their own request -- an admin/
+        # manager with add/view_reimbursement can still create one for
+        # anyone regardless of that employee's own eligibility.
+        instance = Reimbursement.objects.filter(pk=kwargs.get("pk")).first()
+        record_type = request.GET.get("type") or (instance.type if instance else None)
+        if record_type == "leave_encashment" and not leave_encashment_visible_to(
+            request
+        ):
+            return handle_no_permission(
+                request, message=_("Sorry, Leave Encashment is not enabled.")
+            )
+        return super().dispatch(request, *args, **kwargs)
 
     # Maps Reimbursement.type -> the singular, tab-matching label to show
     # on the form (Reimbursement.get_type_display() exists too, but its

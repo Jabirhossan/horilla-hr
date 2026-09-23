@@ -12,5 +12,6 @@
 
     {% if "payroll"|app_installed and perms.payroll.change_encashmentgeneralsettings %}
         {% include "settings/encashment_settings.html" %}
+        {% include "settings/encashment_eligibility.html" %}
     {% endif %}
 {% endblock settings %}
