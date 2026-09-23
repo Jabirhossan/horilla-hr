@@ -7,6 +7,7 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 
 from base.models import EmployeeShift
+from employee.models import ProfileEditFeature
 from horilla.testkit import make_company, make_employee, make_user
 
 
@@ -88,6 +89,10 @@ class WritePermissionTests(TestCase):
         self.assertEqual(response.status_code, 200, response.data)
 
     def test_employee_cannot_rebind_login(self):
+        # Self-edit now honours the profile-edit switch, as the web UI does,
+        # and a missing row reads as "off". Turn it on so this test exercises
+        # the login-rebind protection rather than the toggle.
+        ProfileEditFeature.objects.create(is_enabled=True)
         response = self.client.put(
             f"/api/employee/employees/{self.employee.id}/",
             {"employee_user_id": self.other.employee_user_id.id},
