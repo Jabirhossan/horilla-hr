@@ -1,0 +1,66 @@
+{% extends 'settings.html' %}
+{% block settings %}{% load i18n %}{% load horillafilters %}{% load widget_tweaks %}{% load static %}
+    <div class="mb-4">
+        <h4 class="text-base font-semibold text-[#333]">{% trans "Asset Rules" %}</h4>
+        <p class="text-xs text-gray-500 mt-1">
+            {% trans "Configure asset-related rules." %}
+        </p>
+    </div>
+
+    {% if perms.asset.change_assetgeneralsetting or perms.asset.view_assetgeneralsetting %}
+        <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5 mr-3">
+            <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between">
+                {% trans "Asset Fine" %}
+            </h5>
+            <div class="p-4">
+                <div class="grid grid-cols-12 gap-4 myform">
+                    <div class="col-span-12">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <div class="flex space-x-2">
+                                    <h3 class="text-sm font-medium">
+                                        {% trans "Enable Asset Fine" %}
+                                    </h3>
+                                    <span
+                                        class="oh-info mr-2"
+                                        title="{% trans 'Enabling this allows adding a fine for an employee when an asset is returned.' %}"
+                                    >
+                                    </span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    {% trans "Enabling this allows adding a fine for an employee when an asset is returned." %}
+                                </p>
+                            </div>
+                            <label class="toggle-label">
+                                <input
+                                    type="hidden"
+                                    name="setting_Id"
+                                    value="{{ asset_general_setting.id }}"
+                                    id="companyId{{ asset_general_setting.id }}"
+                                >
+                                <input
+                                    type="checkbox"
+                                    class="toggle-input"
+                                    name="isChecked"
+                                    style="cursor: pointer"
+                                    {% if asset_general_setting.enable_asset_fine %}
+                                        checked
+                                    {% endif %}
+                                    {% if perms.asset.change_assetgeneralsetting %}
+                                        hx-post="{% url 'enable-disable-asset-fine' %}"
+                                        hx-target="#objectDetailsModalW25Target"
+                                        hx-swap="none"
+                                        hx-include="#companyId{{ asset_general_setting.id }}"
+                                        hx-trigger="change"
+                                        hx-on-htmx-after-request="window.location.reload()"
+                                    {% endif %}
+                                >
+                                <div class="toggle-switch"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock settings %}

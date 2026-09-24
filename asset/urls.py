@@ -558,4 +558,14 @@ urlpatterns = [
         request_and_allocation.AssetReassignFormView.as_view(),
         name="asset-reassign",
     ),
+    path(
+        "asset-rule-view/",
+        views.asset_rule_settings_view,
+        name="asset-rule-view",
+    ),
+    path(
+        "enable-disable-asset-fine/",
+        views.enable_disable_asset_fine,
+        name="enable-disable-asset-fine",
+    ),
 ]

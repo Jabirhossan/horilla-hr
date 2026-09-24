@@ -2,8 +2,11 @@
 assets/sidebar.py
 """
 
-from django.urls import reverse
+from django.apps import apps
+from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
+
+from horilla.menu import settings_menu
 
 MENU = _("Assets")
 IMG_SRC = "images/ui/assets.svg"
@@ -84,3 +87,31 @@ def lot_accessibility(request, subment, user_perms, *args, **kwargs):
     Asset batch sidebar accessibility method
     """
     return request.user.has_perm("asset.view_assetlot")
+
+
+def asset_rule_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm(
+        "asset.change_assetgeneralsetting"
+    ) or request.user.has_perm("asset.view_assetgeneralsetting")
+
+
+@settings_menu.register
+class AssetSettings:
+    title = _("Assets")
+    order = 9
+    condition = lambda self, request: apps.is_installed("asset")
+    items = [
+        {
+            "label": _("Asset Rule"),
+            "url": reverse_lazy("asset-rule-view"),
+            "accessibility": asset_rule_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Enable Asset Fine"),
+                    "description": _(
+                        "Allow adding a fine for an employee when an asset is returned"
+                    ),
+                },
+            ],
+        },
+    ]

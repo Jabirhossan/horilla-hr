@@ -48,6 +48,29 @@ class AssetCategory(HorillaModel):
         return f"{self.asset_category_name}"
 
 
+class AssetGeneralSetting(HorillaModel):
+    """
+    Company-scoped general settings for the asset app.
+    """
+
+    enable_asset_fine = models.BooleanField(
+        default=False,
+        verbose_name=_("Enable Asset Fine"),
+        help_text=_(
+            "Enabling this allows adding a fine for an employee when an asset is returned."
+        ),
+    )
+    company_id = models.ForeignKey(
+        Company, on_delete=models.CASCADE, null=True, blank=True
+    )
+    objects = HorillaCompanyManager()
+
+    def company_col(self):
+        if self.company_id:
+            return self.company_id.company
+        return "All Company"
+
+
 class AssetLot(HorillaModel):
     """
     Represents a lot associated with a collection of assets.
