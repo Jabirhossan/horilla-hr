@@ -1265,17 +1265,11 @@ def delete_employee_objective(request, emp_obj_id):
             request, message=_("No Employee Objective found matching the query.")
         )
 
-    single_view = request.GET.get("single_view")
-    if emp_objective.employee_key_result.exists():
-        messages.warning(
-            request, _("You can't delete this objective,related entries exists")
-        )
-    else:
-        employee = emp_objective.employee_id
-        objective = emp_objective.objective_id
-        emp_objective.delete()
-        objective.assignees.remove(employee)
-        messages.success(request, _("Objective deleted successfully!."))
+    employee = emp_objective.employee_id
+    objective = emp_objective.objective_id
+    emp_objective.delete()
+    objective.assignees.remove(employee)
+    messages.success(request, _("Objective deleted successfully!."))
     return HorillaRedirect(request)
 
 

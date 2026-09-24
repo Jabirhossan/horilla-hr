@@ -280,7 +280,7 @@ class ObjectivesTab(HorillaTabView):
         else:
             self.tabs = [
                 {
-                    "title": _("Assigned Objectives"),
+                    "title": _("My Objectives"),
                     "url": with_query(reverse("my-objectives-tab-shell")),
                     "badge": assigned_objectives_count,
                 },
@@ -298,7 +298,7 @@ class _ObjectivesTabNavBase(HorillaNavView):
     independent Nav - only search_url/search_swap_target differ per tab.
     """
 
-    nav_title = _("Objectives")
+    nav_title = _("Employee Objectives")
     filter_instance = ActualObjectiveFilter()
     filter_form_context_name = "form"
     filter_body_template = "cbv/objectives/filter.html"
@@ -311,25 +311,16 @@ class _ObjectivesTabNavBase(HorillaNavView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+        # The Create button opens "Create Objective" (define a new
+        # objective/OKR, optionally assigning it to employees right away
+        # via its own "Add assignees" toggle) -- that's the single entry
+        # point for this page now, so there's no separate Actions dropdown.
         self.create_attrs = f"""
-                        hx-get='{reverse_lazy('create-employee-objective')}'"
-                        data-toggle="oh-modal-toggle"
-                        data-target="#genericModal"
-                        hx-target="#genericModalBody"
-                        """
-        if self.request.user.has_perm("pms.add_objective"):
-            self.actions = [
-                {
-                    "action": _("Create Objectives"),
-                    "attrs": f"""
                         hx-get='{reverse_lazy('objective-creation')}'"
                         data-toggle="oh-modal-toggle"
                         data-target="#genericModal"
                         hx-target="#genericModalBody"
-                        style="cursor: pointer;"
-                        """,
-                }
-            ]
+                        """
 
     # Mirrors ObjectivesList.nested_group_by_fields
     nested_group_by_fields = [
@@ -345,7 +336,7 @@ class _ObjectivesTabNavBase(HorillaNavView):
 @method_decorator(login_required, name="dispatch")
 class MyObjectivesNav(_ObjectivesTabNavBase):
     """
-    Independent Nav for the Assigned Objectives tab.
+    Independent Nav for the My Objectives tab.
     """
 
     def __init__(self, **kwargs: Any) -> None:
@@ -470,7 +461,7 @@ class CreateObjectiveFormView(HorillaFormView):
 
     form_class = ObjectiveForm
     model = Objective
-    new_display_title = _("Create  Objective")
+    new_display_title = _("Create Employee Objective")
     dynamic_create_fields = [("key_result_id", DynamicKeyResultCreateForm)]
     template_name = "cbv/objectives/form.html"
     force_template = False

@@ -2,15 +2,6 @@
     {% include "generic/horilla_form.html" %}
 </div>
 <script>
-    $(document).ready(function(){
-      $('[id="id_start_date"]').parent().parent().hide();
-      $('#id_assignees').closest('div.col-12').hide();
-      addAssignees()
-    })
-    $('#id_add_assignees').change(function(){
-      addAssignees()
-    })
-
     function addAssignees(){
       if ($('#id_add_assignees').is(":checked")){
         $('[id="id_start_date"]').parent().parent().show();
@@ -23,4 +14,20 @@
 
       }
     }
+    $(document).ready(function(){
+      addAssignees()
+    })
+    $('#id_add_assignees').change(function(){
+      addAssignees()
+    })
+    // htmx "settles" a swapped-in fragment on the next animation frame by
+    // re-syncing attributes of any element it id-matched and reused (like
+    // this form's "..._parent_div" field wrappers) against the freshly
+    // rendered HTML -- which never carries our client-side display:none.
+    // That settle runs *after* the block above, so on a validation-error
+    // reswap it silently wipes the hide we just applied. Re-apply once
+    // settle finishes so the section doesn't reappear.
+    $('#genericModalBody')
+      .off('htmx:afterSettle.addAssignees')
+      .on('htmx:afterSettle.addAssignees', addAssignees)
 </script>

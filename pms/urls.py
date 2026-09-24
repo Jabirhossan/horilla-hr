@@ -815,21 +815,6 @@ urlpatterns = [
         name="performance-settings-bonus-point-tab",
     ),
     path(
-        "performance-settings-objective-template-tab/",
-        settings_tabs.PerformanceSettingsObjectiveTemplateTab.as_view(),
-        name="performance-settings-objective-template-tab",
-    ),
-    path(
-        "performance-settings-objective-template-nav/",
-        settings_tabs.PerformanceSettingsObjectiveTemplateNav.as_view(),
-        name="performance-settings-objective-template-nav",
-    ),
-    path(
-        "performance-settings-objective-template-list/",
-        settings_tabs.PerformanceSettingsObjectiveTemplateList.as_view(),
-        name="performance-settings-objective-template-list",
-    ),
-    path(
         "performance-settings-question-template-tab/",
         settings_tabs.PerformanceSettingsQuestionTemplateTab.as_view(),
         name="performance-settings-question-template-tab",
