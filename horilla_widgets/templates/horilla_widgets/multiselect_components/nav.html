@@ -1,4 +1,19 @@
 {% load i18n %}
+<style>
+    /* Not inline: Alpine's x-show toggles the element's own inline
+       style.display directly (removing it entirely when shown), which
+       would otherwise wipe out an inline display:flex declared alongside
+       it every time the panel opens. A stylesheet rule survives that. */
+    #{{section_id}} .oh-filter-scroll-menu {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    #{{section_id}} .oh-filter-scroll-menu__body {
+        overflow-y: auto;
+        flex: 1 1 auto;
+    }
+</style>
 <section
     class="oh-main__topbar p-3 mb-1 m-0"
     style="padding-left: 0 !important; padding-right: 0 !important"
@@ -36,7 +51,7 @@
                     <button
                         onclick="$(this).closest('.oh-main__titlebar-button-container').find('#hxButton').click()"
                         class="oh-btn ml-2"
-                        @click="open = !open"
+                        @click="open = !open; $nextTick(() => positionFilterScrollMenu($el))"
                     >
                         <ion-icon
                             name="filter"
@@ -48,14 +63,15 @@
                     </button>
                 </button>
                 <div
-                    class="oh-dropdown__menu oh-dropdown__menu--left oh-dropdown__filter p-4"
+                    class="oh-dropdown__menu oh-dropdown__menu--left oh-dropdown__filter oh-filter-scroll-menu p-4"
                     x-show="open"
                     @click.outside="open = false"
+                    style="max-height: 70vh;"
                 >
-                    <div id="widgetFilterContainer">
+                    <div id="widgetFilterContainer" class="oh-filter-scroll-menu__body">
                         {% comment %} {% include filter_template_path %} {% endcomment %}
                     </div>
-                    <div class="oh-dropdown__filter-footer">
+                    <div class="oh-dropdown__filter-footer" style="flex: 0 0 auto;">
                         <button
                             type="submit"
                             class="oh-btn oh-btn--secondary oh-btn--small w-100"
@@ -71,6 +87,36 @@
     </div>
 </section>
 <script>
+    if (typeof positionFilterScrollMenu !== "function") {
+      // The panel's max-height was a fixed 70vh, but it's positioned
+      // partway down whatever modal/page it's opened in -- inside a
+      // shorter modal that 70vh comfortably overflows the modal's own
+      // clipping box (overflow:hidden), pushing the Filter submit button
+      // out of view instead of just scrolling within the panel. Recompute
+      // max-height each time it opens from the actual space available
+      // before the nearest clipping ancestor (or the viewport, whichever
+      // is smaller).
+      window.positionFilterScrollMenu = function (triggerEl) {
+        const dropdown = triggerEl.closest(".oh-dropdown");
+        const menu = dropdown ? dropdown.querySelector(".oh-filter-scroll-menu") : null;
+        if (!menu || menu.style.display === "none" || getComputedStyle(menu).display === "none") {
+          return;
+        }
+        let clip = menu.parentElement;
+        while (clip && clip !== document.body) {
+          const cs = getComputedStyle(clip);
+          if (["hidden", "auto", "scroll"].indexOf(cs.overflowY) !== -1) {
+            break;
+          }
+          clip = clip.parentElement;
+        }
+        const menuTop = menu.getBoundingClientRect().top;
+        const clipBottom = clip ? clip.getBoundingClientRect().bottom : window.innerHeight;
+        const available = Math.min(clipBottom, window.innerHeight) - menuTop - 16;
+        menu.style.maxHeight = Math.max(available, 200) + "px";
+      };
+    }
+
     $(document).ready(function () {
       function transformJson(inputJson) {
         // Clone the input JSON to avoid modifying the original object
@@ -101,6 +147,15 @@
         );
         var formData = [];
         formFields.each(function () {
+          // .val() on a checkbox/radio returns its "value" attribute
+          // regardless of whether it's actually checked, so an unchecked
+          // one still contributed its value here -- e.g. every option of
+          // the Is Active radio group (empty/True/False) was sent at once,
+          // filtering every search down to zero results.
+          const type = (this.type || "").toLowerCase();
+          if ((type === "checkbox" || type === "radio") && !this.checked) {
+            return;
+          }
           const name = $(this).attr("name");
           const value = $(this).val();
           formData.push({ name, value });

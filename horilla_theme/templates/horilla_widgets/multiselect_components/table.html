@@ -1,7 +1,20 @@
 {% load i18n %}
 
 <style>
-    .oh-sticky-table {
+    /* Scoped to this widget instance (#{{section_id}}) -- .oh-sticky-table*
+       is also the class name of the app's unrelated global sticky-header
+       list-table component (horilla_theme/assets/css/global.css), which
+       builds a display:table/table-row/table-cell structure with fixed
+       per-cell widths (e.g. .oh-sticky-table__sd is 240px) and no scroll
+       container. That table-display chain doesn't respect the flex sizing
+       below (a table-display flex item sizes to its content instead of
+       being constrained by flex-grow, so the list never got a bounded,
+       scrollable height), so every table-role class this picker's markup
+       uses is switched to a plain block/flex layout here instead -- single
+       "cell" per row, no need for real table layout. !important because
+       this scoped, more-specific selector was still losing the overflow/
+       display properties to the global rule otherwise. */
+    #{{section_id}} .oh-sticky-table {
         display: flex;
         flex-direction: column;
         height: 50vh; /* already in your inline style */
@@ -10,7 +23,8 @@
         border-radius: 8px;
     }
 
-    .oh-sticky-table__thead {
+    #{{section_id}} .oh-sticky-table__thead {
+        display: block !important;
         z-index: 2;
         position: sticky;
         top: 0;
@@ -19,19 +33,48 @@
         background: #f8fafc;
     }
 
-    .oh-sticky-table__table {
+    #{{section_id}} .oh-sticky-table__table {
+        display: block !important;
         flex: 1 1 auto;
-        overflow-x: hidden;
-        overflow-y: auto;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
     }
 
-    .oh-sticky-table__tr--custom {
+    #{{section_id}} .oh-sticky-table__tbody {
+        /* No !important: the search/filter JS toggles rows via jQuery
+           .hide()/.show(), which set/clear a plain (non-!important) inline
+           display:none -- an !important rule here would always beat that
+           inline style and make rows impossible to hide. */
+        display: block;
+        height: auto !important;
+    }
+
+    #{{section_id}} .oh-sticky-table__tr {
+        display: block !important;
+    }
+
+    #{{section_id}} .oh-sticky-table__th,
+    #{{section_id}} .oh-sticky-table__sd {
+        display: block !important;
+        width: 100% !important;
+        /* The global rule also makes each individual cell sticky (for a
+           sticky first-column, multi-column table) -- nested inside our
+           own sticky .oh-sticky-table__thead ROW, that second, conflicting
+           sticky context was what made the header render blank/collapsed
+           while scrolled instead of showing its checkbox + label. Only the
+           row should stick; the cell inside it just flows normally. */
+        position: static !important;
+        top: auto !important;
+        left: auto !important;
+    }
+
+    #{{section_id}} .oh-sticky-table__tr--custom {
         padding: 0.5rem;
         padding-bottom: 0;
         transition: background 0.2s;
     }
 
-    .oh-sticky-table__tr--custom:hover {
+    #{{section_id}} .oh-sticky-table__tr--custom:hover {
         background: #f1f5f9;
         cursor: pointer;
     }

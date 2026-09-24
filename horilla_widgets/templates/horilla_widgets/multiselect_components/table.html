@@ -1,4 +1,59 @@
 {% load i18n %}
+<style>
+    /* Scoped to this widget instance (#{{section_id}}) -- .oh-sticky-table*
+       is also the class name of the app's unrelated global sticky-header
+       list-table component, which builds a display:table/table-row/
+       table-cell structure with fixed per-cell widths and no scroll
+       container. That doesn't respect flex sizing (a table-display flex
+       item sizes to its content instead of being constrained by
+       flex-grow), so every table-role class this picker's markup uses is
+       switched to a plain block/flex layout here instead -- single "cell"
+       per row, no need for real table layout. See the horilla_theme
+       variant of this same file for the fuller writeup. */
+    #{{section_id}} .oh-sticky-table {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border: 1px solid #cdd5df;
+        border-radius: 8px;
+    }
+
+    #{{section_id}} .oh-sticky-table__thead {
+        display: block !important;
+        z-index: 2;
+        position: sticky;
+        top: 0;
+        flex: 0 0 auto;
+        border-bottom: 1px solid #cdd5df;
+        background: #f8fafc;
+    }
+
+    #{{section_id}} .oh-sticky-table__table {
+        display: block !important;
+        flex: 1 1 auto;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+    }
+
+    #{{section_id}} .oh-sticky-table__tbody {
+        /* No !important: the search/filter JS toggles rows via jQuery
+           .hide()/.show(), which set/clear a plain (non-!important) inline
+           display:none -- an !important rule here would always beat that
+           inline style and make rows impossible to hide. */
+        display: block;
+        height: auto !important;
+    }
+
+    #{{section_id}} .oh-sticky-table__tr {
+        display: block !important;
+    }
+
+    #{{section_id}} .oh-sticky-table__th,
+    #{{section_id}} .oh-sticky-table__sd {
+        display: block !important;
+        width: 100% !important;
+    }
+</style>
 <div class="oh-sticky-table" style="height: 50vh">
   <div
     class="oh-sticky-table__table oh-table--sortable"
