@@ -443,8 +443,10 @@ class EmployeeWorkInformationAPIView(APIView):
     Manage employee work information with CRUD operations.
 
     Methods:
-        get(request, pk):
+        get(request, pk=None):
             - Retrieves work information for a specific employee identified by `pk`.
+            - Returns a paginated list, scoped to what the caller may see, if
+              `pk` is not provided.
 
         post(request):
             - Creates a new work information entry for an employee.
@@ -458,15 +460,26 @@ class EmployeeWorkInformationAPIView(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, pk):
-        work_info = EmployeeWorkInformation.objects.get(pk=pk)
-        if (
-            request.user.employee_get
-            in [work_info.employee_id, work_info.reporting_manager_id]
-        ) or request.user.has_perm("employee.view_employeeworkinformation"):
-            serializer = EmployeeWorkInformationSerializer(work_info)
-            return Response(serializer.data, status=200)
-        return Response({"message": _("No permission")}, status=400)
+    def get(self, request, pk=None):
+        if pk is not None:
+            work_info = EmployeeWorkInformation.objects.get(pk=pk)
+            if (
+                request.user.employee_get
+                in [work_info.employee_id, work_info.reporting_manager_id]
+            ) or request.user.has_perm("employee.view_employeeworkinformation"):
+                serializer = EmployeeWorkInformationSerializer(work_info)
+                return Response(serializer.data, status=200)
+            return Response({"message": _("No permission")}, status=400)
+
+        queryset = permission_based_queryset(
+            request.user,
+            "employee.view_employeeworkinformation",
+            EmployeeWorkInformation.objects.all(),
+        )
+        paginator = HorillaPageNumberPagination()
+        page = paginator.paginate_queryset(queryset, request)
+        serializer = EmployeeWorkInformationSerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     @manager_permission_required("employee.add_employeeworkinformation")
     def post(self, request):
