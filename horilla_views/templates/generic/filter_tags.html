@@ -55,11 +55,29 @@
             {% if values and field != "path" %}
                 <span class="oh-titlebar__tag filter-field" data-field="{{ field }}">
                     {% if field == "field" %}{% trans "Group by" %}{% else %}{{ field|filter_field }}{% endif %}: &nbsp
-                    {% for value in values %}
-                        <span class="filter-value" data-value="{{value|filter_field}}">
-                        {{value|filter_field}}
+                    {% if values|length > 3 %}
+                        {% comment %}
+                            A deep link (e.g. a dashboard tile) can pre-select
+                            dozens of values for one field -- spelling all of
+                            them out ran them together into one unreadable
+                            wall of digits/text instead of a short filter
+                            tag. Collapse to a count once there are more than
+                            a few, with the full list still available on
+                            hover.
+                        {% endcomment %}
+                        <span
+                            class="filter-value"
+                            title="{% for value in values %}{{ value|filter_field }}{% if not forloop.last %}, {% endif %}{% endfor %}"
+                        >
+                            {% blocktrans count counter=values|length %}{{ counter }} selected{% plural %}{{ counter }} selected{% endblocktrans %}
                         </span>
-                    {% endfor %}
+                    {% else %}
+                        {% for value in values %}
+                            <span class="filter-value" data-value="{{value|filter_field}}">
+                            {{value|filter_field}}{% if not forloop.last %},{% endif %}
+                            </span>
+                        {% endfor %}
+                    {% endif %}
                     <button class="oh-titlebar__tag-close"
                         data-x-field="{{ field }}"
                     >

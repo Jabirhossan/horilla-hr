@@ -2630,8 +2630,13 @@ class HorillaNavView(TemplateView):
 
         extra_params = {}
 
-        for key, val in self.request.GET.items():
-            extra_params[key] = val
+        # .getlist(), not .items() (which -- like .get() -- silently keeps
+        # only the LAST value of a repeated key): a deep link with several
+        # values for the same multi-select filter field (e.g.
+        # ?employee_id=1&employee_id=2) otherwise collapsed to just the
+        # last id by the time it reached the actual list fetch below.
+        for key in self.request.GET:
+            extra_params[key] = self.request.GET.getlist(key)
 
         extra_params["referrer"] = urlparse(
             self.request.META.get("HTTP_REFERER", "")
@@ -2645,7 +2650,13 @@ class HorillaNavView(TemplateView):
             # combined_query.update(self.request.GET)
             combined_query.update(extra_params)
 
-            view["url"] = urlunparse(parsed._replace(query=urlencode(combined_query)))
+            # doseq=True: combined_query's values can now be lists (see
+            # extra_params above) -- without it, urlencode would str() a
+            # list into one garbled "['1', '2']"-shaped param instead of
+            # repeating the key once per value.
+            view["url"] = urlunparse(
+                parsed._replace(query=urlencode(combined_query, doseq=True))
+            )
 
         context["view_types"] = self.view_types
 
@@ -2657,7 +2668,7 @@ class HorillaNavView(TemplateView):
             parsed_search_url.update(extra_params)
 
             context["search_url"] = urlunparse(
-                parsed_search._replace(query=urlencode(parsed_search_url))
+                parsed_search._replace(query=urlencode(parsed_search_url, doseq=True))
             )
 
         # CACHE.get(self.request.session.session_key + "cbv")[HorillaNavView] = context

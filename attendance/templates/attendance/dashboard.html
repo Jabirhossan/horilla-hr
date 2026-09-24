@@ -79,7 +79,7 @@
         /* ── KPI ── */
         .am-kpi-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             margin-bottom: 20px;
             gap: 14px;
         }
@@ -1747,6 +1747,20 @@
                         <div class="am-kpi-card__label">{% trans "Present Today"|escapejs %}</div>
                         <div class="am-kpi-card__value">${data.present_today}</div>
                         <div class="am-kpi-card__sub"><span class="am-badge ${data.attendance_rate >= 80 ? "am-badge--green" : "am-badge--amber"}">${data.attendance_rate}% {% trans "rate"|escapejs %}</span></div>
+                    </a>
+                    <a href="{% url 'employee-view' %}?filter_applied=on&${(data.missing_punches_ids || []).map((id) => `employee_id=${id}`).join("&")}" class="am-kpi-card">
+                        <div class="am-kpi-card__icon am-kpi-card__icon--red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+                        <div class="am-kpi-card__label">{% trans "Offline"|escapejs %}</div>
+                        <div class="am-kpi-card__value">${data.missing_punches}</div>
+                        <div class="am-kpi-card__sub">${
+                            data.missing_punches > 0
+                                ? '<span class="am-badge am-badge--red">' +
+                                    '{% trans "Shift started, not checked in"|escapejs %}' +
+                                    "</span>"
+                                : '<span style="opacity:0.5">' +
+                                    '{% trans "All clear"|escapejs %}' +
+                                    "</span>"
+                        }</div>
                     </a>
                     <a href="{% url 'attendance-view' %}?open_tab=1&attendance_date=${data.date}&filter_applied=on" class="am-kpi-card">
                         <div class="am-kpi-card__icon am-kpi-card__icon--blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>

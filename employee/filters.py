@@ -88,13 +88,23 @@ class EmployeeFilter(HorillaFilterSet):
     # AJAX-searched "pick specific employee(s)" combobox (see ajax_fields
     # below) -- employee_filters.html's Employee section (First/Last
     # Name, Email, Phone, Country, Gender) for the classic filter
-    # dropdowns. field_name="id" since this filters the Employee model
-    # itself by primary key, not a related field.
+    # dropdowns. Custom method instead of field_name="id": django-filter's
+    # default MultipleChoiceFilter builds Q(id=<Employee instance>) per
+    # selected value (OR'd together) rather than a single id__in=[...] --
+    # fine for a real FK field (Django resolves the instance to its pk
+    # there), but "id" is the model's own plain AutoField, which can't
+    # accept a model instance, so ANY value here raised a TypeError.
     employee_id = django_filters.ModelMultipleChoiceFilter(
-        field_name="id",
         queryset=Employee.objects.all(),
         label=_("Employee"),
+        method="filter_by_employee_ids",
     )
+
+    def filter_by_employee_ids(self, queryset, name, value):
+        if not value:
+            return queryset
+        return queryset.filter(id__in=[emp.pk for emp in value])
+
     country = django_filters.CharFilter(lookup_expr="icontains")
     department = django_filters.CharFilter(
         field_name="employee_work_info__department_id__department",

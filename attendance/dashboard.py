@@ -31,6 +31,66 @@ def _parse_period(request):
     return from_date, to_date
 
 
+def _missing_punches_employees(today=None):
+    """
+    Active employees who should already be at work today but haven't
+    clocked in: their shift's scheduled start time for today has already
+    passed, they're not on approved leave, and no AttendanceActivity
+    (punch-in) row exists for them today.
+
+    Employees with no shift assigned are skipped entirely -- there's no
+    schedule to compare "has it started" against.
+    """
+    from attendance.models import AttendanceActivity
+    from base.models import EmployeeShiftSchedule
+    from employee.models import Employee
+    from leave.models import LeaveRequest
+
+    today = today or date.today()
+    now_time = datetime.now().time()
+    weekday = today.strftime("%A").lower()
+
+    on_leave_ids = LeaveRequest.employees_on_leave_today(
+        today=today, status="approved"
+    ).values_list("employee_id", flat=True)
+    checked_in_ids = AttendanceActivity.objects.filter(
+        attendance_date=today
+    ).values_list("employee_id", flat=True)
+
+    candidates = (
+        Employee.objects.filter(is_active=True)
+        .exclude(id__in=on_leave_ids)
+        .exclude(id__in=checked_in_ids)
+        .select_related("employee_work_info__shift_id")
+    )
+
+    shift_ids = {
+        emp.employee_work_info.shift_id_id
+        for emp in candidates
+        if getattr(emp, "employee_work_info", None)
+        and emp.employee_work_info.shift_id_id
+    }
+    # One lookup for every shift's schedule on today's weekday, instead of a
+    # query per candidate employee.
+    schedules = {
+        schedule.shift_id_id: schedule
+        for schedule in EmployeeShiftSchedule.objects.filter(
+            shift_id_id__in=shift_ids, day__day=weekday
+        )
+    }
+
+    missing_ids = []
+    for emp in candidates:
+        work_info = getattr(emp, "employee_work_info", None)
+        if not work_info or not work_info.shift_id_id:
+            continue
+        schedule = schedules.get(work_info.shift_id_id)
+        if schedule and schedule.start_time and schedule.start_time <= now_time:
+            missing_ids.append(emp.id)
+
+    return Employee.objects.filter(id__in=missing_ids)
+
+
 def _latest_attendance_date(reference_date=None):
     """Return the latest attendance_date that actually has records.
 
@@ -142,6 +202,14 @@ def attendance_kpi_data(request):
     except Exception:
         pass
 
+    # ids (not just the count) so the dashboard tile can link straight to
+    # the Employee list pre-filtered to exactly these people via repeated
+    # ?employee_id=<id> params (EmployeeFilter.employee_id, a
+    # ModelMultipleChoiceFilter on id) instead of a dedicated page.
+    missing_punches_ids = list(
+        _missing_punches_employees(today).values_list("id", flat=True)
+    )
+
     return JsonResponse(
         {
             "total_employees": total_employees,
@@ -152,6 +220,8 @@ def attendance_kpi_data(request):
             "early_out": early_out,
             "pending_validation": pending_validation,
             "pending_overtime": pending_overtime,
+            "missing_punches": len(missing_punches_ids),
+            "missing_punches_ids": missing_punches_ids,
             "date": today.isoformat(),
         }
     )
