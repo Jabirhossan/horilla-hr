@@ -8,7 +8,9 @@ from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from base.templatetags.horillafilters import is_asset_fine_enabled
 from employee.models import Employee
+from horilla.http.response import HorillaRedirect
 from horilla.methods import get_horilla_model_class
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import HorillaFormView
@@ -25,6 +27,11 @@ class AssetFineFormView(HorillaFormView):
     model = LoanAccount
     form_class = AssetFineForm
     new_display_title = _("Asset Fine")
+
+    def dispatch(self, request, *args, **kwargs):
+        if not is_asset_fine_enabled(request):
+            return HorillaRedirect(request, message=_("Asset fine is not enabled."))
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form: AssetFineForm) -> HttpResponse:
         if apps.is_installed("asset"):

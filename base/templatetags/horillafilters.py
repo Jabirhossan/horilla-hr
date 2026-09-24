@@ -360,6 +360,29 @@ def is_check_in_enabled(request):
     return bool(attendance_settings and attendance_settings.enable_check_in)
 
 
+@register.filter(name="is_asset_fine_enabled")
+def is_asset_fine_enabled(request):
+    """
+    This method checks whether the asset fine feature is enabled.
+    """
+    from asset.models import AssetGeneralSetting
+
+    selected_company = request.session.get("selected_company")
+    if not selected_company:
+        return False  # Safeguard if session key is missing
+
+    # Fetch the settings based on the selected company
+    if selected_company == "all":
+        asset_settings = AssetGeneralSetting.objects.filter(company_id=None).first()
+    else:
+        company = Company.objects.filter(id=selected_company).first()
+        if not company:
+            return False  # Return False if the company doesn't exist
+        asset_settings = AssetGeneralSetting.objects.filter(company_id=company).first()
+
+    return bool(asset_settings and asset_settings.enable_asset_fine)
+
+
 @register.filter(name="is_timerunner_enabled")
 def is_timerunner_enabled(request):
     """
