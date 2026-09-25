@@ -288,54 +288,83 @@
                         </tbody>
                     </table>
 
-                    <div class="oh-payslip__salary-summary" style="margin-top:24px; border:1px solid #d9dde3; border-radius:8px; overflow:hidden; background:#fff;">
-                    <div style="padding:18px 20px;">
-                        <h3 style="margin:0 0 18px; font-size:16px; font-weight:700;">{% trans "Salary Summary" %}</h3>
+                    <div style="margin-top:28px;">
+                        <table style="width:100%; border-collapse:collapse; font-size:14px;">
+                            <thead>
+                                <tr style="background:#d9d9d9;">
+                                    <th colspan="1" style="border:1px solid #222; padding:8px; text-align:center;">{% trans "Earnings" %}</th>
+                                    <th style="border:1px solid #222; padding:8px; text-align:center; width:110px;">{% trans "Amount" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="border:1px solid #222; padding:7px;">{% trans "Basic Salary" %}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ summary_basic_salary|floatformat:2|currency_symbol_position }}</td>
+                                </tr>
+                                {% for allowance in all_allowances %}
+                                    {% if allowance.amount %}
+                                    <tr>
+                                        <td style="border:1px solid #222; padding:7px;">{{ allowance.title }}</td>
+                                        <td style="border:1px solid #222; padding:7px; text-align:right;">{{ allowance.amount|floatformat:2|currency_symbol_position }}</td>
+                                    </tr>
+                                    {% endif %}
+                                {% endfor %}
+                                <tr>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right; font-weight:700;">{% trans "Total Earnings" %}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right; font-weight:700;">{{ summary_basic_salary|add:0|floatformat:2|currency_symbol_position }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
 
-                        <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #eceff2;">
-                            <span style="font-weight:600;">{% trans "Basic Salary" %}</span>
-                            <span style="font-weight:600;">{{ summary_basic_salary|floatformat:2|currency_symbol_position }}</span>
+                        <table style="width:100%; border-collapse:collapse; font-size:14px; margin-top:24px;">
+                            <thead>
+                                <tr style="background:#d9d9d9;">
+                                    <th style="border:1px solid #222; padding:8px; text-align:center;">{% trans "Deductions" %}</th>
+                                    <th style="border:1px solid #222; padding:8px; text-align:center; width:110px;">{% trans "Amount" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="border:1px solid #222; padding:7px;">{% trans "Absent" %} — {{ absent|floatformat:0 }} {% trans "days" %}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ summary_absent_deduction|floatformat:2|currency_symbol_position }}</td>
+                                </tr>
+                                {% if summary_outside_period_deduction %}
+                                <tr>
+                                    <td style="border:1px solid #222; padding:7px;">{% trans "Outside Payroll Period" %} — {{ summary_outside_period_days|floatformat:0 }} {% trans "days" %}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ summary_outside_period_deduction|floatformat:2|currency_symbol_position }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if summary_unpaid_leave_deduction %}
+                                <tr>
+                                    <td style="border:1px solid #222; padding:7px;">{% trans "Unpaid Leave" %}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ summary_unpaid_leave_deduction|floatformat:2|currency_symbol_position }}</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right; font-weight:700;">{% trans "Total Deductions" %}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right; font-weight:700;">{{ summary_total_deduction|floatformat:2|currency_symbol_position }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right; font-weight:700;">{% trans "Net Pay" %}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right; font-weight:700;">{{ net_pay|floatformat:2|currency_symbol_position }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div style="text-align:center; margin-top:32px; font-size:15px; font-weight:600;">
+                            <div>{{ net_pay|floatformat:2 }}</div>
+                            <div style="margin-top:4px;">{% trans "Net Payable Salary" %}</div>
                         </div>
 
-                        <div style="padding-top:18px;">
-                            <div style="font-weight:700; margin-bottom:8px;">{% trans "Deduction" %}</div>
-
-                            <div style="display:flex; justify-content:space-between; padding:8px 0 8px 14px;">
-                                <span>{% trans "Loss of Pay" %} — {{ absent|floatformat:0 }} {% trans "days absent" %}</span>
-                                <span>{{ summary_absent_deduction|floatformat:2|currency_symbol_position }}</span>
+                        <div style="display:flex; justify-content:space-between; margin-top:48px; padding:0 20px;">
+                            <div style="width:32%; text-align:center;">
+                                <div style="border-top:1px solid #222; padding-top:8px;">{% trans "Employer Signature" %}</div>
                             </div>
-
-                            {% if outside_period_deduction %}
-                            <div style="display:flex; justify-content:space-between; padding:8px 0 8px 14px;">
-                                <span>{% trans "Outside Payroll Period" %} — {{ outside_period_days|floatformat:0 }} {% trans "days" %}</span>
-                                <span>{{ summary_outside_period_deduction|floatformat:2|currency_symbol_position }}</span>
-                            </div>
-                            {% endif %}
-
-                            {% if unpaid_leave_deduction %}
-                            <div style="display:flex; justify-content:space-between; padding:8px 0 8px 14px;">
-                                <span>{% trans "Unpaid Leave" %}</span>
-                                <span>{{ summary_unpaid_leave_deduction|floatformat:2|currency_symbol_position }}</span>
-                            </div>
-                            {% endif %}
-
-                            <div style="display:flex; justify-content:space-between; padding:12px 0; margin-top:4px; border-top:1px dashed #c9ced4; font-weight:700;">
-                                <span>{% trans "Total Deduction" %}</span>
-                                <span>{{ summary_total_deduction|floatformat:2|currency_symbol_position }}</span>
+                            <div style="width:32%; text-align:center;">
+                                <div style="border-top:1px solid #222; padding-top:8px;">{% trans "Employee Signature" %}</div>
                             </div>
                         </div>
-
-                        <div style="display:flex; justify-content:space-between; padding:14px 0; margin-top:6px; border-top:1px solid #d9dde3; font-weight:700;">
-                            <span>{% trans "Gross Pay / Payable Salary" %}</span>
-                            <span>{{ gross_pay|floatformat:2|currency_symbol_position }}</span>
-                        </div>
-
-                        <div style="display:flex; justify-content:space-between; padding:14px 0 4px; font-weight:700;">
-                            <span>{% trans "Net Payable" %}</span>
-                            <span>{{ net_pay|floatformat:2|currency_symbol_position }}</span>
-                        </div>
-                    </div>
-                </div></div>
+                    </div>                </div></div>
             </div>
         </div>
     </body>
