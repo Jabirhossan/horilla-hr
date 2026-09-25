@@ -30,9 +30,24 @@ from base.forms import AttendanceAllowedIPForm
 from base.models import AttendanceAllowedIP
 from base.views import add_remove_dynamic_fields
 
-from .views import summary, views
+from .views import daily_report, summary, views
 
 urlpatterns = [
+    path(
+        "daily-report/",
+        daily_report.attendance_daily_report,
+        name="attendance-daily-report",
+    ),
+    path(
+        "daily-report/table/",
+        daily_report.attendance_daily_report_table,
+        name="attendance-daily-report-table",
+    ),
+    path(
+        "daily-report/export/",
+        daily_report.attendance_daily_report_export,
+        name="attendance-daily-report-export",
+    ),
     path(
         "individual-panalty-list-view/<int:pk>/",
         attendances.PenaltyAccountListView.as_view(),
