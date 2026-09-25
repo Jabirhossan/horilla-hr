@@ -243,10 +243,18 @@ def build_daily_report(from_date, to_date, employee_qs):
             week_off = current in roster_map.get(employee.pk, set())
             holiday = current in holiday_dates or current in company_leave_dates
             scheduled = schedule is not None
+            approved_leave = (employee.pk, current) in leave_map
 
-            # Do not hide actual biometric/manual attendance even when the
-            # employee was rostered off or the date is a holiday.
-            if not (scheduled or attendance or work_record or week_off or holiday):
+            # Do not hide actual attendance or an approved leave date even
+            # when the employee has no shift schedule for that date.
+            if not (
+                scheduled
+                or attendance
+                or work_record
+                or week_off
+                or holiday
+                or approved_leave
+            ):
                 continue
 
             shift_start = getattr(schedule, "start_time", None)
