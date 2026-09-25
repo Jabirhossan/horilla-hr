@@ -21,7 +21,6 @@ from reportlab.lib.units import mm
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 
 from attendance.models import Attendance, WorkRecords
-from leave.models import LeaveRequest
 from attendance.methods.utils import attendance_window_violation
 from base.methods import (
     filtersubordinatesemployeemodel,
@@ -128,6 +127,8 @@ def build_daily_report(from_date, to_date, employee_qs):
             "late": 0,
             "early": 0,
         }
+
+    from leave.models import LeaveRequest
 
     employee_ids = [e.pk for e in employees]
 
