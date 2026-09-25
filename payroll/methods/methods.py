@@ -773,9 +773,25 @@ def compute_salary_on_period(
             if contract.deduct_leave_from_basic_pay:
                 basic_pay = basic_pay - loss_of_pay
 
+            outside_period_days = max(0.0, float(month_days - period_days))
+            absent_deduction = absent_days * per_day_amount
+            unpaid_leave_deduction = unpaid_leave * per_day_amount
+            outside_period_deduction = outside_period_days * per_day_amount
+            salary_period_deduction = (
+                absent_deduction
+                + unpaid_leave_deduction
+                + outside_period_deduction
+                + custom_leave_deduction
+            )
+
             data = {
                 "basic_pay": basic_pay,
                 "loss_of_pay": loss_of_pay,
+                "absent_deduction": absent_deduction,
+                "unpaid_leave_deduction": unpaid_leave_deduction,
+                "outside_period_days": outside_period_days,
+                "outside_period_deduction": outside_period_deduction,
+                "salary_period_deduction": salary_period_deduction,
                 "custom_leave_deduction": custom_leave_deduction,
                 "custom_leave_breakdown": custom_leave_breakdown,
                 "month_data": months_between_range(wage, start_date, end_date),
