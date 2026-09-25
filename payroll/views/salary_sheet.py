@@ -131,13 +131,15 @@ def build_salary_sheet(month_value="", employee_id=""):
                 {"present": 0, "absent": 0, "leave": 0, "half_day": 0},
             )
             status = str(report_row["status"]).lower()
-            if "paid leave" in status:
-                stats["leave"] += 1
-                stats["paid_leave"] = stats.get("paid_leave", 0) + 1
-            elif "unpaid leave" in status:
+            # Check unpaid/partial before paid because the string
+            # "unpaid leave" contains "paid leave".
+            if "unpaid leave" in status:
                 stats["leave"] += 1
                 stats["unpaid_leave"] = stats.get("unpaid_leave", 0) + 1
             elif "partial paid leave" in status:
+                stats["leave"] += 1
+                stats["paid_leave"] = stats.get("paid_leave", 0) + 1
+            elif "paid leave" in status:
                 stats["leave"] += 1
                 stats["paid_leave"] = stats.get("paid_leave", 0) + 1
             elif "half day" in status:
