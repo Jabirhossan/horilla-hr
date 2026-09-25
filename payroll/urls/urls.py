@@ -11,8 +11,11 @@ from payroll import dashboard as pay_dashboard
 from payroll.cbv import contracts, dashboard, payslip_automation, settings_tabs
 from payroll.models.models import Contract, Payslip
 from payroll.views import views
+from payroll.views import salary_sheet
 
 urlpatterns = [
+    path("salary-sheet/", salary_sheet.salary_sheet, name="salary-sheet"),
+    path("salary-sheet/export/", salary_sheet.salary_sheet_export, name="salary-sheet-export"),
     path("", include("payroll.urls.component_urls")),
     path("", include("payroll.urls.tax_urls")),
     path("contract-create/", views.contract_create, name="contract-create"),
