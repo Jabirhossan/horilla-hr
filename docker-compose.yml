@@ -1,30 +1,23 @@
-# Development Compose stack for Horilla HR.
-# Zero-config: `make dev` / `docker compose up --build`
-# Production: `make prod` (uses docker-compose.prod.yml + .env — see .env.dist)
-#
-# Dev secrets below are intentionally weak and for local use only.
-# Replaces the legacy docker-compose.yaml (Python 3.10 / runserver) stack.
-
 services:
   web:
     build: .
     ports:
-      - "8000:8000"
+      - "8000"
     volumes:
-      - .:/app
       - staticfiles:/app/staticfiles
       - media:/app/media
     environment:
-      - DEBUG=1
-      - DB_HOST=db
-      # nginx is the single proxy hop; lets django-axes read the real client IP
-      - AXES_PROXY_COUNT=1
-      - SECRET_KEY=dev-secret-key-change-in-production
-      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
-      - CSRF_TRUSTED_ORIGINS=http://localhost:8000
-      - DATABASE_URL=postgres://horilla_user:horilla_pass@db:5432/horilla_db
-      - DB_INIT_PASSWORD=dev-init-password-change-in-production
-      - REDIS_URL=redis://:horilla_pass@redis:6379/0
+      DEBUG: "0"
+      HORILLA_ENV: production
+      DB_HOST: db
+      SECRET_KEY: ${SECRET_KEY}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS}
+      CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS}
+      DATABASE_URL: ${DATABASE_URL}
+      DB_INIT_PASSWORD: ${DB_INIT_PASSWORD}
+      REDIS_URL: ${REDIS_URL}
+      SECURE_SSL_REDIRECT: "1"
+      GUNICORN_LOG_LEVEL: info
     depends_on:
       db:
         condition: service_healthy
@@ -37,38 +30,26 @@ services:
       start_period: 60s
       retries: 3
 
-  # Background jobs run here, NOT in the web workers. Keep this at exactly one
-  # replica: the jobs are not idempotent, so a second copy means a second
-  # payslip run and a second backup. Scaling `web` is safe; scaling this is not.
   scheduler:
     build: .
     command: python manage.py run_scheduler
     volumes:
-      - .:/app
       - media:/app/media
     environment:
-      - DEBUG=1
-      - DB_HOST=db
-      # nginx is the single proxy hop; lets django-axes read the real client IP
-      - AXES_PROXY_COUNT=1
-      - SECRET_KEY=dev-secret-key-change-in-production
-      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
-      - DATABASE_URL=postgres://horilla_user:horilla_pass@db:5432/horilla_db
-      - DB_INIT_PASSWORD=dev-init-password-change-in-production
-      - REDIS_URL=redis://:horilla_pass@redis:6379/0
-      # web owns migrate/collectstatic; racing them from here can deadlock on
-      # DDL and would wipe STATIC_ROOT while web is serving from it.
-      - HORILLA_SKIP_RELEASE_TASKS=1
+      DEBUG: "0"
+      HORILLA_ENV: production
+      DB_HOST: db
+      SECRET_KEY: ${SECRET_KEY}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS}
+      DATABASE_URL: ${DATABASE_URL}
+      DB_INIT_PASSWORD: ${DB_INIT_PASSWORD}
+      REDIS_URL: ${REDIS_URL}
+      HORILLA_SKIP_RELEASE_TASKS: "1"
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
-    # The image's HEALTHCHECK curls localhost:8000/health/, which only the web
-    # service serves. This container runs run_scheduler and binds no port, so
-    # the inherited check can never pass -- it reported "unhealthy" forever,
-    # and orchestrators that gate on health would restart-loop it. The prod
-    # overlay builds on this file, so disabling it here covers both stacks.
     healthcheck:
       disable: true
     restart: unless-stopped
@@ -76,24 +57,24 @@ services:
   db:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: horilla_db
-      POSTGRES_USER: horilla_user
-      POSTGRES_PASSWORD: horilla_pass
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U horilla_user -d horilla_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 5
 
   redis:
     image: redis:7-alpine
-    command: redis-server --appendonly yes --requirepass horilla_pass
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "horilla_pass", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -101,16 +82,13 @@ services:
   nginx:
     image: nginx:alpine
     ports:
-      - "80:80"
+      - "80"
     volumes:
-      # Static only — /media/ is proxied to Django (protected_media). Do not
-      # mount the media volume here; an alias location would bypass auth.
       - staticfiles:/static:ro
       - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       web:
         condition: service_healthy
-    profiles: ["production"]
 
 volumes:
   staticfiles:
