@@ -799,6 +799,11 @@ def compute_salary_on_period(
             # This deliberately uses the calendar month even when the selected
             # payroll range ends before the month's last day, matching the
             # monthly-salary rule requested for payroll.
+            # Calendar days in the payroll month. This variable must be
+            # defined before calculating paid days and is also used by the
+            # monthly salary loss-of-pay calculation.
+            month_days = calendar.monthrange(start_date.year, start_date.month)[1]
+
             unpaid_leave = float(month_summary.get("unpaid_leave", 0) or 0)
             absent_days = float(month_summary.get("absent", 0) or 0)
             paid_leave = float(month_summary.get("paid_leave", 0) or 0)
