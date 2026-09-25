@@ -6,6 +6,7 @@ from calendar import monthrange
 from datetime import date
 
 import pandas as pd
+import pdfkit
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -13,6 +14,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_GET
 
 from employee.models import Employee
+from base.models import Company
 from horilla.decorators import login_required, permission_required
 from payroll.models.models import Payslip
 
@@ -192,6 +194,7 @@ def salary_sheet(request):
         "employee_first_name", "employee_last_name"
     )
 
+    company = Company.objects.filter(hq=True).first() or Company.objects.first()
     return render(
         request,
         "payroll/salary_sheet/salary_sheet.html",
@@ -199,8 +202,53 @@ def salary_sheet(request):
             **data,
             "employees": employees,
             "selected_employee": request.GET.get("employee_id", ""),
+            "company": company,
         },
     )
+
+
+@login_required
+@permission_required("payroll.view_payslip")
+@require_GET
+def salary_sheet_pdf(request):
+    data = build_salary_sheet(
+        request.GET.get("month", ""),
+        request.GET.get("employee_id", ""),
+    )
+    company = Company.objects.filter(hq=True).first() or Company.objects.first()
+    html = render(
+        request,
+        "payroll/salary_sheet/salary_sheet_pdf.html",
+        {
+            **data,
+            "company": company,
+        },
+    ).content.decode("utf-8")
+    options = {
+        "page-size": "A4",
+        "orientation": "Landscape",
+        "margin-top": "10mm",
+        "margin-right": "10mm",
+        "margin-bottom": "15mm",
+        "margin-left": "10mm",
+        "encoding": "UTF-8",
+        "footer-right": "Page [page] of [topage]",
+        "footer-font-size": "8",
+        "quiet": "",
+    }
+    try:
+        pdf = pdfkit.from_string(html, False, options=options)
+    except Exception as exc:
+        return HttpResponse(
+            f"Error generating Salary Sheet PDF: {exc}",
+            status=500,
+            content_type="text/plain",
+        )
+    response = HttpResponse(pdf, content_type="application/pdf")
+    response["Content-Disposition"] = (
+        f'inline; filename="salary-sheet-{data["month_value"]}.pdf"'
+    )
+    return response
 
 
 @login_required
