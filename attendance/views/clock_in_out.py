@@ -41,7 +41,7 @@ def attendance_window_flags(
     check_in_cutoff = start_sec + max(check_in_window_minutes, 0) * 60
     check_out_open = end_sec - max(check_out_window_minutes, 0) * 60
 
-    check_in_absent = current_sec < start_sec or current_sec >= check_in_cutoff
+    check_in_absent = current_sec < start_sec or current_sec > check_in_cutoff
     check_out_absent = current_sec < check_out_open
 
     return check_in_absent, check_out_absent
