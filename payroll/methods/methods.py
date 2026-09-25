@@ -771,30 +771,36 @@ def compute_salary_on_period(
             data["contract"] = contract
     else:
         if month_summary:
-            total_days = (
-                month_summary.get("week_off", 0)
-                + month_summary.get("holiday", 0)
-                + month_summary.get("absent", 0)
-                + month_summary.get("present", 0)
-                + month_summary.get("paid_leave", 0)
-                + month_summary.get("unpaid_leave", 0)
-            )
-            unpaid_days = month_summary.get("unpaid_leave", 0) + month_summary.get(
-                "absent", 0
-            )
-            if month_summary.get("unresolved_conflicts", 0):
-                unpaid_days = total_days
-            per_day_amount = wage / total_days if total_days and wage else 0.0
-            loss_of_pay = unpaid_days * per_day_amount
+            # Monthly salary is based on the calendar days of the payroll month,
+            # not on the number of scheduled/working days.
+            #
+            # Example: salary 30,000 in a 30-day month = 1,000/day.
+            # Paid leave, configured week-offs and configured holidays remain
+            # payable. Only unpaid leave and actual absence reduce salary.
+            #
+            # This deliberately uses the calendar month even when the selected
+            # payroll range ends before the month's last day, matching the
+            # monthly-salary rule requested for payroll.
+            month_days = calendar.monthrange(start_date.year, start_date.month)[1]
+
+            unpaid_leave = float(month_summary.get("unpaid_leave", 0) or 0)
+            absent_days = float(month_summary.get("absent", 0) or 0)
+            paid_leave = float(month_summary.get("paid_leave", 0) or 0)
+            week_off = float(month_summary.get("week_off", 0) or 0)
+            holiday = float(month_summary.get("holiday", 0) or 0)
+
+            # Paid categories are explicitly kept for the payslip breakdown.
+            # They do not need to be added separately because they are already
+            # part of the monthly salary entitlement; only unpaid/absent days
+            # are deducted from the full monthly wage.
+            deduction_days = max(0.0, unpaid_leave + absent_days)
+            per_day_amount = wage / month_days if month_days else 0.0
+            loss_of_pay = deduction_days * per_day_amount
+            paid_days = max(0.0, month_days - deduction_days)
 
             leave_data = get_leaves(employee, start_date, end_date)
-            daily_computed_salary = get_daily_salary(wage=wage, wage_date=start_date)[
-                "day_wage"
-            ]
             custom_leave_deduction, custom_leave_breakdown = (
-                compute_custom_leave_deduction(
-                    leave_data, contract, daily_computed_salary
-                )
+                compute_custom_leave_deduction(leave_data, contract, per_day_amount)
             )
             loss_of_pay += custom_leave_deduction
 
@@ -808,16 +814,18 @@ def compute_salary_on_period(
                 "custom_leave_deduction": custom_leave_deduction,
                 "custom_leave_breakdown": custom_leave_breakdown,
                 "month_data": months_between_range(wage, start_date, end_date),
-                "unpaid_days": unpaid_days,
-                "paid_days": float(total_days - unpaid_days),
+                "unpaid_days": unpaid_leave + absent_days,
+                "paid_days": paid_days,
                 "partial_pay_days": leave_data.get("partial_pay_days", 0),
                 "present": month_summary.get("present", 0),
-                "paid_leave": month_summary.get("paid_leave", 0),
-                "unpaid_leave": month_summary.get("unpaid_leave", 0),
-                "absent": month_summary.get("absent", 0),
-                "week_off": month_summary.get("week_off", 0),
-                "holiday": month_summary.get("holiday", 0),
+                "paid_leave": paid_leave,
+                "unpaid_leave": unpaid_leave,
+                "absent": absent_days,
+                "week_off": week_off,
+                "holiday": holiday,
                 "total_working": month_summary.get("total_working", 0),
+                "calendar_days": month_days,
+                "per_day_amount": per_day_amount,
                 "contract": contract,
             }
         else:
