@@ -296,10 +296,10 @@ def build_daily_report(from_date, to_date, employee_qs):
                     window_absent=window_absent,
                 )
             )
-            # Approved leave is shown only when there is no actual attendance
-            # or explicit WorkRecords status for the date.
-            if not attendance and not work_record:
-                status = str(leave_map.get((employee.pk, current), status))
+            # Approved leave overrides an automatic/manual absent
+            # WorkRecord. Actual attendance always remains authoritative.
+            if not attendance and (employee.pk, current) in leave_map:
+                status = str(leave_map[(employee.pk, current)])
 
             row = {
                 "date": current,
