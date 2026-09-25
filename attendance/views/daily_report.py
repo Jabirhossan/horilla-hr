@@ -14,6 +14,12 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import mm
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+
 from attendance.models import Attendance, WorkRecords
 from base.methods import (
     filtersubordinatesemployeemodel,
@@ -448,6 +454,92 @@ def attendance_daily_report_table(request):
 
 @login_required
 @manager_can_enter("attendance.view_attendance")
+def attendance_daily_report_pdf(request):
+    from_date, to_date, rows, summary = _get_report_context(request)
+
+    output = io.BytesIO()
+    doc = SimpleDocTemplate(
+        output,
+        pagesize=landscape(A4),
+        rightMargin=8 * mm,
+        leftMargin=8 * mm,
+        topMargin=8 * mm,
+        bottomMargin=8 * mm,
+        title="Attendance Report",
+    )
+    styles = getSampleStyleSheet()
+    title_style = styles["Title"]
+    title_style.fontSize = 16
+    title_style.leading = 19
+
+    story = [
+        Paragraph("Attendance Report", title_style),
+        Paragraph(
+            f"Period: {from_date.strftime('%d %b %Y')} - {to_date.strftime('%d %b %Y')}",
+            styles["Normal"],
+        ),
+        Spacer(1, 4 * mm),
+    ]
+
+    headers = [
+        "Date", "Employee", "Employee ID", "Branch", "Shift",
+        "Start", "Check-In", "Late", "End", "Check-Out",
+        "Early", "Working", "Status",
+    ]
+    data = [headers]
+    for row in rows:
+        data.append([
+            row["date"].strftime("%d %b %Y"),
+            row["employee"].get_full_name(),
+            row["employee_id"],
+            str(row["company"] or "-"),
+            str(row["shift"] or "-"),
+            row["shift_start"].strftime("%H:%M") if row["shift_start"] else "-",
+            row["check_in"].strftime("%H:%M") if row["check_in"] else "-",
+            row["late"],
+            row["shift_end"].strftime("%H:%M") if row["shift_end"] else "-",
+            row["check_out"].strftime("%H:%M") if row["check_out"] else "-",
+            row["early"],
+            row["worked"],
+            row["status"],
+        ])
+
+    col_widths = [19*mm, 30*mm, 24*mm, 31*mm, 25*mm, 14*mm, 17*mm, 15*mm,
+                  14*mm, 17*mm, 15*mm, 18*mm, 25*mm]
+    table = Table(data, repeatRows=1, colWidths=col_widths)
+    table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#eef2f6")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.HexColor("#1f2937")),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("FONTSIZE", (0, 0), (-1, -1), 6.5),
+        ("LEADING", (0, 0), (-1, -1), 8),
+        ("GRID", (0, 0), (-1, -1), 0.35, colors.HexColor("#d9dee5")),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 2),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 2),
+        ("TOPPADDING", (0, 0), (-1, -1), 3),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+    ]))
+    story.append(table)
+    story.append(Spacer(1, 3 * mm))
+    story.append(
+        Paragraph(
+            f"Total: {summary['total']} | Present: {summary['present']} | "
+            f"Absent: {summary['absent']} | Half Day: {summary['half_day']} | "
+            f"Late: {summary['late']} | Early Out: {summary['early']}",
+            styles["Normal"],
+        )
+    )
+    doc.build(story)
+
+    output.seek(0)
+    response = HttpResponse(output.read(), content_type="application/pdf")
+    response["Content-Disposition"] = (
+        f'attachment; filename="Attendance_Report_{from_date}_{to_date}.pdf"'
+    )
+    return response
+
+
 def attendance_daily_report_export(request):
     from_date, to_date, rows, _summary = _get_report_context(request)
 
