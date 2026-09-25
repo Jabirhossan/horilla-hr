@@ -188,14 +188,8 @@ def salary_sheet(request):
     month_value = request.GET.get("month", "")
     data = build_salary_sheet(month_value, request.GET.get("employee_id", ""))
 
-    employees = (
-        Employee.objects.filter(
-            id__in=Payslip.objects.filter(
-                start_date__lte=data["month_end"],
-                end_date__gte=data["month_start"],
-            ).values_list("employee_id", flat=True)
-        )
-        .order_by("employee_first_name", "employee_last_name")
+    employees = Employee.objects.filter(is_active=True).order_by(
+        "employee_first_name", "employee_last_name"
     )
 
     return render(
