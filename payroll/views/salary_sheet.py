@@ -7,7 +7,7 @@ from datetime import date
 
 import pandas as pd
 import pdfkit
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
@@ -151,7 +151,7 @@ def build_salary_sheet(month_value="", employee_id=""):
                 employee_id_id__in=employee_ids,
                 date__range=(range_start, range_end),
                 is_leave_record=True,
-            ).values("employee_id_id").annotate(count=__import__("django.db.models", fromlist=["Count"]).Count("id")).values_list(
+            ).values("employee_id_id").annotate(count=Count("id")).values_list(
                 "employee_id_id", "count"
             )
         }
