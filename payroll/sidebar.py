@@ -22,6 +22,11 @@ SUBMENUS = [
         "menu": _("Payslips"),
         "redirect": reverse("view-payslip"),
     },
+    {
+        "menu": _("Salary Sheet"),
+        "redirect": reverse("salary-sheet"),
+        "accessibility": "payroll.sidebar.salary_sheet_accessibility",
+    },
     # {
     #     "menu": _("Allowances"),
     #     "redirect": reverse("view-allowance"),
@@ -151,3 +156,4 @@ class PayrollSettings:
             ],
         },
     ]
+\n\ndef salary_sheet_accessibility(request, submenu, user_perms, *args, **kwargs):\n    return request.user.has_perm("payroll.view_payslip")\n
