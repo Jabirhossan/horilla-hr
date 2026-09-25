@@ -37,12 +37,14 @@ def attendance_post_save(sender, instance, **kwargs):
     min_hour_second = strtime_seconds(instance.minimum_hour)
     at_work_second = strtime_seconds(instance.attendance_worked_hour)
 
-    cutoff_absent = bool(
-        (instance.requested_data or {}).get("checkin_cutoff_absent")
+    requested_data = instance.requested_data or {}
+    window_absent = bool(
+        requested_data.get("checkin_window_absent")
+        or requested_data.get("checkout_window_absent")
     )
 
-    if cutoff_absent:
-        status, message = "ABS", _("Absent: check-in window closed")
+    if window_absent:
+        status, message = "ABS", _("Absent: attendance window rule violated")
     elif not instance.attendance_validated:
         status, message = "CONF", _("Validate the attendance")
     elif at_work_second >= min_hour_second:
@@ -93,7 +95,7 @@ def attendance_post_save(sender, instance, **kwargs):
             _("Half day leave") if status == "HDP" else _("An approved leave exists")
         )
 
-    if not cutoff_absent and not instance.attendance_clock_out:
+    if not window_absent and not instance.attendance_clock_out:
         status, message = "FDP", _("Currently working")
 
     work_record.work_record_type = status
