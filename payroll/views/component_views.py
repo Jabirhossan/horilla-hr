@@ -306,6 +306,12 @@ def payroll_calculation(employee, start_date, end_date, month_summary=None):
     net_pay = updated_net_pay_data["compensation_amount"]
     update_net_pay_deductions = updated_net_pay_data["deductions"]
 
+    salary_deduction_total = salary_period_deduction
+    if not contract.deduct_leave_from_basic_pay:
+        salary_deduction_total += max(0.0, total_deductions - loss_of_pay_amount)
+    else:
+        salary_deduction_total += max(0.0, total_deductions)
+
     net_pay_deductions = calculate_net_pay_deduction(
         net_pay,
         post_tax_deductions["net_pay_deduction"],
@@ -345,6 +351,7 @@ def payroll_calculation(employee, start_date, end_date, month_summary=None):
         "outside_period_days": outside_period_days,
         "outside_period_deduction": outside_period_deduction,
         "salary_period_deduction": salary_period_deduction,
+        "salary_deduction_total": salary_deduction_total,
         "custom_leave_deduction": custom_leave_deduction,
         "custom_leave_breakdown": custom_leave_breakdown,
         "federal_tax": federal_tax,
