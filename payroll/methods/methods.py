@@ -839,6 +839,7 @@ def compute_salary_on_period(
             )
             month_days = calendar.monthrange(start_date.year, start_date.month)[1]
             period_days = get_total_days(start_date, end_date)
+            outside_period_days = max(0.0, float(month_days - period_days))
             paid_days = max(0.0, month_days - deduction_days)
 
             leave_data = get_leaves(employee, start_date, end_date)
