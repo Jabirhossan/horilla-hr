@@ -1668,6 +1668,38 @@ def payslip_pdf(request, id):
 
             equalize_lists_length(data["allowances"], data["all_deductions"])
             data["zipped_data"] = zip(data["allowances"], data["all_deductions"])
+
+            # Build explicit salary-summary values for the PDF template.
+            # Saved Payslip fields are the source of truth; pay_head_data
+            # contains the attendance/leave breakdown used to calculate them.
+            basic_salary = float(payslip.contract_wage or 0)
+            month_days = calendar.monthrange(start_date.year, start_date.month)[1]
+            period_days = (end_date - start_date).days + 1
+            per_day_amount = basic_salary / month_days if month_days else 0.0
+            absent_days = float(data.get("absent", 0) or 0)
+            paid_leave_days = float(data.get("paid_leave", 0) or 0)
+            unpaid_leave_days = float(data.get("unpaid_leave", 0) or 0)
+            outside_period_days = max(0.0, float(month_days - period_days))
+            absent_deduction = round(absent_days * per_day_amount, 2)
+            unpaid_leave_deduction = round(unpaid_leave_days * per_day_amount, 2)
+            outside_period_deduction = round(outside_period_days * per_day_amount, 2)
+
+            data["summary_basic_salary"] = basic_salary
+            data["summary_paid_leave_days"] = paid_leave_days
+            data["summary_unpaid_leave_days"] = unpaid_leave_days
+            data["summary_absent_days"] = absent_days
+            data["summary_absent_deduction"] = absent_deduction
+            data["summary_unpaid_leave_deduction"] = unpaid_leave_deduction
+            data["summary_outside_period_days"] = outside_period_days
+            data["summary_outside_period_deduction"] = outside_period_deduction
+            data["summary_total_deduction"] = float(payslip.deduction or 0)
+            data["summary_net_pay"] = float(payslip.net_pay or 0)
+            data["summary_total_earnings"] = round(
+                basic_salary
+                + sum(float(a.get("amount", 0) or 0) for a in data.get("allowances", [])),
+                2,
+            )
+
             data["request"] = request
             template_path = "payroll/payslip/payslip_pdf.html"
 
