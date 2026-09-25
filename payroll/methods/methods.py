@@ -658,26 +658,35 @@ def _monthly_salary_loss_of_pay(
     wage, start_date, end_date, unpaid_leave, absent_days
 ):
     """
-    Calculate monthly-salary LOP for the selected payroll period.
+    Calculate monthly-salary loss of pay using the full calendar month.
 
-    The selected payroll period is the salary period. Days outside that
-    period are not included in the salary calculation.
+    A monthly salary is based on the calendar month. When the payroll period
+    ends before the last day of the month, the days after end_date are also
+    unpaid because no salary period covers those days.
 
     Example:
         Monthly wage = 30,000
-        Payroll period = Sep 1-25 (25 days)
+        September = 30 days
+        Payroll period = Sep 1-25
         Present = 16, Absent = 9
-        Daily rate = 30,000 / 25 = 1,200
-        Basic pay = 16 * 1,200 = 19,200
+        Remaining days after payroll period = 5
+
+        Daily rate = 30,000 / 30 = 1,000
+        Payable days = 16
+        Deduction days = 9 + 5 = 14
+        Basic pay = 16 * 1,000 = 16,000
     """
+    month_days = calendar.monthrange(start_date.year, start_date.month)[1]
     period_days = get_total_days(start_date, end_date)
+    remaining_days = max(0.0, float(month_days - period_days))
     deduction_days = max(
         0.0,
-        float(unpaid_leave or 0) + float(absent_days or 0),
+        float(unpaid_leave or 0)
+        + float(absent_days or 0)
+        + remaining_days,
     )
-    per_day_amount = wage / period_days if period_days else 0.0
+    per_day_amount = wage / month_days if month_days else 0.0
     return deduction_days * per_day_amount, deduction_days, per_day_amount
-
 
 def compute_salary_on_period(
     employee, start_date, end_date, wage=None, month_summary=None
@@ -796,24 +805,25 @@ def compute_salary_on_period(
             data["contract"] = contract
     else:
         if month_summary:
-            # Monthly salary is calculated only for the selected payroll
-            # period. Days after end_date are never included.
+            # Monthly salary uses the full calendar month as the salary base.
+            # Days after the selected payroll period are unpaid because the
+            # employee did not work in the selected payroll period.
             #
-            # Example: salary 30,000 for Sep 1-25 with 16 present and
-            # 9 absent => 30,000 / 25 * 16 = 19,200.
+            # Example: 30,000 / 30 = 1,000/day.
+            # Sep 1-25: 16 present, 9 absent, 5 days outside the period.
+            # Deduction = 9 + 5 = 14 days; payable = 16 days.
             unpaid_leave = float(month_summary.get("unpaid_leave", 0) or 0)
             absent_days = float(month_summary.get("absent", 0) or 0)
             paid_leave = float(month_summary.get("paid_leave", 0) or 0)
             week_off = float(month_summary.get("week_off", 0) or 0)
             holiday = float(month_summary.get("holiday", 0) or 0)
 
-            # The selected payroll period is the denominator. For Sep 1-25,
-            # the divisor is 25; days after end_date are excluded.
             loss_of_pay, deduction_days, per_day_amount = _monthly_salary_loss_of_pay(
                 wage, start_date, end_date, unpaid_leave, absent_days
             )
+            month_days = calendar.monthrange(start_date.year, start_date.month)[1]
             period_days = get_total_days(start_date, end_date)
-            paid_days = max(0.0, period_days - deduction_days)
+            paid_days = max(0.0, month_days - deduction_days)
 
             leave_data = get_leaves(employee, start_date, end_date)
             custom_leave_deduction, custom_leave_breakdown = (
@@ -841,7 +851,7 @@ def compute_salary_on_period(
                 "week_off": week_off,
                 "holiday": holiday,
                 "total_working": month_summary.get("total_working", 0),
-                "calendar_days": period_days,
+                "calendar_days": month_days,
                 "per_day_amount": per_day_amount,
                 "contract": contract,
             }
