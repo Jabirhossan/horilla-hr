@@ -15,6 +15,7 @@ from payroll.views import salary_sheet
 
 urlpatterns = [
     path("salary-sheet/", salary_sheet.salary_sheet, name="salary-sheet"),
+    path("salary-sheet/pdf/", salary_sheet.salary_sheet_pdf, name="salary-sheet-pdf"),
     path("salary-sheet/export/", salary_sheet.salary_sheet_export, name="salary-sheet-export"),
     path("", include("payroll.urls.component_urls")),
     path("", include("payroll.urls.tax_urls")),
