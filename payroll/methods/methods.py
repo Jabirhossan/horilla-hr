@@ -854,6 +854,11 @@ def compute_salary_on_period(
             data = {
                 "basic_pay": basic_pay,
                 "loss_of_pay": loss_of_pay,
+                "absent_deduction": round(absent_days * per_day_amount, 2),
+                "unpaid_leave_deduction": round(unpaid_leave * per_day_amount, 2),
+                "outside_period_days": outside_period_days,
+                "outside_period_deduction": round(outside_period_days * per_day_amount, 2),
+                "salary_period_deduction": round(loss_of_pay, 2),
                 "custom_leave_deduction": custom_leave_deduction,
                 "custom_leave_breakdown": custom_leave_breakdown,
                 "month_data": months_between_range(wage, start_date, end_date),
