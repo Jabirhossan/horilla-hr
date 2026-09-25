@@ -133,10 +133,10 @@
             <tr class="oh-payslip__table-tr">
                 <td class="oh-payslip__table-td"
                     title="{% trans 'Some deductions will update basic pay before payslip calculation starts, eg: LOP is Deduducted from basic pay if `Deduct leave from basic pay` field is enabled on the contract, and also with the update compensation deduction through' %}">
-                    {% trans "Basic Pay" %}
+                    {% trans "Basic Salary" %}
                 </td>
                 <td class="oh-payslip__table-td" colspan="2">
-                    {{basic_pay|floatformat:2|currency_symbol_position}}
+                    {{instance.contract_wage|floatformat:2|currency_symbol_position}}
                 </td>
             </tr>
             {% for allowance in allowances %}
@@ -181,11 +181,19 @@
         </thead>
         <tbody class="oh-payslip__table-tbody">
             <tr class="oh-payslip__table-tr">
-                <td class="oh-payslip__table-td">{% trans "Loss of Pay" %}</td>
+                <td class="oh-payslip__table-td">{% trans "Loss of Pay" %} — {{absent|floatformat:0}} {% trans "days absent" %}</td>
                 <td class="oh-payslip__table-td">
-                    {{loss_of_pay|floatformat:2|currency_symbol_position}}
+                    {{absent_deduction|floatformat:2|currency_symbol_position}}
                 </td>
             </tr>
+            {% if outside_period_deduction %}
+            <tr class="oh-payslip__table-tr">
+                <td class="oh-payslip__table-td">{% trans "Outside Payroll Period" %} — {{outside_period_days|floatformat:0}} {% trans "days" %}</td>
+                <td class="oh-payslip__table-td">
+                    {{outside_period_deduction|floatformat:2|currency_symbol_position}}
+                </td>
+            </tr>
+            {% endif %}
             {% if custom_leave_deduction %}
             <tr class="oh-payslip__table-tr" style="color: #c47d00;">
                 <td class="oh-payslip__table-td" style="padding-left: 1.5rem;">
