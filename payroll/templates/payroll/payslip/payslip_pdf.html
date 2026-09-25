@@ -292,6 +292,32 @@
                         <table style="width:100%; border-collapse:collapse; font-size:14px;">
                             <thead>
                                 <tr style="background:#d9d9d9;">
+                                    <th colspan="2" style="border:1px solid #222; padding:8px; text-align:center;">{% trans "Leave Summary" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="border:1px solid #222; padding:7px;">{% trans "Paid Leave" %}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ summary_paid_leave|floatformat:0 }} {% trans "days" %}</td>
+                                </tr>
+                                <tr>
+                                    <td style="border:1px solid #222; padding:7px;">{% trans "Unpaid Leave" %}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ summary_unpaid_leave|floatformat:0 }} {% trans "days" %}</td>
+                                </tr>
+                                {% if summary_partial_pay_days %}
+                                <tr>
+                                    <td style="border:1px solid #222; padding:7px;">{% trans "Partially Paid Leave" %}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ summary_partial_pay_days|floatformat:0 }} {% trans "days" %}</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="margin-top:28px;">
+                        <table style="width:100%; border-collapse:collapse; font-size:14px;">
+                            <thead>
+                                <tr style="background:#d9d9d9;">
                                     <th colspan="1" style="border:1px solid #222; padding:8px; text-align:center;">{% trans "Earnings" %}</th>
                                     <th style="border:1px solid #222; padding:8px; text-align:center; width:110px;">{% trans "Amount" %}</th>
                                 </tr>
