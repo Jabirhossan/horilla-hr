@@ -807,9 +807,8 @@ def compute_salary_on_period(
             week_off = float(month_summary.get("week_off", 0) or 0)
             holiday = float(month_summary.get("holiday", 0) or 0)
 
-            # For monthly wages, always use the full calendar month as the
-            # denominator. Never use (end_date - start_date + 1), otherwise a
-            # Sep 1-25 payslip incorrectly uses 25 days as the salary divisor.
+            # The selected payroll period is the denominator. For Sep 1-25,
+            # the divisor is 25; days after end_date are excluded.
             loss_of_pay, deduction_days, per_day_amount = _monthly_salary_loss_of_pay(
                 wage, start_date, end_date, unpaid_leave, absent_days
             )
