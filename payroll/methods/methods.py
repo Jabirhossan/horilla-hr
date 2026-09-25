@@ -654,6 +654,24 @@ def monthly_computation(employee, wage, start_date, end_date, *args, **kwargs):
     }
 
 
+def _monthly_salary_loss_of_pay(wage, start_date, unpaid_leave, absent_days):
+    """
+    Calculate monthly-salary LOP against the full calendar month.
+
+    A monthly employee's salary is not prorated by the selected payroll
+    range. For example, a 30,000 monthly salary in September uses 30,000 / 30
+    as the daily rate even when the payslip period is September 1-25.
+    Only unpaid leave and actual absence reduce the monthly salary.
+    """
+    month_days = calendar.monthrange(start_date.year, start_date.month)[1]
+    deduction_days = max(
+        0.0,
+        float(unpaid_leave or 0) + float(absent_days or 0),
+    )
+    per_day_amount = wage / month_days if month_days else 0.0
+    return deduction_days * per_day_amount, deduction_days, per_day_amount
+
+
 def compute_salary_on_period(
     employee, start_date, end_date, wage=None, month_summary=None
 ):
@@ -781,21 +799,18 @@ def compute_salary_on_period(
             # This deliberately uses the calendar month even when the selected
             # payroll range ends before the month's last day, matching the
             # monthly-salary rule requested for payroll.
-            month_days = calendar.monthrange(start_date.year, start_date.month)[1]
-
             unpaid_leave = float(month_summary.get("unpaid_leave", 0) or 0)
             absent_days = float(month_summary.get("absent", 0) or 0)
             paid_leave = float(month_summary.get("paid_leave", 0) or 0)
             week_off = float(month_summary.get("week_off", 0) or 0)
             holiday = float(month_summary.get("holiday", 0) or 0)
 
-            # Paid categories are explicitly kept for the payslip breakdown.
-            # They do not need to be added separately because they are already
-            # part of the monthly salary entitlement; only unpaid/absent days
-            # are deducted from the full monthly wage.
-            deduction_days = max(0.0, unpaid_leave + absent_days)
-            per_day_amount = wage / month_days if month_days else 0.0
-            loss_of_pay = deduction_days * per_day_amount
+            # For monthly wages, always use the full calendar month as the
+            # denominator. Never use (end_date - start_date + 1), otherwise a
+            # Sep 1-25 payslip incorrectly uses 25 days as the salary divisor.
+            loss_of_pay, deduction_days, per_day_amount = _monthly_salary_loss_of_pay(
+                wage, start_date, unpaid_leave, absent_days
+            )
             paid_days = max(0.0, month_days - deduction_days)
 
             leave_data = get_leaves(employee, start_date, end_date)
