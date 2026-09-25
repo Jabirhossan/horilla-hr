@@ -132,6 +132,7 @@ def build_daily_report(from_date, to_date, employee_qs):
             "total": 0,
             "present": 0,
             "absent": 0,
+            "leave": 0,
             "half_day": 0,
             "late": 0,
             "early": 0,
@@ -310,8 +311,8 @@ def build_daily_report(from_date, to_date, employee_qs):
 
             summary["total"] += 1
             status_lower = status.lower()
-            if "unpaid leave" in status_lower:
-                summary["absent"] += 1
+            if "leave" in status_lower:
+                summary["leave"] += 1
             elif "absent" in status_lower:
                 summary["absent"] += 1
             elif "half day" in status_lower:
@@ -399,6 +400,7 @@ def _get_report_context(request):
             "total": len(rows),
             "present": sum(1 for r in rows if "present" in r["status"].lower() and "half day" not in r["status"].lower()),
             "absent": sum(1 for r in rows if "absent" in r["status"].lower()),
+            "leave": sum(1 for r in rows if "leave" in r["status"].lower()),
             "half_day": sum(1 for r in rows if "half day" in r["status"].lower()),
             "late": sum(1 for r in rows if r["late_seconds"]),
             "early": sum(1 for r in rows if r["early_seconds"]),
@@ -531,7 +533,7 @@ def attendance_daily_report_pdf(request):
     story.append(
         Paragraph(
             f"Total: {summary['total']} | Present: {summary['present']} | "
-            f"Absent: {summary['absent']} | Half Day: {summary['half_day']} | "
+            f"Absent: {summary['absent']} | Leave: {summary['leave']} | Half Day: {summary['half_day']} | "
             f"Late: {summary['late']} | Early Out: {summary['early']}",
             styles["Normal"],
         )
