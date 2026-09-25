@@ -29,10 +29,6 @@
     </div>
 
     <form id="attendance-report-filter"
-          hx-get="{% url 'attendance-daily-report-table' %}"
-          hx-target="#attendance-report-table"
-          hx-trigger="submit"
-          hx-push-url="false"
           class="border border-dark-50 rounded-md p-4 mb-4 bg-white">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
         <div>
@@ -109,14 +105,58 @@
 </div>
 
 <script>
-document.body.addEventListener("htmx:afterRequest", function () {
+(function () {
   const form = document.getElementById("attendance-report-filter");
+  const table = document.getElementById("attendance-report-table");
   const exportLink = document.getElementById("attendance-report-export");
   const pdfLink = document.getElementById("attendance-report-pdf");
-  if (!form || !exportLink || !pdfLink) return;
-  const params = new URLSearchParams(new FormData(form));
-  exportLink.href = "{% url 'attendance-daily-report-export' %}?" + params.toString();
-  pdfLink.href = "{% url 'attendance-daily-report-pdf' %}?" + params.toString();
-});
+
+  if (!form || !table) return;
+
+  async function loadAttendanceReport(event) {
+    if (event) event.preventDefault();
+
+    const params = new URLSearchParams(new FormData(form));
+    params.set("page", "1");
+
+    table.innerHTML =
+      '<div class="p-8 text-center text-color-500">Loading attendance report...</div>';
+
+    try {
+      const response = await fetch(
+        "{% url 'attendance-daily-report-table' %}?" + params.toString(),
+        { headers: { "X-Requested-With": "XMLHttpRequest" } }
+      );
+
+      if (!response.ok) {
+        throw new Error("HTTP " + response.status);
+      }
+
+      table.innerHTML = await response.text();
+
+      const exportParams = new URLSearchParams(new FormData(form));
+      exportLink.href =
+        "{% url 'attendance-daily-report-export' %}?" +
+        exportParams.toString();
+      pdfLink.href =
+        "{% url 'attendance-daily-report-pdf' %}?" +
+        exportParams.toString();
+    } catch (error) {
+      table.innerHTML =
+        '<div class="p-5 text-center" style="color:#b42318;">Unable to load attendance report. Please try again.</div>';
+      console.error("Attendance report filter error:", error);
+    }
+  }
+
+  form.addEventListener("submit", loadAttendanceReport);
+
+  const exportParams = new URLSearchParams(new FormData(form));
+  exportLink.href =
+    "{% url 'attendance-daily-report-export' %}?" +
+    exportParams.toString();
+  pdfLink.href =
+    "{% url 'attendance-daily-report-pdf' %}?" +
+    exportParams.toString();
+})();
 </script>
 {% endblock %}
