@@ -612,58 +612,69 @@ def view_payslip_pdf(request, payslip_id):
             data["company"] = company
 
             # Values used by the custom salary-summary PDF section.
-            # Keep these derived from the saved payslip data so the PDF does
-            # not depend on model attributes that are not available on Payslip.
-            per_day_amount = float(data.get("per_day_amount", 0) or 0)
+            # Use the saved Payslip fields as the source of truth. The PDF
+            # must not depend on optional keys that may be absent from older
+            # pay_head_data JSON.
+            basic_salary = float(payslip.contract_wage or data.get("contract_wage", 0) or 0)
+            month_days = calendar.monthrange(start_date.year, start_date.month)[1]
+            period_days = (end_date - start_date).days + 1
+            per_day_amount = basic_salary / month_days if month_days else 0.0
+
             absent_days = float(data.get("absent", 0) or 0)
             unpaid_leave_days = float(data.get("unpaid_leave", 0) or 0)
-            outside_period_days = float(data.get("outside_period_days", 0) or 0)
-            data["summary_basic_salary"] = float(
-                data.get("contract_wage", 0) or 0
+            outside_period_days = max(0.0, float(month_days - period_days))
+
+            summary_absent_deduction = round(absent_days * per_day_amount, 2)
+            summary_unpaid_leave_deduction = round(
+                unpaid_leave_days * per_day_amount, 2
             )
-            data["summary_total_earnings"] = round(
-                data["summary_basic_salary"]
-                + sum(float(a.get("amount", 0) or 0) for a in data.get("allowances", [])),
-                2,
+            summary_outside_period_deduction = round(
+                outside_period_days * per_day_amount, 2
             )
-            data["summary_absent_days"] = float(data.get("absent", 0) or 0)
-            data["summary_per_day_amount"] = per_day_amount
-            data["summary_other_deductions"] = [
-                d for d in data.get("all_deductions", [])
-                if float(d.get("amount", 0) or 0) > 0
+
+            allowances = [
+                a for a in data.get("allowances", [])
+                if float(a.get("amount", 0) or 0) > 0
             ]
-            data["summary_total_deduction"] = round(
-                data["summary_total_deduction"]
-                + sum(
-                    float(d.get("amount", 0) or 0)
-                    for d in data["summary_other_deductions"]
-                ),
+            total_allowances = round(
+                sum(float(a.get("amount", 0) or 0) for a in allowances), 2
+            )
+            summary_total_earnings = round(basic_salary + total_allowances, 2)
+
+            # Other payroll deductions, excluding the salary-period LOP items
+            # already shown explicitly in the payslip.
+            other_deductions = []
+            for deduction in data.get("all_deductions", []):
+                amount = float(deduction.get("amount", 0) or 0)
+                if amount > 0:
+                    other_deductions.append(deduction)
+
+            summary_total_deduction = round(
+                summary_absent_deduction
+                + summary_unpaid_leave_deduction
+                + summary_outside_period_deduction
+                + sum(float(d.get("amount", 0) or 0) for d in other_deductions),
                 2,
             )
+
+            data["summary_basic_salary"] = basic_salary
+            data["summary_total_earnings"] = summary_total_earnings
+            data["summary_allowances"] = allowances
+            data["summary_absent_days"] = absent_days
+            data["summary_absent_deduction"] = summary_absent_deduction
+            data["summary_unpaid_leave_deduction"] = summary_unpaid_leave_deduction
+            data["summary_outside_period_days"] = outside_period_days
+            data["summary_outside_period_deduction"] = summary_outside_period_deduction
+            data["summary_other_deductions"] = other_deductions
+            data["summary_total_deduction"] = summary_total_deduction
+            data["summary_net_pay"] = float(payslip.net_pay or data.get("net_pay", 0) or 0)
             data["summary_worked_days"] = data.get("paid_days", 0)
-            data["summary_joining_date"] = getattr(
-                employee, "date_of_joining", None
-            )
+            data["summary_per_day_amount"] = per_day_amount
+            data["summary_joining_date"] = getattr(employee, "date_of_joining", None)
             data["summary_designation"] = getattr(
                 getattr(employee, "employee_work_info", None),
                 "job_position_id",
                 None,
-            )
-            data["summary_absent_deduction"] = round(
-                absent_days * per_day_amount, 2
-            )
-            data["summary_unpaid_leave_deduction"] = round(
-                unpaid_leave_days * per_day_amount, 2
-            )
-            data["summary_outside_period_days"] = outside_period_days
-            data["summary_outside_period_deduction"] = round(
-                outside_period_days * per_day_amount, 2
-            )
-            data["summary_total_deduction"] = round(
-                data["summary_absent_deduction"]
-                + data["summary_unpaid_leave_deduction"]
-                + data["summary_outside_period_deduction"],
-                2,
             )
 
             return render(request, "payroll/payslip/payslip_pdf.html", context=data)
