@@ -2650,16 +2650,9 @@ def work_records_change_month(request):
         # Daily Work Status can render window violations as ABS regardless of
         # the stored WorkRecords type.
         if window_violation:
-            # Window violations must always be displayed as ABS. Clear the
-            # leave presentation state as well, because a WorkRecords row can
-            # otherwise be rendered as Leave even after its type is overridden.
             wr.work_record_type = "ABS"
-            wr.is_leave_record = False
-            if hasattr(wr, "leave_request_id"):
-                wr.leave_request_id = None
             wr.window_violation_absent = True
             wr.message = "Absent: attendance window rule violated"
-            wr.record_name = "ABS"
         else:
             wr.window_violation_absent = False
 
