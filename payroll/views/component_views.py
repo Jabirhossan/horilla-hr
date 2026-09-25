@@ -182,6 +182,13 @@ def payroll_calculation(employee, start_date, end_date, month_summary=None):
     paid_days = basic_pay_details["paid_days"]
     unpaid_days = basic_pay_details["unpaid_days"]
     partial_pay_days = basic_pay_details.get("partial_pay_days", 0)
+    absent_deduction = basic_pay_details.get("absent_deduction", 0.0)
+    unpaid_leave_deduction = basic_pay_details.get("unpaid_leave_deduction", 0.0)
+    outside_period_days = basic_pay_details.get("outside_period_days", 0.0)
+    outside_period_deduction = basic_pay_details.get("outside_period_deduction", 0.0)
+    salary_period_deduction = basic_pay_details.get(
+        "salary_period_deduction", loss_of_pay
+    )
 
     def _secs_to_label(secs):
         secs = int(secs or 0)
@@ -333,6 +340,11 @@ def payroll_calculation(employee, start_date, end_date, month_summary=None):
         "net_deductions": net_pay_deduction_list,
         "total_deductions": total_deductions,
         "loss_of_pay": loss_of_pay,
+        "absent_deduction": absent_deduction,
+        "unpaid_leave_deduction": unpaid_leave_deduction,
+        "outside_period_days": outside_period_days,
+        "outside_period_deduction": outside_period_deduction,
+        "salary_period_deduction": salary_period_deduction,
         "custom_leave_deduction": custom_leave_deduction,
         "custom_leave_breakdown": custom_leave_breakdown,
         "federal_tax": federal_tax,
