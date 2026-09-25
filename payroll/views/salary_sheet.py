@@ -194,6 +194,8 @@ def build_salary_sheet(month_value="", employee_id=""):
                 "present": stats["present"],
                 "absent": stats["absent"],
                 "leave": stats["leave"],
+                "paid_leave": stats.get("paid_leave", 0),
+                "unpaid_leave": stats.get("unpaid_leave", 0),
                 "half_day": stats["half_day"],
                 "basic_salary": basic,
                 "deduction": deduction,
