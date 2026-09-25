@@ -49,6 +49,11 @@ urlpatterns = [
         name="attendance-daily-report-export",
     ),
     path(
+        "daily-report/pdf/",
+        daily_report.attendance_daily_report_pdf,
+        name="attendance-daily-report-pdf",
+    ),
+    path(
         "individual-panalty-list-view/<int:pk>/",
         attendances.PenaltyAccountListView.as_view(),
         name="individual-panalty-list-view",
