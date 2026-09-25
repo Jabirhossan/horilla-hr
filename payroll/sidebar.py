@@ -94,7 +94,7 @@ SUBMENUS = [
 
 
 def dasbhoard_accessibility(request, submenu, user_perms, *args, **kwargs):
-    return request.user.has_perm("payroll.view_contract")
+    return any(request.user.has_perm(p) for p in ["payroll.view_payslip", "payroll.view_contract", "payroll.view_loanaccount"])
 
 
 def allowance_accessibility(request, submenu, user_perms, *args, **kwargs):
@@ -156,4 +156,7 @@ class PayrollSettings:
             ],
         },
     ]
-\n\ndef salary_sheet_accessibility(request, submenu, user_perms, *args, **kwargs):\n    return request.user.has_perm("payroll.view_payslip")\n
+
+
+def salary_sheet_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("payroll.view_payslip")
