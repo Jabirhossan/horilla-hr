@@ -311,7 +311,7 @@
                                 {% endfor %}
                                 <tr>
                                     <td style="border:1px solid #222; padding:7px; text-align:right; font-weight:700;">{% trans "Total Earnings" %}</td>
-                                    <td style="border:1px solid #222; padding:7px; text-align:right; font-weight:700;">{{ summary_basic_salary|add:0|floatformat:2|currency_symbol_position }}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right; font-weight:700;">{{ summary_total_earnings|floatformat:2|currency_symbol_position }}</td>
                                 </tr>
                             </tbody>
                         </table>
