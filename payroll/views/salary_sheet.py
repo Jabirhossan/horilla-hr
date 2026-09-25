@@ -15,7 +15,6 @@ from django.views.decorators.http import require_GET
 
 from employee.models import Employee
 from base.models import Company
-from attendance.models import WorkRecords
 from attendance.views.daily_report import build_daily_report
 from horilla.decorators import login_required, permission_required
 from payroll.models.models import Payslip
@@ -132,29 +131,22 @@ def build_salary_sheet(month_value="", employee_id=""):
                 {"present": 0, "absent": 0, "leave": 0, "half_day": 0},
             )
             status = str(report_row["status"]).lower()
-            if "half day" in status:
+            if "paid leave" in status:
+                stats["leave"] += 1
+                stats["paid_leave"] = stats.get("paid_leave", 0) + 1
+            elif "unpaid leave" in status:
+                stats["leave"] += 1
+                stats["unpaid_leave"] = stats.get("unpaid_leave", 0) + 1
+            elif "partial paid leave" in status:
+                stats["leave"] += 1
+                stats["paid_leave"] = stats.get("paid_leave", 0) + 1
+            elif "half day" in status:
                 stats["half_day"] += 1
             elif "absent" in status:
                 stats["absent"] += 1
             elif "present" in status:
                 stats["present"] += 1
         attendance_by_range[(range_start, range_end)] = per_employee
-
-    # Leave is kept as a separate payroll-sheet column. WorkRecords is the
-    # attendance system's persisted leave marker, so count it only inside the
-    # same payroll/report period used above.
-    leave_by_range = {}
-    for range_start, range_end in report_ranges:
-        leave_by_range[(range_start, range_end)] = {
-            employee_id: count
-            for employee_id, count in WorkRecords.objects.filter(
-                employee_id_id__in=employee_ids,
-                date__range=(range_start, range_end),
-                is_leave_record=True,
-            ).values("employee_id_id").annotate(count=__import__("django.db.models", fromlist=["Count"]).Count("id")).values_list(
-                "employee_id_id", "count"
-            )
-        }
 
     rows = []
     total_basic = total_deduction = total_net = 0.0
@@ -172,7 +164,10 @@ def build_salary_sheet(month_value="", employee_id=""):
             employee.pk,
             {"present": 0, "absent": 0, "leave": 0, "half_day": 0},
         )
-        stats = {**stats, "leave": leave_by_range.get(payslip_range, {}).get(employee.pk, 0)}
+        stats = {
+            **{"present": 0, "absent": 0, "leave": 0, "paid_leave": 0, "unpaid_leave": 0, "half_day": 0},
+            **stats,
+        }
 
         # Basic Salary in the sheet is always the employee's contract wage.
         # payslip.basic_pay is the payable/basic amount after attendance
