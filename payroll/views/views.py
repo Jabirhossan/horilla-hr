@@ -621,6 +621,20 @@ def view_payslip_pdf(request, payslip_id):
             data["summary_basic_salary"] = float(
                 data.get("contract_wage", 0) or 0
             )
+            data["summary_total_earnings"] = round(
+                data["summary_basic_salary"]
+                + sum(float(a.get("amount", 0) or 0) for a in data.get("allowances", [])),
+                2,
+            )
+            data["summary_worked_days"] = data.get("paid_days", 0)
+            data["summary_joining_date"] = getattr(
+                employee, "date_of_joining", None
+            )
+            data["summary_designation"] = getattr(
+                getattr(employee, "employee_work_info", None),
+                "job_position_id",
+                None,
+            )
             data["summary_absent_deduction"] = round(
                 absent_days * per_day_amount, 2
             )
