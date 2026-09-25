@@ -2627,8 +2627,7 @@ def work_records_change_month(request):
         schedule = schedule_map.get(
             (
                 wr.shift_id_id,
-                month_dates[0].strftime("%A").lower()
-                if False else wr.date.strftime("%A").lower(),
+                wr.date.strftime("%A").lower(),
             )
         )
         if attendance_window_violation(wr.attendance_id, schedule):
