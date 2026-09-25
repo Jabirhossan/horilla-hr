@@ -307,8 +307,13 @@ def calculate_allowance(**kwargs):
 
     allowances = specific_allowances | conditional_allowances | active_employees
 
+    # Loan / salary-advance allowances represent money already paid to the
+    # employee. They must not increase the current payroll gross pay.
+    # Their installment is handled separately through the generated
+    # deduction, so exclude the payout allowance from this payslip.
     allowances = (
-        allowances.exclude(one_time_date__lt=start_date)
+        allowances.exclude(is_loan=True)
+        .exclude(one_time_date__lt=start_date)
         .exclude(one_time_date__gt=end_date)
         .distinct()
     )
