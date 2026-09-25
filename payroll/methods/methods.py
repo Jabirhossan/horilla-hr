@@ -654,21 +654,28 @@ def monthly_computation(employee, wage, start_date, end_date, *args, **kwargs):
     }
 
 
-def _monthly_salary_loss_of_pay(wage, start_date, unpaid_leave, absent_days):
+def _monthly_salary_loss_of_pay(
+    wage, start_date, end_date, unpaid_leave, absent_days
+):
     """
-    Calculate monthly-salary LOP against the full calendar month.
+    Calculate monthly-salary LOP for the selected payroll period.
 
-    A monthly employee's salary is not prorated by the selected payroll
-    range. For example, a 30,000 monthly salary in September uses 30,000 / 30
-    as the daily rate even when the payslip period is September 1-25.
-    Only unpaid leave and actual absence reduce the monthly salary.
+    The selected payroll period is the salary period. Days outside that
+    period are not included in the salary calculation.
+
+    Example:
+        Monthly wage = 30,000
+        Payroll period = Sep 1-25 (25 days)
+        Present = 16, Absent = 9
+        Daily rate = 30,000 / 25 = 1,200
+        Basic pay = 16 * 1,200 = 19,200
     """
-    month_days = calendar.monthrange(start_date.year, start_date.month)[1]
+    period_days = get_total_days(start_date, end_date)
     deduction_days = max(
         0.0,
         float(unpaid_leave or 0) + float(absent_days or 0),
     )
-    per_day_amount = wage / month_days if month_days else 0.0
+    per_day_amount = wage / period_days if period_days else 0.0
     return deduction_days * per_day_amount, deduction_days, per_day_amount
 
 
@@ -789,21 +796,11 @@ def compute_salary_on_period(
             data["contract"] = contract
     else:
         if month_summary:
-            # Monthly salary is based on the calendar days of the payroll month,
-            # not on the number of scheduled/working days.
+            # Monthly salary is calculated only for the selected payroll
+            # period. Days after end_date are never included.
             #
-            # Example: salary 30,000 in a 30-day month = 1,000/day.
-            # Paid leave, configured week-offs and configured holidays remain
-            # payable. Only unpaid leave and actual absence reduce salary.
-            #
-            # This deliberately uses the calendar month even when the selected
-            # payroll range ends before the month's last day, matching the
-            # monthly-salary rule requested for payroll.
-            # Calendar days in the payroll month. This variable must be
-            # defined before calculating paid days and is also used by the
-            # monthly salary loss-of-pay calculation.
-            month_days = calendar.monthrange(start_date.year, start_date.month)[1]
-
+            # Example: salary 30,000 for Sep 1-25 with 16 present and
+            # 9 absent => 30,000 / 25 * 16 = 19,200.
             unpaid_leave = float(month_summary.get("unpaid_leave", 0) or 0)
             absent_days = float(month_summary.get("absent", 0) or 0)
             paid_leave = float(month_summary.get("paid_leave", 0) or 0)
@@ -814,9 +811,10 @@ def compute_salary_on_period(
             # denominator. Never use (end_date - start_date + 1), otherwise a
             # Sep 1-25 payslip incorrectly uses 25 days as the salary divisor.
             loss_of_pay, deduction_days, per_day_amount = _monthly_salary_loss_of_pay(
-                wage, start_date, unpaid_leave, absent_days
+                wage, start_date, end_date, unpaid_leave, absent_days
             )
-            paid_days = max(0.0, month_days - deduction_days)
+            period_days = get_total_days(start_date, end_date)
+            paid_days = max(0.0, period_days - deduction_days)
 
             leave_data = get_leaves(employee, start_date, end_date)
             custom_leave_deduction, custom_leave_breakdown = (
@@ -844,7 +842,7 @@ def compute_salary_on_period(
                 "week_off": week_off,
                 "holiday": holiday,
                 "total_working": month_summary.get("total_working", 0),
-                "calendar_days": month_days,
+                "calendar_days": period_days,
                 "per_day_amount": per_day_amount,
                 "contract": contract,
             }
