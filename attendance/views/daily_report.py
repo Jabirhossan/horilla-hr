@@ -296,9 +296,10 @@ def build_daily_report(from_date, to_date, employee_qs):
                     window_absent=window_absent,
                 )
             )
-            # Approved leave overrides an automatic/manual absent
-            # WorkRecord. Actual attendance always remains authoritative.
-            if not attendance and (employee.pk, current) in leave_map:
+            # Approved leave is the authoritative attendance status for
+            # an approved leave request. This keeps approved paid/unpaid
+            # leave separate from both Present and Absent in payroll reports.
+            if (employee.pk, current) in leave_map:
                 status = str(leave_map[(employee.pk, current)])
 
             row = {
