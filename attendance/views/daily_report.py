@@ -21,6 +21,7 @@ from reportlab.lib.units import mm
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 
 from attendance.models import Attendance, WorkRecords
+from leave.models import LeaveRequest
 from attendance.methods.utils import attendance_window_violation
 from base.methods import (
     filtersubordinatesemployeemodel,
@@ -146,6 +147,46 @@ def build_daily_report(from_date, to_date, employee_qs):
         )
     }
 
+    # Approved leave is a daily attendance status when there is no actual
+    # attendance/work-record override. Resolve both the new payment_type
+    # field and the legacy payment field.
+    approved_leaves = LeaveRequest.objects.filter(
+        employee_id__in=employee_ids,
+        status="approved",
+        start_date__lte=to_date,
+    ).filter(
+        end_date__isnull=False,
+        end_date__gte=from_date,
+    ).select_related("leave_type_id")
+    single_day_leaves = LeaveRequest.objects.filter(
+        employee_id__in=employee_ids,
+        status="approved",
+        start_date__range=(from_date, to_date),
+        end_date__isnull=True,
+    ).select_related("leave_type_id")
+
+    leave_map = {}
+    for leave_request in list(approved_leaves) + list(single_day_leaves):
+        leave_start = max(leave_request.start_date, from_date)
+        leave_end = min(leave_request.end_date or leave_request.start_date, to_date)
+        leave_type = leave_request.leave_type_id
+        payment_type = getattr(leave_type, "payment_type", None)
+        if not payment_type:
+            payment_type = "paid" if getattr(leave_type, "payment", "unpaid") == "paid" else "unpaid"
+        if payment_type == "custom":
+            percentage = float(getattr(leave_type, "payment_percentage", 0) or 0)
+            status_label = (
+                _("Paid Leave") if percentage >= 100
+                else _("Unpaid Leave") if percentage <= 0
+                else _("Partial Paid Leave")
+            )
+        else:
+            status_label = _("Paid Leave") if payment_type == "paid" else _("Unpaid Leave")
+        current_leave_date = leave_start
+        while current_leave_date <= leave_end:
+            leave_map[(leave_request.employee_id_id, current_leave_date)] = status_label
+            current_leave_date += datetime.timedelta(days=1)
+
     shift_ids = {
         e.employee_work_info.shift_id_id
         for e in employees
@@ -186,6 +227,8 @@ def build_daily_report(from_date, to_date, employee_qs):
         "half_day": 0,
         "late": 0,
         "early": 0,
+        "paid_leave": 0,
+        "unpaid_leave": 0,
     }
 
     current = from_date
@@ -243,6 +286,10 @@ def build_daily_report(from_date, to_date, employee_qs):
                     window_absent=window_absent,
                 )
             )
+            # Approved leave is shown only when there is no actual attendance
+            # or explicit WorkRecords status for the date.
+            if not attendance and not work_record:
+                status = str(leave_map.get((employee.pk, current), status))
 
             row = {
                 "date": current,
@@ -279,7 +326,11 @@ def build_daily_report(from_date, to_date, employee_qs):
 
             summary["total"] += 1
             status_lower = status.lower()
-            if "absent" in status_lower:
+            if "paid leave" in status_lower:
+                summary["paid_leave"] += 1
+            elif "unpaid leave" in status_lower:
+                summary["unpaid_leave"] += 1
+            elif "absent" in status_lower:
                 summary["absent"] += 1
             elif "half day" in status_lower:
                 summary["half_day"] += 1
@@ -366,6 +417,8 @@ def _get_report_context(request):
             "total": len(rows),
             "present": sum(1 for r in rows if "present" in r["status"].lower() and "half day" not in r["status"].lower()),
             "absent": sum(1 for r in rows if "absent" in r["status"].lower()),
+            "paid_leave": sum(1 for r in rows if "paid leave" in r["status"].lower()),
+            "unpaid_leave": sum(1 for r in rows if "unpaid leave" in r["status"].lower()),
             "half_day": sum(1 for r in rows if "half day" in r["status"].lower()),
             "late": sum(1 for r in rows if r["late_seconds"]),
             "early": sum(1 for r in rows if r["early_seconds"]),
@@ -393,6 +446,9 @@ def attendance_daily_report(request):
         "status_choices": [
             ("Present", _("Present")),
             ("Absent", _("Absent")),
+            ("Paid Leave", _("Paid Leave")),
+            ("Unpaid Leave", _("Unpaid Leave")),
+            ("Partial Paid Leave", _("Partial Paid Leave")),
             ("Half Day Present", _("Half Day Present")),
             ("Holiday", _("Holiday")),
             ("Weekly Off", _("Weekly Off")),
