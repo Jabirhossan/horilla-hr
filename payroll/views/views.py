@@ -1693,7 +1693,20 @@ def payslip_pdf(request, id):
             data["summary_unpaid_leave_deduction"] = unpaid_leave_deduction
             data["summary_outside_period_days"] = outside_period_days
             data["summary_outside_period_deduction"] = outside_period_deduction
-            data["summary_total_deduction"] = float(payslip.deduction or 0)
+            # The saved Payslip.deduction can be zero for this custom
+            # attendance/leave calculation. The PDF must show the actual
+            # deductions displayed in the breakdown above.
+            _pdf_other_deductions = sum(
+                float(d.get("amount", 0) or 0)
+                for d in data.get("all_deductions", [])
+            )
+            data["summary_total_deduction"] = round(
+                absent_deduction
+                + unpaid_leave_deduction
+                + outside_period_deduction
+                + _pdf_other_deductions,
+                2,
+            )
             data["summary_net_pay"] = float(payslip.net_pay or 0)
             data["summary_total_earnings"] = round(
                 basic_salary
