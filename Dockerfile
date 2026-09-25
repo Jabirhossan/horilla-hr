@@ -81,6 +81,7 @@ RUN apt-get update \
         curl \
         netcat-openbsd \
         gettext \
+        wkhtmltopdf \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
