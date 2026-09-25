@@ -396,7 +396,21 @@ def _get_report_context(request):
 
     status_filter = request.GET.get("status", "")
     if status_filter:
-        rows = [r for r in rows if r["status"] == status_filter]
+        if status_filter == "Late":
+            rows = [r for r in rows if r["late_seconds"]]
+        elif status_filter == "Half Day":
+            rows = [r for r in rows if "Half Day" in r["status"]]
+        else:
+            rows = [r for r in rows if r["status"] == status_filter]
+
+        summary = {
+            "total": len(rows),
+            "present": sum(1 for r in rows if "present" in r["status"].lower() and "half day" not in r["status"].lower()),
+            "absent": sum(1 for r in rows if "absent" in r["status"].lower()),
+            "half_day": sum(1 for r in rows if "half day" in r["status"].lower()),
+            "late": sum(1 for r in rows if r["late_seconds"]),
+            "early": sum(1 for r in rows if r["early_seconds"]),
+        }
 
     return from_date, to_date, rows, summary
 
