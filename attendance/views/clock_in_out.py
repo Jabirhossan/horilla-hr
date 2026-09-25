@@ -14,6 +14,28 @@ from horilla.http.response import HorillaRedirect
 logger = logging.getLogger(__name__)
 from datetime import date, datetime, timedelta
 
+# Production attendance policy: biometric check-in is considered closed
+# 30 minutes after the scheduled shift start. The raw biometric punch is
+# still stored as an AttendanceActivity; the Attendance/Work Record is marked
+# Absent. This is intentionally code-configurable without a DB migration.
+CHECKIN_WINDOW_CLOSE_MINUTES = 30
+
+def checkin_window_closed(now_sec, start_time_sec, end_time_sec):
+    """Return True when a biometric check-in is at/after the cutoff.
+
+    For night shifts, punches after midnight belong to the previous shift day
+    and are therefore already beyond the check-in window.
+    """
+    if start_time_sec > end_time_sec and start_time_sec != end_time_sec:
+        if now_sec < strtime_seconds("12:00"):
+            return True
+
+    cutoff_sec = start_time_sec + CHECKIN_WINDOW_CLOSE_MINUTES * 60
+    if cutoff_sec >= 24 * 60 * 60:
+        cutoff_sec -= 24 * 60 * 60
+
+    return now_sec >= cutoff_sec
+
 from django.contrib import messages
 from django.db.models import Q
 from django.http import HttpResponse
@@ -295,6 +317,14 @@ def clock_in(request):
                     )
                     attendance_date = date_yesterday
                     day = day_yesterday
+            # Biometric punches are always retained in AttendanceActivity, but
+            # a first check-in at/after the cutoff must remain Absent in the
+            # daily attendance/work-record view.
+            biometric_cutoff_absent = (
+                bool(request.__dict__.get("datetime"))
+                and checkin_window_closed(now_sec, start_time_sec, end_time_sec)
+            )
+
             attendance = clock_in_attendance_and_activity(
                 employee=employee,
                 date_today=date_today,
@@ -307,6 +337,14 @@ def clock_in(request):
                 end_time=end_time_sec,
                 in_datetime=datetime_now,
             )
+
+            if biometric_cutoff_absent:
+                requested_data = attendance.requested_data or {}
+                requested_data["checkin_cutoff_absent"] = True
+                requested_data["checkin_cutoff_minutes"] = CHECKIN_WINDOW_CLOSE_MINUTES
+                attendance.requested_data = requested_data
+                attendance.save(update_fields=["requested_data"])
+
             # Refresh employee from DB so template re-evaluates is_clocked_in correctly
             employee.refresh_from_db()
             return render(
