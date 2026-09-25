@@ -74,6 +74,11 @@ SUBMENUS = [
         "match_prefixes": ["/attendance/late-in-early-out-single-view/"],
     },
     {
+        "menu": _("Attendance Report"),
+        "redirect": reverse_lazy("attendance-daily-report"),
+        "accessibility": "attendance.sidebar.monthly_summary_accessibility",
+    },
+    {
         "menu": _("Monthly Summary"),
         "redirect": reverse_lazy("attendance-monthly-summary"),
         "accessibility": "attendance.sidebar.monthly_summary_accessibility",
