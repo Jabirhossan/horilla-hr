@@ -230,6 +230,7 @@ def build_daily_report(from_date, to_date, employee_qs):
         "early": 0,
         "paid_leave": 0,
         "unpaid_leave": 0,
+        "leave": 0,
     }
 
     current = from_date
@@ -329,8 +330,10 @@ def build_daily_report(from_date, to_date, employee_qs):
             status_lower = status.lower()
             if "paid leave" in status_lower:
                 summary["paid_leave"] += 1
+                summary["leave"] += 1
             elif "unpaid leave" in status_lower:
                 summary["unpaid_leave"] += 1
+                summary["leave"] += 1
             elif "absent" in status_lower:
                 summary["absent"] += 1
             elif "half day" in status_lower:
@@ -420,6 +423,7 @@ def _get_report_context(request):
             "absent": sum(1 for r in rows if "absent" in r["status"].lower()),
             "paid_leave": sum(1 for r in rows if "paid leave" in r["status"].lower()),
             "unpaid_leave": sum(1 for r in rows if "unpaid leave" in r["status"].lower()),
+            "leave": sum(1 for r in rows if "leave" in r["status"].lower()),
             "half_day": sum(1 for r in rows if "half day" in r["status"].lower()),
             "late": sum(1 for r in rows if r["late_seconds"]),
             "early": sum(1 for r in rows if r["early_seconds"]),
