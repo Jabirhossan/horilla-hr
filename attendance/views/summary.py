@@ -430,6 +430,18 @@ def build_monthly_summary(from_date, to_date, employee_qs):
                 hours_second += _day_manual if _day_manual is not None else _actual_secs
                 continue
 
+            # Approved leave is authoritative for payroll/attendance
+            # unless HR has explicitly set a resolution above.
+            # This is intentionally checked before raw attendance so an
+            # employee who clocked in/out during an approved leave period
+            # is still classified according to the approved leave.
+            if d in _paid_dates:
+                paid_leave += 1.0
+                continue
+            if d in _unpaid_dates:
+                unpaid_leave += 1.0
+                continue
+
             # Legacy "attendance" / "leave" — fall through to natural
             # No resolution — natural computation
             if d in _att_vals:
@@ -464,10 +476,6 @@ def build_monthly_summary(from_date, to_date, employee_qs):
                 hours_second += (
                     _day_manual if _day_manual is not None else _att_secs.get(d, 0)
                 )
-            elif d in _paid_dates:
-                paid_leave += 1.0
-            elif d in _unpaid_dates:
-                unpaid_leave += 1.0
             elif d in holiday_dates_set:
                 holiday_c += 1.0
             elif d in _emp_off:
