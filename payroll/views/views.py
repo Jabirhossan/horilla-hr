@@ -632,6 +632,14 @@ def view_payslip_pdf(request, payslip_id):
                 d for d in data.get("all_deductions", [])
                 if float(d.get("amount", 0) or 0) > 0
             ]
+            data["summary_total_deduction"] = round(
+                data["summary_total_deduction"]
+                + sum(
+                    float(d.get("amount", 0) or 0)
+                    for d in data["summary_other_deductions"]
+                ),
+                2,
+            )
             data["summary_worked_days"] = data.get("paid_days", 0)
             data["summary_joining_date"] = getattr(
                 employee, "date_of_joining", None
