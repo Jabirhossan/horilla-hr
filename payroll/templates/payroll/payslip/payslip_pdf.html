@@ -230,7 +230,7 @@
                             <div class="d-flex align-item-center gap-2">
                                 <span class="oh-payslip-left-title">{% trans "Employee Netpay :" %} </span>
                                 <p class="oh-payslip-left-value">
-                                    {{ net_pay|floatformat:2|currency_symbol_position }}<br>
+                                    {{ summary_net_pay|floatformat:2|currency_symbol_position }}<br>
                                 </p>
                             </div>
                         </div>
@@ -301,7 +301,7 @@
                                     <td style="border:1px solid #222; padding:7px;">{% trans "Basic Salary" %}</td>
                                     <td style="border:1px solid #222; padding:7px; text-align:right;">{{ summary_basic_salary|floatformat:2|currency_symbol_position }}</td>
                                 </tr>
-                                {% for allowance in all_allowances %}
+                                {% for allowance in summary_allowances %}
                                     {% if allowance.amount %}
                                     <tr>
                                         <td style="border:1px solid #222; padding:7px;">{{ allowance.title }}</td>
@@ -358,7 +358,7 @@
                         </table>
 
                         <div style="text-align:center; margin-top:32px; font-size:15px; font-weight:600;">
-                            <div>{{ net_pay|floatformat:2 }}</div>
+                            <div>{{ summary_net_pay|floatformat:2 }}</div>
                             <div style="margin-top:4px;">{% trans "Net Payable Salary" %}</div>
                         </div>
 
