@@ -611,6 +611,33 @@ def view_payslip_pdf(request, payslip_id):
             data["protocol"] = "https" if request.is_secure() else "http"
             data["company"] = company
 
+            # Values used by the custom salary-summary PDF section.
+            # Keep these derived from the saved payslip data so the PDF does
+            # not depend on model attributes that are not available on Payslip.
+            per_day_amount = float(data.get("per_day_amount", 0) or 0)
+            absent_days = float(data.get("absent", 0) or 0)
+            unpaid_leave_days = float(data.get("unpaid_leave", 0) or 0)
+            outside_period_days = float(data.get("outside_period_days", 0) or 0)
+            data["summary_basic_salary"] = float(
+                data.get("contract_wage", 0) or 0
+            )
+            data["summary_absent_deduction"] = round(
+                absent_days * per_day_amount, 2
+            )
+            data["summary_unpaid_leave_deduction"] = round(
+                unpaid_leave_days * per_day_amount, 2
+            )
+            data["summary_outside_period_days"] = outside_period_days
+            data["summary_outside_period_deduction"] = round(
+                outside_period_days * per_day_amount, 2
+            )
+            data["summary_total_deduction"] = round(
+                data["summary_absent_deduction"]
+                + data["summary_unpaid_leave_deduction"]
+                + data["summary_outside_period_deduction"],
+                2,
+            )
+
             return render(request, "payroll/payslip/payslip_pdf.html", context=data)
         return redirect(filter_payslip)
     return render(request, "405.html")
