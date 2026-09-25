@@ -139,7 +139,10 @@ def build_monthly_summary(from_date, to_date, employee_qs):
     # Using values() + Python loop instead of annotate(Count()) avoids the
     # GROUP BY join-multiplication caused by HorillaCompanyManager's work-info
     # join.
-    from attendance.methods.utils import strtime_seconds as _strtime_secs
+    from attendance.methods.utils import (
+        attendance_window_violation as _attendance_window_violation,
+        strtime_seconds as _strtime_secs,
+    )
     from attendance.models import GraceTime as _GraceTime
 
     emp_pks = list(employee_qs.values_list("pk", flat=True))
@@ -158,6 +161,10 @@ def build_monthly_summary(from_date, to_date, employee_qs):
         "overtime_second",
         "minimum_hour",
         "attendance_date",
+        "attendance_clock_in",
+        "attendance_clock_out",
+        "shift_id_id",
+        "requested_data",
     )
 
     att_dates_map = defaultdict(set)  # {emp_pk: set(dates)} — conflict detection
@@ -170,8 +177,10 @@ def build_monthly_summary(from_date, to_date, employee_qs):
     # "00:00" on days with no shift schedule (holiday/company leave) — so
     # unscheduled days are entirely overtime.
     att_date_ot_secs_map = defaultdict(dict)
+    att_record_map = {}
     for _r in att_records:
         _pk = _r["employee_id_id"]
+        att_record_map[(_pk, _r["attendance_date"])] = _r
         _date = _r["attendance_date"]
         _worked = _r["at_work_second"] or 0
         _min_secs = _strtime_secs(_r["minimum_hour"]) if _r.get("minimum_hour") else 0
@@ -212,20 +221,21 @@ def build_monthly_summary(from_date, to_date, employee_qs):
 
     shift_pk_set = {v for v in emp_shift_map.values() if v}
     shift_day_secs = defaultdict(dict)  # {shift_pk: {day_name: seconds}}
+    shift_schedule_map = {}
     if shift_pk_set:
         for _ss in (
             EmployeeShiftSchedule.objects.filter(shift_id__in=shift_pk_set)
             .select_related("day")
-            .values("shift_id_id", "day__day", "minimum_working_hour")
         ):
-            _spk = _ss["shift_id_id"]
-            _day = _ss["day__day"]
+            _spk = _ss.shift_id_id
+            _day = (_ss.day.day or "").lower()
             _secs = (
-                _strtime_secs(_ss["minimum_working_hour"])
-                if _ss["minimum_working_hour"]
+                _strtime_secs(_ss.minimum_working_hour)
+                if _ss.minimum_working_hour
                 else 0
             )
             shift_day_secs[_spk][_day] = _secs
+            shift_schedule_map[(_spk, _day)] = _ss
 
     # -- 2c. Load existing manually-edited hours (never overwritten by compute) --
     hours_override_map = {}  # {emp_pk: hours_second}
@@ -410,10 +420,26 @@ def build_monthly_summary(from_date, to_date, employee_qs):
             # No resolution — natural computation
             if d in _att_vals:
                 val = _att_vals[d]
+                _att_row = att_record_map.get((emp.pk, d))
+                _schedule = shift_schedule_map.get(
+                    (_att_row.get("shift_id_id") if _att_row else _shift_pk, _DAY_NAMES[d.weekday()])
+                )
+                _window_absent = False
+                if _att_row and _schedule:
+                    class _AttendanceSnapshot:
+                        attendance_clock_in = _att_row.get("attendance_clock_in")
+                        attendance_clock_out = _att_row.get("attendance_clock_out")
+                        requested_data = _att_row.get("requested_data")
+                    _window_absent = _attendance_window_violation(
+                        _AttendanceSnapshot(), _schedule
+                    )
+
                 if d in holiday_dates_set:
                     holiday_c += 1.0  # HO — attendance on holiday
                 elif d in _emp_off:
                     week_off += 1.0  # WO — attendance on week-off
+                elif _window_absent:
+                    absent += 1.0
                 else:
                     present += val
                     # Half-day (0.5) or zero-hour: remaining fraction is absent
