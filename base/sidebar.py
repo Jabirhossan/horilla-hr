@@ -125,6 +125,10 @@ def company_accessibility(request, submenu, user_perms, *args, **kwargs):
     return request.user.has_perm("base.view_company")
 
 
+def shift_schedule_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("base.view_employeeshiftschedule")
+
+
 def holidays_settings_accessibility(request, submenu, user_perms, *args, **kwargs):
     return request.user.has_perm("base.view_holidays")
 
@@ -406,6 +410,17 @@ class BaseSettings:
             "accessibility": job_role_accessibility,
             "search_entries": [
                 {"text": _("Job Roles"), "description": _("Name of the job role")},
+            ],
+        },
+        {
+            "label": _("Shift Schedule"),
+            "url": reverse_lazy("employee-shift-schedule-view"),
+            "accessibility": shift_schedule_accessibility,
+            "search_entries": [
+                {
+                    "text": _("Shift Schedule"),
+                    "description": _("Configure shift days, times, working hours, and attendance windows"),
+                },
             ],
         },
         {
