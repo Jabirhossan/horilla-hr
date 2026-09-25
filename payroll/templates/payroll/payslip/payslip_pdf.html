@@ -294,7 +294,7 @@
 
                         <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #eceff2;">
                             <span style="font-weight:600;">{% trans "Basic Salary" %}</span>
-                            <span style="font-weight:600;">{{ instance.contract_wage|floatformat:2|currency_symbol_position }}</span>
+                            <span style="font-weight:600;">{{ summary_basic_salary|floatformat:2|currency_symbol_position }}</span>
                         </div>
 
                         <div style="padding-top:18px;">
@@ -302,26 +302,26 @@
 
                             <div style="display:flex; justify-content:space-between; padding:8px 0 8px 14px;">
                                 <span>{% trans "Loss of Pay" %} — {{ absent|floatformat:0 }} {% trans "days absent" %}</span>
-                                <span>{{ absent_deduction|floatformat:2|currency_symbol_position }}</span>
+                                <span>{{ summary_absent_deduction|floatformat:2|currency_symbol_position }}</span>
                             </div>
 
                             {% if outside_period_deduction %}
                             <div style="display:flex; justify-content:space-between; padding:8px 0 8px 14px;">
                                 <span>{% trans "Outside Payroll Period" %} — {{ outside_period_days|floatformat:0 }} {% trans "days" %}</span>
-                                <span>{{ outside_period_deduction|floatformat:2|currency_symbol_position }}</span>
+                                <span>{{ summary_outside_period_deduction|floatformat:2|currency_symbol_position }}</span>
                             </div>
                             {% endif %}
 
                             {% if unpaid_leave_deduction %}
                             <div style="display:flex; justify-content:space-between; padding:8px 0 8px 14px;">
                                 <span>{% trans "Unpaid Leave" %}</span>
-                                <span>{{ unpaid_leave_deduction|floatformat:2|currency_symbol_position }}</span>
+                                <span>{{ summary_unpaid_leave_deduction|floatformat:2|currency_symbol_position }}</span>
                             </div>
                             {% endif %}
 
                             <div style="display:flex; justify-content:space-between; padding:12px 0; margin-top:4px; border-top:1px dashed #c9ced4; font-weight:700;">
                                 <span>{% trans "Total Deduction" %}</span>
-                                <span>{{ salary_deduction_total|floatformat:2|currency_symbol_position }}</span>
+                                <span>{{ summary_total_deduction|floatformat:2|currency_symbol_position }}</span>
                             </div>
                         </div>
 
