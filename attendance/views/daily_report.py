@@ -21,6 +21,7 @@ from reportlab.lib.units import mm
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 
 from attendance.models import Attendance, WorkRecords
+from attendance.methods.utils import attendance_window_violation
 from base.methods import (
     filtersubordinatesemployeemodel,
     get_company_leave_dates,
@@ -76,54 +77,6 @@ def _schedule_for_employee_date(employee, date, schedule_map):
         return None
 
     return schedule_map.get((shift.pk, DAY_NAMES[date.weekday()]))
-
-
-def _attendance_window_violation(attendance, schedule):
-    """Return True when an attendance punch violates the configured shift window."""
-    if not attendance or not schedule:
-        return False
-
-    requested_data = attendance.requested_data or {}
-    if requested_data.get("checkin_window_absent") or requested_data.get(
-        "checkout_window_absent"
-    ):
-        return True
-
-    check_in = attendance.attendance_clock_in
-    check_out = attendance.attendance_clock_out
-    start = schedule.start_time
-    end = schedule.end_time
-
-    if not start:
-        return False
-
-    start_sec = _time_seconds(start)
-    end_sec = _time_seconds(end) if end else start_sec
-    night = bool(getattr(schedule, "is_night_shift", False)) or start_sec > end_sec
-
-    check_in_window = max(
-        int(getattr(schedule, "check_in_window_minutes", 0) or 0), 0
-    ) * 60
-    check_out_window = max(
-        int(getattr(schedule, "check_out_window_minutes", 0) or 0), 0
-    ) * 60
-
-    if check_in:
-        check_in_sec = _time_seconds(check_in)
-        if night and check_in_sec < start_sec:
-            check_in_sec += 24 * 60 * 60
-        if check_in_sec < start_sec or check_in_sec >= start_sec + check_in_window:
-            return True
-
-    if check_out:
-        check_out_sec = _time_seconds(check_out)
-        if night and check_out_sec < end_sec:
-            check_out_sec += 24 * 60 * 60
-        effective_end = end_sec + (24 * 60 * 60 if night else 0)
-        if check_out_sec < effective_end - check_out_window:
-            return True
-
-    return False
 
 
 def _status_label(
