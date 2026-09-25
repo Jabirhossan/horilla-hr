@@ -6,7 +6,7 @@ from calendar import monthrange
 from datetime import date
 
 import pandas as pd
-from django.http import HttpResponse
+from django.db.models import Q\nfrom django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -41,36 +41,65 @@ def build_salary_sheet(month_value="", employee_id=""):
     month_start = _parse_month(month_value)
     month_start, month_end = _month_range(month_start)
 
-    payslips = (
-        Payslip.objects.select_related("employee_id")
-        .filter(start_date__lte=month_end, end_date__gte=month_start)
-        .order_by("employee_id__employee_first_name", "employee_id__employee_last_name", "-end_date")
+    employee_qs = Employee.objects.filter(is_active=True).order_by(
+        "employee_first_name", "employee_last_name"
     )
-
     if employee_id:
         try:
-            payslips = payslips.filter(employee_id_id=int(employee_id))
+            employee_qs = employee_qs.filter(pk=int(employee_id))
         except (TypeError, ValueError):
-            payslips = payslips.none()
+            employee_qs = employee_qs.none()
 
-    # Prefer an exact monthly payslip when duplicates/overlapping periods exist.
-    selected = {}
+    employees = list(employee_qs)
+    employee_ids = [employee.pk for employee in employees]
+
+    payslips = (
+        Payslip.objects.select_related("employee_id")
+        .filter(
+            employee_id_id__in=employee_ids,
+            start_date__lte=month_end,
+            end_date__gte=month_start,
+        )
+        .order_by(
+            "employee_id__employee_first_name",
+            "employee_id__employee_last_name",
+            "-end_date",
+        )
+    )
+
+    # Prefer an exact monthly payslip when overlapping periods exist.
+    payslip_map = {}
     for payslip in payslips:
         employee_pk = payslip.employee_id_id
-        if employee_pk not in selected:
-            selected[employee_pk] = payslip
+        current = payslip_map.get(employee_pk)
+        if current is None:
+            payslip_map[employee_pk] = payslip
         elif (
             payslip.start_date == month_start
             and payslip.end_date == month_end
             and not (
-                selected[employee_pk].start_date == month_start
-                and selected[employee_pk].end_date == month_end
+                current.start_date == month_start
+                and current.end_date == month_end
             )
         ):
-            selected[employee_pk] = payslip
+            payslip_map[employee_pk] = payslip
 
-    rows = []
-    employee_ids = list(selected.keys())
+    from payroll.models.models import Contract
+
+    contracts = (
+        Contract.objects.filter(
+            employee_id_id__in=employee_ids,
+            contract_status="active",
+            contract_start_date__lte=month_end,
+        )
+        .filter(
+            Q(contract_end_date__isnull=True) | Q(contract_end_date__gte=month_start)
+        )
+        .order_by("-contract_start_date")
+    )
+    contract_map = {}
+    for contract in contracts:
+        contract_map.setdefault(contract.employee_id_id, contract)
 
     try:
         from attendance.models import WorkRecords
@@ -79,11 +108,7 @@ def build_salary_sheet(month_value="", employee_id=""):
             employee_id_id__in=employee_ids,
             date__gte=month_start,
             date__lte=month_end,
-        ).values(
-            "employee_id_id",
-            "work_record_type",
-            "is_leave_record",
-        )
+        ).values("employee_id_id", "work_record_type", "is_leave_record")
     except Exception:
         records = []
 
@@ -102,23 +127,37 @@ def build_salary_sheet(month_value="", employee_id=""):
         elif record["work_record_type"] == "HDP":
             stats["half_day"] += 1
 
+    rows = []
     total_basic = total_deduction = total_net = 0.0
-    for payslip in selected.values():
+    generated_count = 0
+
+    for employee in employees:
+        payslip = payslip_map.get(employee.pk)
+        contract = contract_map.get(employee.pk)
         stats = attendance.get(
-            payslip.employee_id_id,
+            employee.pk,
             {"present": 0, "absent": 0, "leave": 0, "half_day": 0},
         )
-        basic = float(payslip.basic_pay or 0)
-        deduction = float(payslip.deduction or 0)
-        net = float(payslip.net_pay or 0)
-        total_basic += basic
-        total_deduction += deduction
-        total_net += net
+
+        if payslip:
+            basic = float(payslip.basic_pay or 0)
+            deduction = float(payslip.deduction or 0)
+            net = float(payslip.net_pay or 0)
+            status = payslip.get_status()
+            generated_count += 1
+            total_basic += basic
+            total_deduction += deduction
+            total_net += net
+        else:
+            basic = float(contract.wage or 0) if contract else 0
+            deduction = None
+            net = None
+            status = _("Not Generated")
 
         rows.append(
             {
-                "employee": _employee_label(payslip.employee_id),
-                "employee_id": payslip.employee_id.badge_id or payslip.employee_id_id,
+                "employee": _employee_label(employee),
+                "employee_id": employee.badge_id or employee.pk,
                 "present": stats["present"],
                 "absent": stats["absent"],
                 "leave": stats["leave"],
@@ -126,8 +165,7 @@ def build_salary_sheet(month_value="", employee_id=""):
                 "basic_salary": basic,
                 "deduction": deduction,
                 "net_payable": net,
-                "status": payslip.get_status(),
-                "payslip_id": payslip.pk,
+                "status": status,
             }
         )
 
@@ -137,11 +175,11 @@ def build_salary_sheet(month_value="", employee_id=""):
         "month_value": month_start.strftime("%Y-%m"),
         "rows": rows,
         "total_employees": len(rows),
+        "generated_count": generated_count,
         "total_basic": total_basic,
         "total_deduction": total_deduction,
         "total_net": total_net,
     }
-
 
 @login_required
 @permission_required("payroll.view_payslip")
