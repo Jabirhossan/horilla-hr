@@ -83,6 +83,7 @@ RUN apt-get update \
         gettext \
         wkhtmltopdf \
         xvfb \
+        xauth \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
