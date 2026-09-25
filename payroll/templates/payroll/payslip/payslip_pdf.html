@@ -346,7 +346,7 @@
                                     <td style="border:1px solid #222; padding:7px; text-align:right;">{{ summary_outside_period_deduction|floatformat:2 }} {{ currency }}</td>
                                 </tr>
                                 {% endif %}
-                                {% for deduction in payslip.pay_head_data.all_deductions %}
+                                {% for deduction in all_deductions %}
                                 <tr>
                                     <td style="border:1px solid #222; padding:7px;">{{ deduction.title }}</td>
                                     <td style="border:1px solid #222; padding:7px; text-align:right;">{{ deduction.amount|floatformat:2 }} {{ currency }}</td>
