@@ -232,7 +232,7 @@ def build_daily_report(from_date, to_date, employee_qs):
                 else _duration_between(check_in, check_out)
             )
 
-            window_absent = _attendance_window_violation(attendance, schedule)
+            window_absent = attendance_window_violation(attendance, schedule)
             status = str(
                 _status_label(
                     work_record,
