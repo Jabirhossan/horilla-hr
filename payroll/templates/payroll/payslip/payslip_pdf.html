@@ -230,7 +230,7 @@
                             <div class="d-flex align-item-center gap-2">
                                 <span class="oh-payslip-left-title">{% trans "Employee Netpay :" %} </span>
                                 <p class="oh-payslip-left-value">
-                                    {{ payslip.net_pay|floatformat:2 }} {{ currency }}<br>
+                                    {{ summary_net_pay|floatformat:2 }} {{ currency }}<br>
                                 </p>
                             </div>
                         </div>
@@ -299,7 +299,7 @@
                             <tbody>
                                 <tr>
                                     <td style="border:1px solid #222; padding:7px;">{% trans "Basic Salary" %}</td>
-                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ payslip.contract_wage|floatformat:2 }} {{ currency }}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ summary_basic_salary|floatformat:2 }} {{ currency }}</td>
                                 </tr>
                                 {% for allowance in payslip.pay_head_data.allowances %}
                                     {% if allowance.amount %}
@@ -325,10 +325,22 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td style="border:1px solid #222; padding:7px;">{% trans "Absent" %} — {{ payslip.pay_head_data.absent|floatformat:0 }} {% trans "days" %}</td>
-                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ payslip.pay_head_data.absent_deduction|floatformat:2 }} {{ currency }}</td>
+                                    <td style="border:1px solid #222; padding:7px;">{% trans "Absent" %} — {{ summary_absent_days|floatformat:0 }} {% trans "days" %}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ summary_absent_deduction|floatformat:2 }} {{ currency }}</td>
                                 </tr>
-                                {% if payslip.pay_head_data.outside_period_deduction %}
+                                {% if summary_paid_leave_days %}
+                                <tr>
+                                    <td style="border:1px solid #222; padding:7px;">{% trans "Paid Leave" %} — {{ summary_paid_leave_days|floatformat:0 }} {% trans "days" %}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right;">0.00 {{ currency }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if summary_unpaid_leave_days %}
+                                <tr>
+                                    <td style="border:1px solid #222; padding:7px;">{% trans "Unpaid Leave" %} — {{ summary_unpaid_leave_days|floatformat:0 }} {% trans "days" %}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ summary_unpaid_leave_deduction|floatformat:2 }} {{ currency }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if summary_outside_period_deduction %}
                                 <tr>
                                     <td style="border:1px solid #222; padding:7px;">{% trans "Outside Payroll Period" %} — {{ payslip.pay_head_data.outside_period_days|floatformat:0 }} {% trans "days" %}</td>
                                     <td style="border:1px solid #222; padding:7px; text-align:right;">{{ payslip.pay_head_data.outside_period_deduction|floatformat:2 }} {{ currency }}</td>
@@ -336,9 +348,7 @@
                                 {% endif %}
                                 {% if payslip.pay_head_data.unpaid_leave_deduction %}
                                 <tr>
-                                    <td style="border:1px solid #222; padding:7px;">{% trans "Unpaid Leave" %}</td>
-                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ payslip.pay_head_data.unpaid_leave_deduction|floatformat:2 }} {{ currency }}</td>
-                                </tr>
+                                    </tr>
                                 {% endif %}
                                 {% for deduction in payslip.pay_head_data.all_deductions %}
                                 <tr>
@@ -348,7 +358,7 @@
                                 {% endfor %}
                                 <tr>
                                     <td style="border:1px solid #222; padding:7px; text-align:right; font-weight:700;">{% trans "Total Deductions" %}</td>
-                                    <td style="border:1px solid #222; padding:7px; text-align:right; font-weight:700;">{{ payslip.pay_head_data.salary_period_deduction|floatformat:2 }} {{ currency }}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right; font-weight:700;">{{ summary_total_deduction|floatformat:2 }} {{ currency }}</td>
                                 </tr>
                                 <tr>
                                     <td style="border:1px solid #222; padding:7px; text-align:right; font-weight:700;">{% trans "Net Pay" %}</td>
