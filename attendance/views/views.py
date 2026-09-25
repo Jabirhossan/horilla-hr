@@ -2640,14 +2640,21 @@ def work_records_change_month(request):
             (effective_shift_id, wr.date.strftime("%A").lower())
         )
 
-        if attendance and schedule and attendance_window_violation(
-            attendance, schedule
-        ):
-            # Do not modify the database record. Only change the status
-            # displayed by Daily Work Status according to the configured
-            # check-in/check-out windows.
+        window_violation = bool(
+            attendance
+            and schedule
+            and attendance_window_violation(attendance, schedule)
+        )
+
+        # Do not modify the database record. Keep a dedicated display flag so
+        # Daily Work Status can render window violations as ABS regardless of
+        # the stored WorkRecords type.
+        if window_violation:
             wr.work_record_type = "ABS"
+            wr.window_violation_absent = True
             wr.message = "Absent: attendance window rule violated"
+        else:
+            wr.window_violation_absent = False
 
         work_records_dict[(wr.employee_id.id, wr.date)] = wr
 
