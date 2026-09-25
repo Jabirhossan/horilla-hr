@@ -17,6 +17,7 @@ from employee.models import Employee
 from base.models import Company
 from attendance.models import WorkRecords
 from attendance.views.daily_report import build_daily_report
+from payroll.methods.methods import get_leaves
 from horilla.decorators import login_required, permission_required
 from payroll.models.models import Payslip
 
@@ -140,21 +141,19 @@ def build_salary_sheet(month_value="", employee_id=""):
                 stats["present"] += 1
         attendance_by_range[(range_start, range_end)] = per_employee
 
-    # Leave is kept as a separate payroll-sheet column. WorkRecords is the
-    # attendance system's persisted leave marker, so count it only inside the
-    # same payroll/report period used above.
+    # Leave counts come from the same approved LeaveRequest logic used by
+    # payroll, so paid/unpaid leave cannot be mistaken for attendance absence.
     leave_by_range = {}
     for range_start, range_end in report_ranges:
-        leave_by_range[(range_start, range_end)] = {
-            employee_id: count
-            for employee_id, count in WorkRecords.objects.filter(
-                employee_id_id__in=employee_ids,
-                date__range=(range_start, range_end),
-                is_leave_record=True,
-            ).values("employee_id_id").annotate(count=Count("id")).values_list(
-                "employee_id_id", "count"
-            )
-        }
+        per_employee = {}
+        for employee in employees:
+            leave_data = get_leaves(employee, range_start, range_end)
+            per_employee[employee.pk] = {
+                "leave": float(leave_data.get("paid_leave", 0) or 0)
+                + float(leave_data.get("unpaid_leaves", 0) or 0)
+                + float(leave_data.get("partial_pay_days", 0) or 0),
+            }
+        leave_by_range[(range_start, range_end)] = per_employee
 
     rows = []
     total_basic = total_deduction = total_net = 0.0
@@ -172,7 +171,7 @@ def build_salary_sheet(month_value="", employee_id=""):
             employee.pk,
             {"present": 0, "absent": 0, "leave": 0, "half_day": 0},
         )
-        stats = {**stats, "leave": leave_by_range.get(payslip_range, {}).get(employee.pk, 0)}
+        stats = {**stats, "leave": leave_by_range.get(payslip_range, {}).get(employee.pk, {}).get("leave", 0)}
 
         # Basic Salary in the sheet is always the employee's contract wage.
         # payslip.basic_pay is the payable/basic amount after attendance
