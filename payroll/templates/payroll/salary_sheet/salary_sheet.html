@@ -102,7 +102,8 @@
               <th class="text-left p-3">{% trans "Employee ID" %}</th>
               <th class="text-center p-3">{% trans "Present" %}</th>
               <th class="text-center p-3">{% trans "Absent" %}</th>
-              <th class="text-center p-3">{% trans "Leave" %}</th>
+              <th class="text-center p-3">{% trans "Paid Leave" %}</th>
+              <th class="text-center p-3">{% trans "Unpaid Leave" %}</th>
               <th class="text-center p-3">{% trans "Half Day" %}</th>
               <th class="text-right p-3">{% trans "Basic Salary" %}</th>
               <th class="text-right p-3">{% trans "Deduction" %}</th>
@@ -117,7 +118,8 @@
               <td class="p-3">{{ row.employee_id }}</td>
               <td class="p-3 text-center">{{ row.present }}</td>
               <td class="p-3 text-center">{{ row.absent }}</td>
-              <td class="p-3 text-center">{{ row.leave }}</td>
+              <td class="p-3 text-center">{{ row.paid_leave }}</td>
+              <td class="p-3 text-center">{{ row.unpaid_leave }}</td>
               <td class="p-3 text-center">{{ row.half_day }}</td>
               <td class="p-3 text-right">{{ row.basic_salary|floatformat:2 }}</td>
               <td class="p-3 text-right">{% if row.deduction != None %}{{ row.deduction|floatformat:2 }}{% else %}-{% endif %}</td>
@@ -125,7 +127,7 @@
               <td class="p-3 text-center">{{ row.status }}</td>
             </tr>
           {% empty %}
-            <tr><td colspan="10" class="p-8 text-center text-color-500">{% trans "No active employees found." %}</td></tr>
+            <tr><td colspan="11" class="p-8 text-center text-color-500">{% trans "No active employees found." %}</td></tr>
           {% endfor %}
           </tbody>
         </table>
