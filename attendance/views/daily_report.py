@@ -374,17 +374,23 @@ def _get_report_context(request):
             query |= Q(badge_id__icontains=term)
         employee_qs = employee_qs.filter(query)
 
-    employee_ids = request.GET.getlist("employee_id")
+    employee_ids = [
+        value for value in request.GET.getlist("employee_id") if value.strip()
+    ]
     if employee_ids:
         employee_qs = employee_qs.filter(pk__in=employee_ids)
 
-    department_ids = request.GET.getlist("department_id")
+    department_ids = [
+        value for value in request.GET.getlist("department_id") if value.strip()
+    ]
     if department_ids:
         employee_qs = employee_qs.filter(
             employee_work_info__department_id__in=department_ids
         )
 
-    shift_ids = request.GET.getlist("shift_id")
+    shift_ids = [
+        value for value in request.GET.getlist("shift_id") if value.strip()
+    ]
     if shift_ids:
         employee_qs = employee_qs.filter(
             employee_work_info__shift_id__in=shift_ids
