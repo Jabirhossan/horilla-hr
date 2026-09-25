@@ -38,6 +38,19 @@ operator_mapping = {
     "icontains": operator.contains,
     "range": return_none,
 }
+def _salary_advance_deduction_ids(employee):
+    """
+    Return deduction IDs generated for salary-advance repayments.
+
+    Salary advance is money already paid to the employee, so it is excluded
+    from the current payslip rather than shown as an allowance or repayment.
+    """
+    return LoanAccount.objects.filter(
+        employee_id=employee,
+        type="advanced_salary",
+    ).values_list("deduction_ids__id", flat=True)
+
+
 filter_mapping = {
     "work_type_id": {
         "filter": lambda employee, allowance, start_date, end_date: {
@@ -543,6 +556,7 @@ def calculate_pre_tax_deduction(*_args, **kwargs):
         deductions.exclude(one_time_date__lt=start_date)
         .exclude(one_time_date__gt=end_date)
         .exclude(update_compensation__isnull=False)
+        .exclude(id__in=_salary_advance_deduction_ids(employee))
     )
     # Installment deductions
     installments = deductions.filter(is_installment=True)
@@ -653,6 +667,7 @@ def calculate_post_tax_deduction(*_args, **kwargs):
         deductions.exclude(one_time_date__lt=start_date)
         .exclude(one_time_date__gt=end_date)
         .exclude(update_compensation__isnull=False)
+        .exclude(id__in=_salary_advance_deduction_ids(employee))
     )
     # Installment deductions
     installments = deductions.filter(is_installment=True)
