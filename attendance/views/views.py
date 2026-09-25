@@ -2612,6 +2612,12 @@ def work_records_change_month(request):
         for wr in work_records
         if wr.shift_id_id
     }
+    shift_ids.update(
+        wr.attendance_id.shift_id_id
+        for wr in work_records
+        if wr.attendance_id and wr.attendance_id.shift_id_id
+    )
+
     schedule_map = {}
     if shift_ids:
         schedules = EmployeeShiftSchedule.objects.filter(
@@ -2624,16 +2630,25 @@ def work_records_change_month(request):
 
     work_records_dict = {}
     for wr in work_records:
-        schedule = schedule_map.get(
-            (
-                wr.shift_id_id,
-                wr.date.strftime("%A").lower(),
-            )
+        attendance = wr.attendance_id
+        effective_shift_id = (
+            attendance.shift_id_id
+            if attendance and attendance.shift_id_id
+            else wr.shift_id_id
         )
-        if attendance_window_violation(wr.attendance_id, schedule):
-            # Keep the stored WorkRecords row unchanged; only the displayed
-            # Daily Work Status is corrected from the configured shift window.
+        schedule = schedule_map.get(
+            (effective_shift_id, wr.date.strftime("%A").lower())
+        )
+
+        if attendance and schedule and attendance_window_violation(
+            attendance, schedule
+        ):
+            # Do not modify the database record. Only change the status
+            # displayed by Daily Work Status according to the configured
+            # check-in/check-out windows.
             wr.work_record_type = "ABS"
+            wr.message = "Absent: attendance window rule violated"
+
         work_records_dict[(wr.employee_id.id, wr.date)] = wr
 
     work_record_table = {
