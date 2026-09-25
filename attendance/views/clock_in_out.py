@@ -14,27 +14,37 @@ from horilla.http.response import HorillaRedirect
 logger = logging.getLogger(__name__)
 from datetime import date, datetime, timedelta
 
-# Production attendance policy: biometric check-in is considered closed
-# 30 minutes after the scheduled shift start. The raw biometric punch is
-# still stored as an AttendanceActivity; the Attendance/Work Record is marked
-# Absent. This is intentionally code-configurable without a DB migration.
-CHECKIN_WINDOW_CLOSE_MINUTES = 30
+def attendance_window_flags(
+    now_sec,
+    start_time_sec,
+    end_time_sec,
+    check_in_window_minutes=0,
+    check_out_window_minutes=0,
+):
+    """Return whether the current biometric punch violates shift windows.
 
-def checkin_window_closed(now_sec, start_time_sec, end_time_sec):
-    """Return True when a biometric check-in is at/after the cutoff.
-
-    For night shifts, punches after midnight belong to the previous shift day
-    and are therefore already beyond the check-in window.
+    Check-in is allowed from shift start through the configured check-in
+    window. Check-out is allowed only during the configured final window
+    before shift end. The calculation also supports overnight shifts.
     """
-    if start_time_sec > end_time_sec and start_time_sec != end_time_sec:
-        if now_sec < strtime_seconds("12:00"):
-            return True
+    is_night_shift = start_time_sec > end_time_sec and start_time_sec != end_time_sec
 
-    cutoff_sec = start_time_sec + CHECKIN_WINDOW_CLOSE_MINUTES * 60
-    if cutoff_sec >= 24 * 60 * 60:
-        cutoff_sec -= 24 * 60 * 60
+    if is_night_shift:
+        current_sec = now_sec + (24 * 60 * 60 if now_sec < 12 * 60 * 60 else 0)
+        start_sec = start_time_sec
+        end_sec = end_time_sec + 24 * 60 * 60
+    else:
+        current_sec = now_sec
+        start_sec = start_time_sec
+        end_sec = end_time_sec
 
-    return now_sec >= cutoff_sec
+    check_in_cutoff = start_sec + max(check_in_window_minutes, 0) * 60
+    check_out_open = end_sec - max(check_out_window_minutes, 0) * 60
+
+    check_in_absent = current_sec >= check_in_cutoff
+    check_out_absent = current_sec < check_out_open
+
+    return check_in_absent, check_out_absent
 
 from django.contrib import messages
 from django.db.models import Q
@@ -300,6 +310,11 @@ def clock_in(request):
             minimum_hour, start_time_sec, end_time_sec = shift_schedule_today(
                 day=day, shift=shift
             )
+            shift_schedule = (
+                shift.employeeshiftschedule_set.filter(day=day).first()
+                if shift
+                else None
+            )
             if start_time_sec > end_time_sec:
                 # night shift
                 # ------------------
@@ -315,14 +330,31 @@ def clock_in(request):
                     minimum_hour, start_time_sec, end_time_sec = shift_schedule_today(
                         day=day_yesterday, shift=shift
                     )
+                    shift_schedule = (
+                        shift.employeeshiftschedule_set.filter(day=day_yesterday).first()
+                        if shift
+                        else None
+                    )
                     attendance_date = date_yesterday
                     day = day_yesterday
-            # Biometric punches are always retained in AttendanceActivity, but
-            # a first check-in at/after the cutoff must remain Absent in the
-            # daily attendance/work-record view.
-            biometric_cutoff_absent = (
+            check_in_window_minutes = (
+                shift_schedule.check_in_window_minutes if shift_schedule else 0
+            )
+            check_out_window_minutes = (
+                shift_schedule.check_out_window_minutes if shift_schedule else 0
+            )
+
+            # Biometric punches are always retained in AttendanceActivity.
+            # A check-in outside the configured shift window is marked Absent.
+            biometric_checkin_absent = (
                 bool(request.__dict__.get("datetime"))
-                and checkin_window_closed(now_sec, start_time_sec, end_time_sec)
+                and attendance_window_flags(
+                    now_sec,
+                    start_time_sec,
+                    end_time_sec,
+                    check_in_window_minutes,
+                    check_out_window_minutes,
+                )[0]
             )
 
             attendance = clock_in_attendance_and_activity(
@@ -338,10 +370,10 @@ def clock_in(request):
                 in_datetime=datetime_now,
             )
 
-            if biometric_cutoff_absent:
+            if biometric_checkin_absent:
                 requested_data = attendance.requested_data or {}
-                requested_data["checkin_cutoff_absent"] = True
-                requested_data["checkin_cutoff_minutes"] = CHECKIN_WINDOW_CLOSE_MINUTES
+                requested_data["checkin_window_absent"] = True
+                requested_data["checkin_window_minutes"] = check_in_window_minutes
                 attendance.requested_data = requested_data
                 attendance.save(update_fields=["requested_data"])
 
@@ -580,10 +612,35 @@ def clock_out(request):
         minimum_hour, start_time_sec, end_time_sec = shift_schedule_today(
             day=day, shift=shift
         )
+        shift_schedule = (
+            shift.employeeshiftschedule_set.filter(day=day).first()
+            if shift
+            else None
+        )
+        check_out_window_minutes = (
+            shift_schedule.check_out_window_minutes if shift_schedule else 0
+        )
+        biometric_checkout_absent = (
+            bool(request.__dict__.get("datetime"))
+            and attendance_window_flags(
+                strtime_seconds(now),
+                start_time_sec,
+                end_time_sec,
+                shift_schedule.check_in_window_minutes if shift_schedule else 0,
+                check_out_window_minutes,
+            )[1]
+        )
         attendance = clock_out_attendance_and_activity(
             employee=employee, date_today=date_today, now=now, out_datetime=datetime_now
         )
         if attendance:
+            if biometric_checkout_absent:
+                requested_data = attendance.requested_data or {}
+                requested_data["checkout_window_absent"] = True
+                requested_data["checkout_window_minutes"] = check_out_window_minutes
+                attendance.requested_data = requested_data
+                attendance.save(update_fields=["requested_data"])
+
             early_out_instance = attendance.late_come_early_out.filter(type="early_out")
             is_night_shift = attendance.is_night_shift()
             next_date = attendance.attendance_date + timedelta(days=1)
