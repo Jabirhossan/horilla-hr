@@ -67,6 +67,63 @@ def strtime_seconds(time):
     return -total if negative else total
 
 
+
+def attendance_window_violation(attendance, schedule):
+    """
+    Return True when an attendance punch violates the shift's configured
+    biometric check-in/check-out window.
+
+    Check-in is valid from shift start through the configured check-in
+    window (inclusive). Check-out is valid only inside the final configured
+    window before shift end. Overnight shifts are supported.
+    """
+    if not attendance or not schedule:
+        return False
+
+    requested_data = getattr(attendance, "requested_data", None) or {}
+    if requested_data.get("checkin_window_absent") or requested_data.get(
+        "checkout_window_absent"
+    ):
+        return True
+
+    start = getattr(schedule, "start_time", None)
+    end = getattr(schedule, "end_time", None)
+    if not start:
+        return False
+
+    def _seconds(value):
+        return value.hour * 3600 + value.minute * 60 + value.second
+
+    start_sec = _seconds(start)
+    end_sec = _seconds(end) if end else start_sec
+    night = bool(getattr(schedule, "is_night_shift", False)) or start_sec > end_sec
+
+    check_in_window = max(
+        int(getattr(schedule, "check_in_window_minutes", 0) or 0), 0
+    ) * 60
+    check_out_window = max(
+        int(getattr(schedule, "check_out_window_minutes", 0) or 0), 0
+    ) * 60
+
+    check_in = getattr(attendance, "attendance_clock_in", None)
+    if check_in:
+        check_in_sec = _seconds(check_in)
+        if night and check_in_sec < start_sec:
+            check_in_sec += 24 * 60 * 60
+        if check_in_sec < start_sec or check_in_sec > start_sec + check_in_window:
+            return True
+
+    check_out = getattr(attendance, "attendance_clock_out", None)
+    if check_out:
+        check_out_sec = _seconds(check_out)
+        if night and check_out_sec < end_sec:
+            check_out_sec += 24 * 60 * 60
+        effective_end = end_sec + (24 * 60 * 60 if night else 0)
+        if check_out_sec < effective_end - check_out_window:
+            return True
+
+    return False
+
 def get_diff_obj(first_instance, other_instance, exclude_fields=None):
     """
     Compare the fields of two instances and identify the changes.
