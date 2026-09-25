@@ -1,5 +1,5 @@
 # Build stage - for compiling dependencies
-FROM python:3.12-slim AS builder
+FROM python:3.12-slim-bookworm AS builder
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
@@ -56,7 +56,7 @@ RUN pip show en_core_web_sm | grep -qx "Version: ${SPACY_MODEL_VERSION}" \
          pip show en_core_web_sm | grep -i version; exit 1; }
 
 # Production stage - minimal runtime image
-FROM python:3.12-slim AS production
+FROM python:3.12-slim-bookworm AS production
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -82,6 +82,7 @@ RUN apt-get update \
         netcat-openbsd \
         gettext \
         wkhtmltopdf \
+        xvfb \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
@@ -97,6 +98,12 @@ RUN apt-get update \
 # /opt/venv/bin, which does not exist yet at this layer.
 RUN /usr/local/bin/python -m pip install --no-cache-dir --upgrade \
         "setuptools>=78.1.1" "msgpack>=1.2.1"
+
+# wkhtmltopdf was removed from Debian Trixie/Testing. Use the Bookworm package
+# and run it under a virtual X server because Debian's build expects X11.
+RUN mv /usr/bin/wkhtmltopdf /usr/bin/wkhtmltopdf-real \
+    && printf '#!/bin/sh\nexec xvfb-run -a /usr/bin/wkhtmltopdf-real "$@"\n' > /usr/local/bin/wkhtmltopdf \
+    && chmod +x /usr/local/bin/wkhtmltopdf
 
 # Create non-root user FIRST
 RUN useradd --create-home --uid 1000 appuser
