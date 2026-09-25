@@ -11,12 +11,21 @@
           {% trans "Daily check-in, check-out, late arrival, early departure and working-hours report." %}
         </p>
       </div>
-      <a id="attendance-report-export"
-         href="{% url 'attendance-daily-report-export' %}?from_date={{ from_date }}&to_date={{ to_date }}"
-         class="px-4 py-2 bg-brand-600 text-white rounded-md text-xs flex items-center gap-2">
-        <ion-icon name="download-outline"></ion-icon>
-        {% trans "Export XLSX" %}
-      </a>
+      <div class="flex flex-wrap gap-2">
+        <a id="attendance-report-pdf"
+           href="{% url 'attendance-daily-report-pdf' %}?from_date={{ from_date }}&to_date={{ to_date }}"
+           target="_blank"
+           class="px-4 py-2 border border-dark-50 rounded-md text-xs flex items-center gap-2 bg-white">
+          <ion-icon name="print-outline"></ion-icon>
+          {% trans "Print / PDF" %}
+        </a>
+        <a id="attendance-report-export"
+           href="{% url 'attendance-daily-report-export' %}?from_date={{ from_date }}&to_date={{ to_date }}"
+           class="px-4 py-2 bg-brand-600 text-white rounded-md text-xs flex items-center gap-2">
+          <ion-icon name="download-outline"></ion-icon>
+          {% trans "Export XLSX" %}
+        </a>
+      </div>
     </div>
 
     <form id="attendance-report-filter"
@@ -24,62 +33,71 @@
           hx-target="#attendance-report-table"
           hx-trigger="submit"
           hx-push-url="false"
-          class="border border-dark-50 rounded-md p-3 mb-3">
-      <div class="flex flex-wrap gap-2 items-end">
+          class="border border-dark-50 rounded-md p-4 mb-4 bg-white">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
         <div>
-          <label class="text-xs block mb-1">{% trans "From Date" %}</label>
+          <label class="text-xs font-medium block mb-1">{% trans "From Date" %}</label>
           <input type="date" name="from_date" value="{{ from_date }}"
-                 class="text-sm border border-dark-50 rounded-md p-2">
+                 class="text-sm border border-dark-50 rounded-md p-2.5 w-full">
         </div>
         <div>
-          <label class="text-xs block mb-1">{% trans "To Date" %}</label>
+          <label class="text-xs font-medium block mb-1">{% trans "To Date" %}</label>
           <input type="date" name="to_date" value="{{ to_date }}"
-                 class="text-sm border border-dark-50 rounded-md p-2">
+                 class="text-sm border border-dark-50 rounded-md p-2.5 w-full">
         </div>
-        <div style="min-width:220px;">
-          <label class="text-xs block mb-1">{% trans "Employee" %}</label>
-          <select name="employee_id" multiple class="text-sm border border-dark-50 rounded-md p-2 w-full" style="min-height:38px;">
+        <div>
+          <label class="text-xs font-medium block mb-1">{% trans "Employee" %}</label>
+          <select name="employee_id"
+                  class="text-sm border border-dark-50 rounded-md p-2.5 w-full">
+            <option value="">{% trans "All Employees" %}</option>
             {% for employee in employees %}
               <option value="{{ employee.pk }}">{{ employee.get_full_name }}{% if employee.badge_id %} ({{ employee.badge_id }}){% endif %}</option>
             {% endfor %}
           </select>
         </div>
-        <div style="min-width:170px;">
-          <label class="text-xs block mb-1">{% trans "Department" %}</label>
-          <select name="department_id" multiple class="text-sm border border-dark-50 rounded-md p-2 w-full" style="min-height:38px;">
+        <div>
+          <label class="text-xs font-medium block mb-1">{% trans "Department" %}</label>
+          <select name="department_id"
+                  class="text-sm border border-dark-50 rounded-md p-2.5 w-full">
+            <option value="">{% trans "All Departments" %}</option>
             {% for department in departments %}
               <option value="{{ department.pk }}">{{ department.department }}</option>
             {% endfor %}
           </select>
         </div>
-        <div style="min-width:170px;">
-          <label class="text-xs block mb-1">{% trans "Shift" %}</label>
-          <select name="shift_id" multiple class="text-sm border border-dark-50 rounded-md p-2 w-full" style="min-height:38px;">
+        <div>
+          <label class="text-xs font-medium block mb-1">{% trans "Shift" %}</label>
+          <select name="shift_id"
+                  class="text-sm border border-dark-50 rounded-md p-2.5 w-full">
+            <option value="">{% trans "All Shifts" %}</option>
             {% for shift in shifts %}
               <option value="{{ shift.pk }}">{{ shift.employee_shift }}</option>
             {% endfor %}
           </select>
         </div>
-        <div style="min-width:150px;">
-          <label class="text-xs block mb-1">{% trans "Status" %}</label>
-          <select name="status" class="text-sm border border-dark-50 rounded-md p-2 w-full">
+        <div>
+          <label class="text-xs font-medium block mb-1">{% trans "Status" %}</label>
+          <select name="status" class="text-sm border border-dark-50 rounded-md p-2.5 w-full">
             <option value="">{% trans "All" %}</option>
             {% for value,label in status_choices %}
               <option value="{{ value }}">{{ label }}</option>
             {% endfor %}
+            <option value="Late">{% trans "Late" %}</option>
           </select>
         </div>
-        <div style="min-width:200px;">
-          <label class="text-xs block mb-1">{% trans "Name / Employee ID" %}</label>
+        <div>
+          <label class="text-xs font-medium block mb-1">{% trans "Name / Employee ID" %}</label>
           <input type="text" name="search" placeholder="{% trans 'Search employee...' %}"
-                 class="text-sm border border-dark-50 rounded-md p-2 w-full">
+                 class="text-sm border border-dark-50 rounded-md p-2.5 w-full">
         </div>
-        <button type="submit" class="px-4 py-2 bg-brand-600 text-white rounded-md text-xs">
-          <ion-icon name="filter-outline"></ion-icon> {% trans "Apply" %}
-        </button>
-        <a href="{% url 'attendance-daily-report' %}" class="px-4 py-2 border border-dark-50 rounded-md text-xs">
-          {% trans "Reset" %}
-        </a>
+        <div class="flex items-end gap-2">
+          <button type="submit" class="px-5 py-2.5 bg-brand-600 text-white rounded-md text-xs flex items-center gap-2">
+            <ion-icon name="filter-outline"></ion-icon> {% trans "Apply Filters" %}
+          </button>
+          <a href="{% url 'attendance-daily-report' %}" class="px-5 py-2.5 border border-dark-50 rounded-md text-xs bg-white">
+            {% trans "Reset" %}
+          </a>
+        </div>
       </div>
     </form>
 
@@ -94,9 +112,11 @@
 document.body.addEventListener("htmx:afterRequest", function () {
   const form = document.getElementById("attendance-report-filter");
   const exportLink = document.getElementById("attendance-report-export");
-  if (!form || !exportLink) return;
+  const pdfLink = document.getElementById("attendance-report-pdf");
+  if (!form || !exportLink || !pdfLink) return;
   const params = new URLSearchParams(new FormData(form));
   exportLink.href = "{% url 'attendance-daily-report-export' %}?" + params.toString();
+  pdfLink.href = "{% url 'attendance-daily-report-pdf' %}?" + params.toString();
 });
 </script>
 {% endblock %}
