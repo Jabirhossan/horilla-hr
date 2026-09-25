@@ -2838,6 +2838,20 @@ def work_record_export(request):
             specific_employee_holidays.setdefault(emp.pk, set()).add(h.start_date)
 
     record_lookup = defaultdict(lambda: "ABS")
+    export_shift_ids = {
+        record.shift_id_id
+        for record in records
+        if record.shift_id_id
+    }
+    export_schedule_map = {}
+    if export_shift_ids:
+        export_schedule_map = {
+            (schedule.shift_id_id, (schedule.day.day or "").lower()): schedule
+            for schedule in EmployeeShiftSchedule.objects.filter(
+                shift_id__in=export_shift_ids
+            ).select_related("day")
+        }
+
     for record in records:
         # Previously skipped records dated after today, which silently
         # dropped real, already-known statuses (e.g. an approved future
@@ -2845,7 +2859,13 @@ def work_record_export(request):
         # below already decides how each day should render; this loop just
         # needs every record available for it to consult.
         record_key = (record.employee_id, record.date)
-        record_lookup[record_key] = record.work_record_type
+        record_status = record.work_record_type
+        schedule = export_schedule_map.get(
+            (record.shift_id_id, record.date.strftime("%A").lower())
+        )
+        if attendance_window_violation(record.attendance_id, schedule):
+            record_status = "ABS"
+        record_lookup[record_key] = record_status
 
     date_format = request.user.employee_get.get_date_format()
     format_string = settings.HORILLA_DATE_FORMATS.get(date_format)
