@@ -76,6 +76,7 @@ from attendance.forms import (
 from attendance.methods.utils import (
     Request,
     attendance_day_checking,
+    attendance_window_violation,
     format_time,
     is_reportingmanger,
     monthly_leave_days,
@@ -2606,7 +2607,35 @@ def work_records_change_month(request):
         date__in=month_dates, employee_id__in=page_emp.object_list
     ).select_related("employee_id", "shift_id", "attendance_id")
 
-    work_records_dict = {(wr.employee_id.id, wr.date): wr for wr in work_records}
+    shift_ids = {
+        wr.shift_id_id
+        for wr in work_records
+        if wr.shift_id_id
+    }
+    schedule_map = {}
+    if shift_ids:
+        schedules = EmployeeShiftSchedule.objects.filter(
+            shift_id__in=shift_ids
+        ).select_related("day")
+        schedule_map = {
+            (schedule.shift_id_id, (schedule.day.day or "").lower()): schedule
+            for schedule in schedules
+        }
+
+    work_records_dict = {}
+    for wr in work_records:
+        schedule = schedule_map.get(
+            (
+                wr.shift_id_id,
+                month_dates[0].strftime("%A").lower()
+                if False else wr.date.strftime("%A").lower(),
+            )
+        )
+        if attendance_window_violation(wr.attendance_id, schedule):
+            # Keep the stored WorkRecords row unchanged; only the displayed
+            # Daily Work Status is corrected from the configured shift window.
+            wr.work_record_type = "ABS"
+        work_records_dict[(wr.employee_id.id, wr.date)] = wr
 
     work_record_table = {
         employee: [
