@@ -148,143 +148,50 @@
             </p>
         </div>
     </div>
-    <div class="bg-[#0000000a] p-3 rounded-md">
-        <div class="flex gap-3 justify-between font-semibold p-3 rounded-md bg-[#0000001a] text-sm mb-2">
-            <p class="w-1/2">{% trans "Deductions" %}</p>
-            <p class="flex-1 flex justify-between">
-                {% trans "Amount" %}
-                {% if perms.payroll.add_deduction and instance.status != "paid" %}
-                    <button
-                        title="{% trans 'Add Deduction' %}"
-                        hx-get="{% url 'add-payslip-deduction' %}?employee_id={{employee.id}}&payslip_id={{instance.id}}"
-                        hx-target="#objectCreateModalTarget"
-                        data-target="#objectCreateModal"
-                        data-toggle="oh-modal-toggle"
-                    >
-                        <img
-                            src="{% static 'horilla_theme/assets/img/icons/more.svg' %}"
-                            alt="{% trans 'Create' %}"
-                            width="15"
-                        >
-                    </button>
-                {% endif %}
-            </p>
-        </div>
-        <div class="flex gap-3 text-sm justify-between mb-2 px-2">
-            <p class="w-1/2 text-sm">{% trans "Loss of Pay" %} — {{ absent|floatformat:0 }} {% trans "days absent" %}</p>
-            <p class="flex-1 font-medium">{{ absent_deduction|floatformat:2|currency_symbol_position }}</p>
-        </div>
-        {% if outside_period_deduction %}
-        <div class="flex gap-3 text-sm justify-between mb-2 px-2">
-            <p class="w-1/2 text-sm">{% trans "Outside Payroll Period" %} — {{ outside_period_days|floatformat:0 }} {% trans "days" %}</p>
-            <p class="flex-1 font-medium">{{ outside_period_deduction|floatformat:2|currency_symbol_position }}</p>
-        </div>
-        {% endif %}
-        {% if custom_leave_deduction %}
-            <div class="flex gap-3 text-sm justify-between mb-2 px-2" style="color: #c47d00">
-                <p class="w-1/2 text-sm flex flex-col">
-                    <span>{% trans "Leave Payment Reduction" %}</span>
-                    <span class="text-xs" style="color: #888">{% blocktrans %}Partial deduction — {{ partial_pay_days }}
-                            day(s) on a partially paid leave type{% endblocktrans %}</span>
-                </p>
-                <p class="flex-1 font-medium">
-                    {{ custom_leave_deduction|floatformat:2|currency_symbol_position }}
-                </p>
-            </div>
-        {% endif %}
-        {% for deduction in basic_pay_deductions %}
-            <div class="flex gap-3 text-sm justify-between mb-2 px-2">
-                <p class="w-1/2 text-sm flex">
-                    {{ deduction.title }}
-                    <img
-                        src="{% static 'horilla_theme/assets/img/icons/info.svg' %}"
-                        alt="{% trans 'Info' %}"
-                        class="pl-2"
-                        title="{% trans 'Basic Pay Deductions' %}"
-                    >
-                </p>
-                <p class="flex-1 font-medium">
-                    {{ deduction.amount|floatformat:2|currency_symbol_position }}
-                </p>
-            </div>
-        {% endfor %}
-        {% for deduction in gross_pay_deductions %}
-            <div class="flex gap-3 text-sm justify-between mb-2 px-2">
-                <p class="w-1/2 text-sm flex">
-                    {{ deduction.title }}
-                    <img
-                        src="{% static 'horilla_theme/assets/img/icons/info.svg' %}"
-                        alt="{% trans 'Info' %}"
-                        class="pl-2"
-                        title="{% trans 'Gross Pay Deductions' %}"
-                    >
-                </p>
-                <p class="flex-1 font-medium">
-                    {{ deduction.amount|floatformat:2|currency_symbol_position }}
-                </p>
-            </div>
-        {% endfor %}
-        {% for deduction in pretax_deductions %}
-            <div class="flex gap-3 text-sm justify-between mb-2 px-2">
-                <p class="w-1/2 text-sm">{{ deduction.title }}</p>
-                <p class="flex-1 font-medium">
-                    {{ deduction.amount|floatformat:2|currency_symbol_position }}
-                </p>
-            </div>
-        {% endfor %}
-        {% for deduction in post_tax_deductions %}
-            <div class="flex gap-3 text-sm justify-between mb-2 px-2">
-                <p class="w-1/2 text-sm">{{ deduction.title }}</p>
-                <p class="flex-1 font-medium">
-                    {{ deduction.amount|floatformat:2|currency_symbol_position }}
-                </p>
-            </div>
-        {% endfor %}
-        <div class="flex gap-3 text-sm justify-between mb-2 px-2">
-            <p class="w-1/2 text-sm">{% trans "Income Tax" %}</p>
-            <p class="flex-1 font-medium">
-                {{ federal_tax|floatformat:2|currency_symbol_position }}
-            </p>
-        </div>
-        {% for deduction in tax_deductions %}
-            <div class="flex gap-3 text-sm justify-between mb-2 px-2">
-                <p class="w-1/2 text-sm">{{ deduction.title }}</p>
-                <p class="flex-1 font-medium">
-                    {{ deduction.amount|floatformat:2|currency_symbol_position }}
-                </p>
-            </div>
-        {% endfor %}
-        {% for deduction in net_deductions %}
-            <div class="flex gap-3 text-sm justify-between mb-2 px-2">
-                <p class="w-1/2 text-sm flex">
-                    {{ deduction.title }}
-                    <img
-                        src="{% static 'horilla_theme/assets/img/icons/info.svg' %}"
-                        alt="{% trans 'Info' %}"
-                        class="pl-2"
-                        title="{% trans 'Net Pay Deductions' %}"
-                    >
-                </p>
-                <p class="flex-1 font-medium">
-                    {{ deduction.amount|floatformat:2|currency_symbol_position }}
-                </p>
-            </div>
-        {% endfor %}
+    <div class="bg-white border border-[#d9dde3] rounded-lg p-4 text-sm">
+        <h3 class="font-bold text-base mb-4">{% trans "Salary Summary" %}</h3>
 
-        <div class="flex gap-3 text-sm justify-between px-2">
-            <p class="w-1/2 text-sm flex items-center gap-3 font-semibold">
-                <span>{% trans "Total Deductions" %}</span>
-                <button>
-                    <img
-                        src="{% static 'horilla_theme/assets/img/icons/info.svg' %}"
-                        title="{% trans 'Some deductions are not included in the total deductions because they are given as updated compensations. These deductions may be applied before the main calculation begins, such as from the basic pay or gross pay, while others are deducted after calculating the net pay.' %}"
-                        alt="{% trans 'Info' %}"
-                    >
-                </button>
-            </p>
-            <p class="flex-1 font-semibold">
-                {{ salary_deduction_total|floatformat:2|currency_symbol_position }}
-            </p>
+        <div class="flex justify-between py-2 border-b border-[#eceff2]">
+            <span class="font-semibold">{% trans "Basic Salary" %}</span>
+            <span class="font-semibold">{{ instance.contract_wage|floatformat:2|currency_symbol_position }}</span>
+        </div>
+
+        <div class="pt-4">
+            <p class="font-bold mb-2">{% trans "Deduction" %}</p>
+
+            <div class="flex justify-between py-2 pl-3">
+                <span>{% trans "Loss of Pay" %} — {{ absent|floatformat:0 }} {% trans "days absent" %}</span>
+                <span>{{ absent_deduction|floatformat:2|currency_symbol_position }}</span>
+            </div>
+
+            {% if outside_period_deduction %}
+            <div class="flex justify-between py-2 pl-3">
+                <span>{% trans "Outside Payroll Period" %} — {{ outside_period_days|floatformat:0 }} {% trans "days" %}</span>
+                <span>{{ outside_period_deduction|floatformat:2|currency_symbol_position }}</span>
+            </div>
+            {% endif %}
+
+            {% if unpaid_leave_deduction %}
+            <div class="flex justify-between py-2 pl-3">
+                <span>{% trans "Unpaid Leave" %}</span>
+                <span>{{ unpaid_leave_deduction|floatformat:2|currency_symbol_position }}</span>
+            </div>
+            {% endif %}
+
+            <div class="flex justify-between py-3 mt-1 border-t border-dashed border-[#c9ced4] font-bold">
+                <span>{% trans "Total Deduction" %}</span>
+                <span>{{ salary_deduction_total|floatformat:2|currency_symbol_position }}</span>
+            </div>
+        </div>
+
+        <div class="flex justify-between py-3 mt-1 border-t border-[#d9dde3] font-bold">
+            <span>{% trans "Gross Pay / Payable Salary" %}</span>
+            <span>{{ gross_pay|floatformat:2|currency_symbol_position }}</span>
+        </div>
+
+        <div class="flex justify-between pt-3 font-bold">
+            <span>{% trans "Net Payable" %}</span>
+            <span>{{ net_pay|floatformat:2|currency_symbol_position }}</span>
         </div>
     </div>
     {% if custom_leave_breakdown %}
