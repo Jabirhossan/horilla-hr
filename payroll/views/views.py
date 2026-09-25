@@ -670,6 +670,19 @@ def view_payslip_pdf(request, payslip_id):
             data["summary_net_pay"] = float(payslip.net_pay or data.get("net_pay", 0) or 0)
             data["summary_worked_days"] = data.get("paid_days", 0)
             data["summary_per_day_amount"] = per_day_amount
+            # Always expose the current approved paid/unpaid leave split
+            # on the payslip. This also makes older saved payslips display
+            # leave information that was missing from their original JSON.
+            leave_data = get_leaves(payslip.employee_id, start_date, end_date)
+            data["paid_leave"] = leave_data.get("paid_leave", 0)
+            data["unpaid_leave"] = leave_data.get("unpaid_leaves", 0)
+            data["partial_pay_days"] = leave_data.get("partial_pay_days", 0)
+            data["paid_leave_dates"] = leave_data.get("paid_leave_dates", [])
+            data["unpaid_leave_dates"] = leave_data.get("unpaid_leave_dates", [])
+            data["summary_paid_leave"] = float(leave_data.get("paid_leave", 0) or 0)
+            data["summary_unpaid_leave"] = float(leave_data.get("unpaid_leaves", 0) or 0)
+            data["summary_partial_pay_days"] = float(leave_data.get("partial_pay_days", 0) or 0)
+
             data["summary_joining_date"] = getattr(employee, "date_of_joining", None)
             data["summary_designation"] = getattr(
                 getattr(employee, "employee_work_info", None),
