@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+@page { size: A4 landscape; margin: 10mm 10mm 15mm 10mm; }
+body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 9px; color:#1f2937; }
+.header { text-align:center; border-bottom:2px solid #1f2937; padding-bottom:10px; margin-bottom:12px; }
+.company { font-size:18px; font-weight:bold; }
+.title { font-size:14px; font-weight:bold; margin-top:4px; }
+.period { font-size:10px; margin-top:3px; color:#555; }
+.summary { width:100%; border-collapse:separate; border-spacing:6px; margin-bottom:10px; }
+.summary td { border:1px solid #ddd; padding:7px; width:25%; }
+.label { color:#666; font-size:8px; }
+.value { font-size:12px; font-weight:bold; margin-top:2px; }
+table.data { width:100%; border-collapse:collapse; }
+.data th { background:#eef2f7; border:1px solid #cfd5dc; padding:6px 4px; font-size:8px; }
+.data td { border:1px solid #d8dde3; padding:5px 4px; }
+.num { text-align:right; }
+.center { text-align:center; }
+.total td { font-weight:bold; background:#f5f7fa; }
+.signatures { width:100%; margin-top:45px; }
+.signatures td { width:33%; text-align:center; padding-top:18px; }
+.line { border-top:1px solid #333; margin:0 25px 5px; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="company">{{ company.company|default:"Company" }}</div>
+  <div class="title">SALARY SHEET</div>
+  <div class="period">Payroll Month: {{ month_start|date:"F Y" }}</div>
+</div>
+
+<table class="summary">
+<tr>
+<td><div class="label">TOTAL EMPLOYEES</div><div class="value">{{ total_employees }}</div></td>
+<td><div class="label">TOTAL BASIC SALARY</div><div class="value">{{ total_basic|floatformat:2 }}</div></td>
+<td><div class="label">TOTAL DEDUCTION</div><div class="value">{{ total_deduction|floatformat:2 }}</div></td>
+<td><div class="label">NET PAYABLE</div><div class="value">{{ total_net|floatformat:2 }}</div></td>
+</tr>
+</table>
+
+<table class="data">
+<thead><tr>
+<th>Employee</th><th>Employee ID</th><th>Present</th><th>Absent</th><th>Leave</th><th>Half Day</th>
+<th>Basic Salary</th><th>Deduction</th><th>Net Payable</th><th>Status</th>
+</tr></thead>
+<tbody>
+{% for row in rows %}
+<tr>
+<td>{{ row.employee }}</td><td>{{ row.employee_id }}</td>
+<td class="center">{{ row.present }}</td><td class="center">{{ row.absent }}</td>
+<td class="center">{{ row.leave }}</td><td class="center">{{ row.half_day }}</td>
+<td class="num">{{ row.basic_salary|floatformat:2 }}</td>
+<td class="num">{% if row.deduction != None %}{{ row.deduction|floatformat:2 }}{% else %}-{% endif %}</td>
+<td class="num">{% if row.net_payable != None %}{{ row.net_payable|floatformat:2 }}{% else %}-{% endif %}</td>
+<td class="center">{{ row.status }}</td>
+</tr>
+{% empty %}
+<tr><td colspan="10" class="center">No employees found.</td></tr>
+{% endfor %}
+{% if rows %}
+<tr class="total">
+<td colspan="2">TOTAL</td>
+<td class="center">{{ rows|length }}</td>
+<td colspan="3"></td>
+<td class="num">{{ total_basic|floatformat:2 }}</td>
+<td class="num">{{ total_deduction|floatformat:2 }}</td>
+<td class="num">{{ total_net|floatformat:2 }}</td>
+<td></td>
+</tr>
+{% endif %}
+</tbody>
+</table>
+
+<table class="signatures">
+<tr>
+<td><div class="line"></div>Prepared By</td>
+<td><div class="line"></div>Checked By</td>
+<td><div class="line"></div>Approved By</td>
+</tr>
+</table>
+</body>
+</html>
