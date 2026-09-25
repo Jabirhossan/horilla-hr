@@ -15,6 +15,8 @@ from django.views.decorators.http import require_GET
 
 from employee.models import Employee
 from base.models import Company
+from attendance.models import WorkRecords
+from attendance.views.daily_report import build_daily_report
 from horilla.decorators import login_required, permission_required
 from payroll.models.models import Payslip
 
@@ -103,31 +105,56 @@ def build_salary_sheet(month_value="", employee_id=""):
     for contract in contracts:
         contract_map.setdefault(contract.employee_id_id, contract)
 
-    try:
-        from attendance.models import WorkRecords
+    # Use the same status engine as Attendance -> Daily Report so the
+    # salary sheet cannot drift from the attendance report.
+    # Generated payslips use their actual payroll period (e.g. Sep 1-25),
+    # while employees without a payslip use the full selected month.
+    report_ranges = set()
+    for employee in employees:
+        payslip = payslip_map.get(employee.pk)
+        if payslip:
+            report_ranges.add((payslip.start_date, payslip.end_date))
+        else:
+            report_ranges.add((month_start, month_end))
 
-        records = WorkRecords.objects.filter(
-            employee_id_id__in=employee_ids,
-            date__gte=month_start,
-            date__lte=month_end,
-        ).values("employee_id_id", "work_record_type", "is_leave_record")
-    except Exception:
-        records = []
-
-    attendance = {}
-    for record in records:
-        key = record["employee_id_id"]
-        stats = attendance.setdefault(
-            key, {"present": 0, "absent": 0, "leave": 0, "half_day": 0}
+    attendance_by_range = {}
+    for range_start, range_end in report_ranges:
+        report_rows, _report_summary = build_daily_report(
+            range_start,
+            range_end,
+            employee_qs,
         )
-        if record["is_leave_record"]:
-            stats["leave"] += 1
-        elif record["work_record_type"] == "FDP":
-            stats["present"] += 1
-        elif record["work_record_type"] == "ABS":
-            stats["absent"] += 1
-        elif record["work_record_type"] == "HDP":
-            stats["half_day"] += 1
+        per_employee = {}
+        for report_row in report_rows:
+            employee_pk = report_row["employee"].pk
+            stats = per_employee.setdefault(
+                employee_pk,
+                {"present": 0, "absent": 0, "leave": 0, "half_day": 0},
+            )
+            status = str(report_row["status"]).lower()
+            if "half day" in status:
+                stats["half_day"] += 1
+            elif "absent" in status:
+                stats["absent"] += 1
+            elif "present" in status:
+                stats["present"] += 1
+        attendance_by_range[(range_start, range_end)] = per_employee
+
+    # Leave is kept as a separate payroll-sheet column. WorkRecords is the
+    # attendance system's persisted leave marker, so count it only inside the
+    # same payroll/report period used above.
+    leave_by_range = {}
+    for range_start, range_end in report_ranges:
+        leave_by_range[(range_start, range_end)] = {
+            employee_id: count
+            for employee_id, count in WorkRecords.objects.filter(
+                employee_id_id__in=employee_ids,
+                date__range=(range_start, range_end),
+                is_leave_record=True,
+            ).values("employee_id_id").annotate(count=__import__("django.db.models", fromlist=["Count"]).Count("id")).values_list(
+                "employee_id_id", "count"
+            )
+        }
 
     rows = []
     total_basic = total_deduction = total_net = 0.0
@@ -136,14 +163,24 @@ def build_salary_sheet(month_value="", employee_id=""):
     for employee in employees:
         payslip = payslip_map.get(employee.pk)
         contract = contract_map.get(employee.pk)
-        stats = attendance.get(
+        payslip_range = (
+            (payslip.start_date, payslip.end_date)
+            if payslip
+            else (month_start, month_end)
+        )
+        stats = attendance_by_range.get(payslip_range, {}).get(
             employee.pk,
             {"present": 0, "absent": 0, "leave": 0, "half_day": 0},
         )
+        stats = {**stats, "leave": leave_by_range.get(payslip_range, {}).get(employee.pk, 0)}
+
+        # Basic Salary in the sheet is always the employee's contract wage.
+        # payslip.basic_pay is the payable/basic amount after attendance
+        # adjustments and must never replace the contractual salary here.
+        basic = float(contract.wage or 0) if contract else 0
 
         if payslip:
-            basic = float(payslip.basic_pay or 0)
-            deduction = float(payslip.deduction or 0)
+            deduction = round(basic - float(payslip.net_pay or 0), 2)
             net = float(payslip.net_pay or 0)
             status = payslip.get_status()
             generated_count += 1
@@ -151,7 +188,6 @@ def build_salary_sheet(month_value="", employee_id=""):
             total_deduction += deduction
             total_net += net
         else:
-            basic = float(contract.wage or 0) if contract else 0
             deduction = None
             net = None
             status = _("Not Generated")
