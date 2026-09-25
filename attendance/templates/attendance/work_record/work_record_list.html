@@ -134,7 +134,9 @@
                             class="days {% if work_record and work_record.date in leave_dates or work_record is None and day in leave_dates %}holiday{% endif %}"
                             style="text-align:center; cursor:default;
                         {% if work_record %}
-                            {% if work_record.work_record_type == 'CONF' %}
+                            {% if work_record.window_violation_absent %}
+                                background-color: #808080; color: #fff;
+                            {% elif work_record.work_record_type == 'CONF' %}
                                 background-color: #ed4c4c; color: #fff;
                             {% elif work_record.is_leave_record and work_record.work_record_type == 'FDP' %}
                                 background-color: #c65d0f; color: #fff;
@@ -155,7 +157,7 @@
                                         title="{{work_record.title_message}}"
                                     {% endif %}
                                     class="fw-bold"
-                                    onclick="{% if work_record.work_record_type == 'ABS' %}
+                                    onclick="{% if work_record.window_violation_absent or work_record.work_record_type == 'ABS' %}
                                         window.location.href = `{% url 'request-view' %}?employee_id={{work_record.employee_id.id}}&from_date={{work_record.date|date:'Y-m-d'}}&to_date={{work_record.date|date:'Y-m-d'}}`;
                                     {% elif work_record.work_record_type != 'DFT' %}
                                         {% if work_record.work_record_type == 'CONF' %}
@@ -167,7 +169,9 @@
                                     {% endif %}"
                                 >
                                     <a class="text-decoration-none" role="button">
-                                        {% if work_record.work_record_type == 'CONF' %}
+                                        {% if work_record.window_violation_absent %}
+                                            ABS
+                                        {% elif work_record.work_record_type == 'CONF' %}
                                             !
                                         {% elif work_record.work_record_type == 'FDP' %}
                                             P
