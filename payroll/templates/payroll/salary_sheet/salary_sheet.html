@@ -2,27 +2,47 @@
 {% load i18n %}
 
 {% block content %}
-<div class="oh-wrapper">
+<style>
+@media print {
+  body * { visibility: hidden !important; }
+  #salary-sheet-print, #salary-sheet-print * { visibility: visible !important; }
+  #salary-sheet-print { position: absolute; left: 0; top: 0; width: 100%; }
+  .no-print { display:none !important; }
+}
+.salary-header { border-bottom:2px solid #e5e7eb; }
+.salary-table th { white-space:nowrap; }
+</style>
+
+<div class="oh-wrapper no-print">
   <div class="oh-container" style="padding-top:1.25rem;">
-    <div class="flex flex-wrap justify-between items-center mb-3">
+    <div class="flex flex-wrap justify-between items-center mb-4">
       <div>
         <h3 class="text-lg font-semibold" style="margin:0;">{% trans "Salary Sheet" %}</h3>
         <p class="text-xs text-color-500" style="margin-top:4px;">
-          {% trans "Monthly employee attendance and salary summary." %}
+          {% trans "Monthly attendance and payroll summary for all employees." %}
         </p>
       </div>
-      <a id="salary-sheet-export"
-         href="{% url 'salary-sheet-export' %}?month={{ month_value }}"
-         class="px-4 py-2 bg-brand-600 text-white rounded-md text-xs flex items-center gap-2">
-        <ion-icon name="download-outline"></ion-icon>
-        {% trans "Export XLSX" %}
-      </a>
+      <div class="flex gap-2">
+        <a href="{% url 'salary-sheet-pdf' %}?month={{ month_value }}{% if selected_employee %}&employee_id={{ selected_employee }}{% endif %}"
+           target="_blank"
+           class="px-4 py-2 border border-dark-50 rounded-md text-xs bg-white flex items-center gap-2">
+          <ion-icon name="document-text-outline"></ion-icon> {% trans "PDF" %}
+        </a>
+        <button type="button" onclick="window.print()"
+           class="px-4 py-2 border border-dark-50 rounded-md text-xs bg-white flex items-center gap-2">
+          <ion-icon name="print-outline"></ion-icon> {% trans "Print" %}
+        </button>
+        <a href="{% url 'salary-sheet-export' %}?month={{ month_value }}{% if selected_employee %}&employee_id={{ selected_employee }}{% endif %}"
+           class="px-4 py-2 bg-brand-600 text-white rounded-md text-xs flex items-center gap-2">
+          <ion-icon name="download-outline"></ion-icon> {% trans "Excel" %}
+        </a>
+      </div>
     </div>
 
     <form method="get" class="border border-dark-50 rounded-md p-4 mb-4 bg-white">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
         <div>
-          <label class="text-xs font-medium block mb-1">{% trans "Month" %}</label>
+          <label class="text-xs font-medium block mb-1">{% trans "Payroll Month" %}</label>
           <input type="month" name="month" value="{{ month_value }}"
                  class="text-sm border border-dark-50 rounded-md p-2.5 w-full">
         </div>
@@ -38,72 +58,84 @@
           </select>
         </div>
         <div class="flex items-end gap-2">
-          <button type="submit" class="px-5 py-2.5 bg-brand-600 text-white rounded-md text-xs">
-            {% trans "Apply" %}
-          </button>
-          <a href="{% url 'salary-sheet' %}" class="px-5 py-2.5 border border-dark-50 rounded-md text-xs bg-white">
-            {% trans "Reset" %}
-          </a>
+          <button type="submit" class="px-5 py-2.5 bg-brand-600 text-white rounded-md text-xs">{% trans "Apply" %}</button>
+          <a href="{% url 'salary-sheet' %}" class="px-5 py-2.5 border border-dark-50 rounded-md text-xs bg-white">{% trans "Reset" %}</a>
         </div>
       </div>
     </form>
+  </div>
+</div>
 
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-      <div class="border border-dark-50 rounded-md p-4 bg-white">
-        <div class="text-xs text-color-500">{% trans "Employees" %}</div>
-        <div class="text-xl font-semibold mt-1">{{ total_employees }}</div>
+<div id="salary-sheet-print">
+  <div class="oh-wrapper">
+    <div class="oh-container" style="padding-top:1rem;">
+      <div class="salary-header pb-3 mb-4">
+        <div class="text-xl font-bold">{{ company.company|default:"Company" }}</div>
+        <div class="text-sm font-semibold mt-1">{% trans "SALARY SHEET" %}</div>
+        <div class="text-xs text-color-500 mt-1">{% trans "Payroll Month" %}: {{ month_start|date:"F Y" }}</div>
       </div>
-      <div class="border border-dark-50 rounded-md p-4 bg-white">
-        <div class="text-xs text-color-500">{% trans "Basic Salary" %}</div>
-        <div class="text-xl font-semibold mt-1">{{ total_basic|floatformat:2 }}</div>
-      </div>
-      <div class="border border-dark-50 rounded-md p-4 bg-white">
-        <div class="text-xs text-color-500">{% trans "Deduction" %}</div>
-        <div class="text-xl font-semibold mt-1">{{ total_deduction|floatformat:2 }}</div>
-      </div>
-      <div class="border border-dark-50 rounded-md p-4 bg-white">
-        <div class="text-xs text-color-500">{% trans "Net Payable" %}</div>
-        <div class="text-xl font-semibold mt-1">{{ total_net|floatformat:2 }}</div>
-      </div>
-    </div>
 
-    <div class="border border-dark-50 rounded-md bg-white overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="border-b border-dark-50 bg-[#f8f9fb]">
-            <th class="text-left p-3">{% trans "Employee" %}</th>
-            <th class="text-left p-3">{% trans "Employee ID" %}</th>
-            <th class="text-center p-3">{% trans "Present" %}</th>
-            <th class="text-center p-3">{% trans "Absent" %}</th>
-            <th class="text-center p-3">{% trans "Leave" %}</th>
-            <th class="text-center p-3">{% trans "Half Day" %}</th>
-            <th class="text-right p-3">{% trans "Basic Salary" %}</th>
-            <th class="text-right p-3">{% trans "Deduction" %}</th>
-            <th class="text-right p-3">{% trans "Net Payable" %}</th>
-            <th class="text-center p-3">{% trans "Status" %}</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for row in rows %}
-          <tr class="border-b border-dark-50">
-            <td class="p-3 font-medium">{{ row.employee }}</td>
-            <td class="p-3">{{ row.employee_id }}</td>
-            <td class="p-3 text-center">{{ row.present }}</td>
-            <td class="p-3 text-center">{{ row.absent }}</td>
-            <td class="p-3 text-center">{{ row.leave }}</td>
-            <td class="p-3 text-center">{{ row.half_day }}</td>
-            <td class="p-3 text-right">{{ row.basic_salary|floatformat:2 }}</td>
-            <td class="p-3 text-right">{{ row.deduction|floatformat:2 }}</td>
-            <td class="p-3 text-right font-semibold">{{ row.net_payable|floatformat:2 }}</td>
-            <td class="p-3 text-center">{{ row.status }}</td>
-          </tr>
-        {% empty %}
-          <tr><td colspan="10" class="p-8 text-center text-color-500">
-            {% trans "No payslips found for this month. Generate payslips first." %}
-          </td></tr>
-        {% endfor %}
-        </tbody>
-      </table>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+        <div class="border border-dark-50 rounded-md p-4 bg-white">
+          <div class="text-xs text-color-500">{% trans "Total Employees" %}</div>
+          <div class="text-xl font-semibold mt-1">{{ total_employees }}</div>
+        </div>
+        <div class="border border-dark-50 rounded-md p-4 bg-white">
+          <div class="text-xs text-color-500">{% trans "Total Salary" %}</div>
+          <div class="text-xl font-semibold mt-1">{{ total_basic|floatformat:2 }}</div>
+        </div>
+        <div class="border border-dark-50 rounded-md p-4 bg-white">
+          <div class="text-xs text-color-500">{% trans "Total Deduction" %}</div>
+          <div class="text-xl font-semibold mt-1">{{ total_deduction|floatformat:2 }}</div>
+        </div>
+        <div class="border border-dark-50 rounded-md p-4 bg-white">
+          <div class="text-xs text-color-500">{% trans "Net Payable" %}</div>
+          <div class="text-xl font-semibold mt-1">{{ total_net|floatformat:2 }}</div>
+        </div>
+      </div>
+
+      <div class="border border-dark-50 rounded-md bg-white overflow-x-auto">
+        <table class="salary-table w-full text-sm">
+          <thead>
+            <tr class="border-b border-dark-50 bg-[#f8f9fb]">
+              <th class="text-left p-3">{% trans "Employee" %}</th>
+              <th class="text-left p-3">{% trans "Employee ID" %}</th>
+              <th class="text-center p-3">{% trans "Present" %}</th>
+              <th class="text-center p-3">{% trans "Absent" %}</th>
+              <th class="text-center p-3">{% trans "Leave" %}</th>
+              <th class="text-center p-3">{% trans "Half Day" %}</th>
+              <th class="text-right p-3">{% trans "Basic Salary" %}</th>
+              <th class="text-right p-3">{% trans "Deduction" %}</th>
+              <th class="text-right p-3">{% trans "Net Payable" %}</th>
+              <th class="text-center p-3">{% trans "Status" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for row in rows %}
+            <tr class="border-b border-dark-50">
+              <td class="p-3 font-medium">{{ row.employee }}</td>
+              <td class="p-3">{{ row.employee_id }}</td>
+              <td class="p-3 text-center">{{ row.present }}</td>
+              <td class="p-3 text-center">{{ row.absent }}</td>
+              <td class="p-3 text-center">{{ row.leave }}</td>
+              <td class="p-3 text-center">{{ row.half_day }}</td>
+              <td class="p-3 text-right">{{ row.basic_salary|floatformat:2 }}</td>
+              <td class="p-3 text-right">{% if row.deduction != None %}{{ row.deduction|floatformat:2 }}{% else %}-{% endif %}</td>
+              <td class="p-3 text-right font-semibold">{% if row.net_payable != None %}{{ row.net_payable|floatformat:2 }}{% else %}-{% endif %}</td>
+              <td class="p-3 text-center">{{ row.status }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="10" class="p-8 text-center text-color-500">{% trans "No active employees found." %}</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid grid-cols-3 gap-8 mt-16 text-center">
+        <div class="pt-4 border-t border-dark-50">{% trans "Prepared By" %}</div>
+        <div class="pt-4 border-t border-dark-50">{% trans "Checked By" %}</div>
+        <div class="pt-4 border-t border-dark-50">{% trans "Approved By" %}</div>
+      </div>
     </div>
   </div>
 </div>
