@@ -1,0 +1,111 @@
+{% load i18n %}
+
+<div class="grid grid-cols-2 md:grid-cols-6 gap-2 mb-3">
+  <div class="border border-dark-50 rounded-md p-3">
+    <div class="text-xs text-color-500">{% trans "Total Records" %}</div>
+    <div class="text-xl font-semibold">{{ summary.total }}</div>
+  </div>
+  <div class="border border-dark-50 rounded-md p-3">
+    <div class="text-xs text-color-500">{% trans "Present" %}</div>
+    <div class="text-xl font-semibold">{{ summary.present }}</div>
+  </div>
+  <div class="border border-dark-50 rounded-md p-3">
+    <div class="text-xs text-color-500">{% trans "Absent" %}</div>
+    <div class="text-xl font-semibold">{{ summary.absent }}</div>
+  </div>
+  <div class="border border-dark-50 rounded-md p-3">
+    <div class="text-xs text-color-500">{% trans "Half Day" %}</div>
+    <div class="text-xl font-semibold">{{ summary.half_day }}</div>
+  </div>
+  <div class="border border-dark-50 rounded-md p-3">
+    <div class="text-xs text-color-500">{% trans "Late" %}</div>
+    <div class="text-xl font-semibold">{{ summary.late }}</div>
+  </div>
+  <div class="border border-dark-50 rounded-md p-3">
+    <div class="text-xs text-color-500">{% trans "Early Out" %}</div>
+    <div class="text-xl font-semibold">{{ summary.early }}</div>
+  </div>
+</div>
+
+<div class="border border-dark-50 rounded-md overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead>
+      <tr style="background:#f7f8fa;">
+        <th class="p-3 text-left whitespace-nowrap">{% trans "Date" %}</th>
+        <th class="p-3 text-left whitespace-nowrap">{% trans "Employee" %}</th>
+        <th class="p-3 text-left whitespace-nowrap">{% trans "Employee ID" %}</th>
+        <th class="p-3 text-left whitespace-nowrap">{% trans "Branch" %}</th>
+        <th class="p-3 text-left whitespace-nowrap">{% trans "Shift" %}</th>
+        <th class="p-3 text-left whitespace-nowrap">{% trans "Shift Start" %}</th>
+        <th class="p-3 text-left whitespace-nowrap">{% trans "Check-In" %}</th>
+        <th class="p-3 text-left whitespace-nowrap">{% trans "Late" %}</th>
+        <th class="p-3 text-left whitespace-nowrap">{% trans "Shift End" %}</th>
+        <th class="p-3 text-left whitespace-nowrap">{% trans "Check-Out" %}</th>
+        <th class="p-3 text-left whitespace-nowrap">{% trans "Early" %}</th>
+        <th class="p-3 text-left whitespace-nowrap">{% trans "Working Hours" %}</th>
+        <th class="p-3 text-left whitespace-nowrap">{% trans "Status" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr style="border-top:1px solid #edf0f2;">
+        <td class="p-3 whitespace-nowrap">{{ row.date|date:"d M Y" }}</td>
+        <td class="p-3 whitespace-nowrap font-medium">{{ row.employee.get_full_name }}</td>
+        <td class="p-3 whitespace-nowrap">{{ row.employee_id|default:"—" }}</td>
+        <td class="p-3 whitespace-nowrap">{{ row.company|default:"—" }}</td>
+        <td class="p-3 whitespace-nowrap">{{ row.shift|default:"—" }}</td>
+        <td class="p-3 whitespace-nowrap">{{ row.shift_start|time:"H:i"|default:"—" }}</td>
+        <td class="p-3 whitespace-nowrap">{{ row.check_in|time:"H:i"|default:"—" }}</td>
+        <td class="p-3 whitespace-nowrap">
+          {% if row.late_seconds %}
+            <span style="font-weight:600;">{{ row.late }}</span>
+          {% else %}—{% endif %}
+        </td>
+        <td class="p-3 whitespace-nowrap">{{ row.shift_end|time:"H:i"|default:"—" }}</td>
+        <td class="p-3 whitespace-nowrap">{{ row.check_out|time:"H:i"|default:"—" }}</td>
+        <td class="p-3 whitespace-nowrap">
+          {% if row.early_seconds %}
+            <span style="font-weight:600;">{{ row.early }}</span>
+          {% else %}—{% endif %}
+        </td>
+        <td class="p-3 whitespace-nowrap">{{ row.worked }}</td>
+        <td class="p-3 whitespace-nowrap">
+          {% if "Absent" in row.status %}
+            <span class="px-2 py-1 rounded-full text-xs" style="background:#fde8e8;color:#b42318;">{{ row.status }}</span>
+          {% elif "Present" in row.status %}
+            <span class="px-2 py-1 rounded-full text-xs" style="background:#e8f7ee;color:#16794c;">{{ row.status }}</span>
+          {% elif "Half Day" in row.status %}
+            <span class="px-2 py-1 rounded-full text-xs" style="background:#fff4d6;color:#9a6700;">{{ row.status }}</span>
+          {% else %}
+            <span class="px-2 py-1 rounded-full text-xs" style="background:#eef1f4;color:#56616f;">{{ row.status }}</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="13" class="p-8 text-center text-color-500">
+          {% trans "No attendance records found for the selected filters." %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if page.paginator.num_pages > 1 %}
+<div class="flex justify-between items-center mt-3 text-xs">
+  <span>{% trans "Page" %} {{ page.number }} / {{ page.paginator.num_pages }}</span>
+  <div class="flex gap-1">
+    {% if page.has_previous %}
+      <button class="px-3 py-1 border rounded"
+              hx-get="{% url 'attendance-daily-report-table' %}?from_date={{ from_date }}&to_date={{ to_date }}&page={{ page.previous_page_number }}"
+              hx-target="#attendance-report-table">{% trans "Previous" %}</button>
+    {% endif %}
+    {% if page.has_next %}
+      <button class="px-3 py-1 border rounded"
+              hx-get="{% url 'attendance-daily-report-table' %}?from_date={{ from_date }}&to_date={{ to_date }}&page={{ page.next_page_number }}"
+              hx-target="#attendance-report-table">{% trans "Next" %}</button>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
