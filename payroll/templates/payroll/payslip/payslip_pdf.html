@@ -230,7 +230,7 @@
                             <div class="d-flex align-item-center gap-2">
                                 <span class="oh-payslip-left-title">{% trans "Employee Netpay :" %} </span>
                                 <p class="oh-payslip-left-value">
-                                    {{ summary_net_pay|floatformat:2|currency_symbol_position }}<br>
+                                    {{ summary_net_pay|floatformat:2 }} {{ currency }}<br>
                                 </p>
                             </div>
                         </div>
@@ -299,19 +299,19 @@
                             <tbody>
                                 <tr>
                                     <td style="border:1px solid #222; padding:7px;">{% trans "Basic Salary" %}</td>
-                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ summary_basic_salary|floatformat:2|currency_symbol_position }}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ summary_basic_salary|floatformat:2 }} {{ currency }}</td>
                                 </tr>
                                 {% for allowance in summary_allowances %}
                                     {% if allowance.amount %}
                                     <tr>
                                         <td style="border:1px solid #222; padding:7px;">{{ allowance.title }}</td>
-                                        <td style="border:1px solid #222; padding:7px; text-align:right;">{{ allowance.amount|floatformat:2|currency_symbol_position }}</td>
+                                        <td style="border:1px solid #222; padding:7px; text-align:right;">{{ allowance.amount|floatformat:2 }} {{ currency }}</td>
                                     </tr>
                                     {% endif %}
                                 {% endfor %}
                                 <tr>
                                     <td style="border:1px solid #222; padding:7px; text-align:right; font-weight:700;">{% trans "Total Earnings" %}</td>
-                                    <td style="border:1px solid #222; padding:7px; text-align:right; font-weight:700;">{{ summary_total_earnings|floatformat:2|currency_symbol_position }}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right; font-weight:700;">{{ summary_total_earnings|floatformat:2 }} {{ currency }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -326,29 +326,29 @@
                             <tbody>
                                 <tr>
                                     <td style="border:1px solid #222; padding:7px;">{% trans "Absent" %} — {{ summary_absent_days|floatformat:0 }} {% trans "days" %}</td>
-                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ summary_absent_deduction|floatformat:2|currency_symbol_position }}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ summary_absent_deduction|floatformat:2 }} {{ currency }}</td>
                                 </tr>
                                 {% if summary_outside_period_deduction %}
                                 <tr>
                                     <td style="border:1px solid #222; padding:7px;">{% trans "Outside Payroll Period" %} — {{ summary_outside_period_days|floatformat:0 }} {% trans "days" %}</td>
-                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ summary_outside_period_deduction|floatformat:2|currency_symbol_position }}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ summary_outside_period_deduction|floatformat:2 }} {{ currency }}</td>
                                 </tr>
                                 {% endif %}
                                 {% if summary_unpaid_leave_deduction %}
                                 <tr>
                                     <td style="border:1px solid #222; padding:7px;">{% trans "Unpaid Leave" %}</td>
-                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ summary_unpaid_leave_deduction|floatformat:2|currency_symbol_position }}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ summary_unpaid_leave_deduction|floatformat:2 }} {{ currency }}</td>
                                 </tr>
                                 {% endif %}
                                 {% for deduction in summary_other_deductions %}
                                 <tr>
                                     <td style="border:1px solid #222; padding:7px;">{{ deduction.title }}</td>
-                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ deduction.amount|floatformat:2|currency_symbol_position }}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right;">{{ deduction.amount|floatformat:2 }} {{ currency }}</td>
                                 </tr>
                                 {% endfor %}
                                 <tr>
                                     <td style="border:1px solid #222; padding:7px; text-align:right; font-weight:700;">{% trans "Total Deductions" %}</td>
-                                    <td style="border:1px solid #222; padding:7px; text-align:right; font-weight:700;">{{ summary_total_deduction|floatformat:2|currency_symbol_position }}</td>
+                                    <td style="border:1px solid #222; padding:7px; text-align:right; font-weight:700;">{{ summary_total_deduction|floatformat:2 }} {{ currency }}</td>
                                 </tr>
                                 <tr>
                                     <td style="border:1px solid #222; padding:7px; text-align:right; font-weight:700;">{% trans "Net Pay" %}</td>
