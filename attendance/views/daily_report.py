@@ -21,7 +21,6 @@ from reportlab.lib.units import mm
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 
 from attendance.models import Attendance, WorkRecords
-from leave.models import LeaveRequest
 from attendance.methods.utils import attendance_window_violation
 from base.methods import (
     filtersubordinatesemployeemodel,
@@ -81,20 +80,12 @@ def _schedule_for_employee_date(employee, date, schedule_map):
 
 
 def _status_label(
-    work_record, attendance, holiday, week_off, scheduled, window_absent=False,
-    leave_type=None,
+    work_record, attendance, holiday, week_off, scheduled, window_absent=False
 ):
     if holiday:
         return _("Holiday")
     if week_off or not scheduled:
         return _("Weekly Off")
-    if leave_type:
-        payment_type = leave_type.payment_type or ("paid" if leave_type.payment == "paid" else "unpaid")
-        if payment_type == "paid":
-            return _("Paid Leave")
-        if payment_type == "unpaid":
-            return _("Unpaid Leave")
-        return _("%s Leave") % leave_type.name
     if window_absent:
         return _("Absent")
     if work_record:
@@ -132,7 +123,6 @@ def build_daily_report(from_date, to_date, employee_qs):
             "total": 0,
             "present": 0,
             "absent": 0,
-            "leave": 0,
             "half_day": 0,
             "late": 0,
             "early": 0,
@@ -155,26 +145,6 @@ def build_daily_report(from_date, to_date, employee_qs):
             date__range=(from_date, to_date),
         )
     }
-
-    # Approved leave is authoritative for the daily status so paid and
-    # unpaid leave are not shown as ordinary absences.
-    leave_by_date = {}
-    approved_leaves = LeaveRequest.objects.filter(
-        employee_id__in=employee_ids,
-        status="approved",
-        start_date__lte=to_date,
-        end_date__gte=from_date,
-    ).select_related("leave_type_id")
-    for leave_request in approved_leaves:
-        leave_start = max(from_date, leave_request.start_date)
-        leave_end = min(to_date, leave_request.end_date or leave_request.start_date)
-        current_leave_date = leave_start
-        while current_leave_date <= leave_end:
-            leave_by_date.setdefault(
-                (leave_request.employee_id_id, current_leave_date),
-                leave_request.leave_type_id,
-            )
-            current_leave_date += datetime.timedelta(days=1)
 
     shift_ids = {
         e.employee_work_info.shift_id_id
@@ -224,7 +194,6 @@ def build_daily_report(from_date, to_date, employee_qs):
             schedule = _schedule_for_employee_date(employee, current, schedule_map)
             attendance = attendances.get((employee.pk, current))
             work_record = work_records.get((employee.pk, current))
-            leave_type = leave_by_date.get((employee.pk, current))
 
             week_off = current in roster_map.get(employee.pk, set())
             holiday = current in holiday_dates or current in company_leave_dates
@@ -272,7 +241,6 @@ def build_daily_report(from_date, to_date, employee_qs):
                     week_off,
                     scheduled,
                     window_absent=window_absent,
-                    leave_type=leave_type,
                 )
             )
 
@@ -311,9 +279,7 @@ def build_daily_report(from_date, to_date, employee_qs):
 
             summary["total"] += 1
             status_lower = status.lower()
-            if "leave" in status_lower:
-                summary["leave"] += 1
-            elif "absent" in status_lower:
+            if "absent" in status_lower:
                 summary["absent"] += 1
             elif "half day" in status_lower:
                 summary["half_day"] += 1
@@ -400,7 +366,6 @@ def _get_report_context(request):
             "total": len(rows),
             "present": sum(1 for r in rows if "present" in r["status"].lower() and "half day" not in r["status"].lower()),
             "absent": sum(1 for r in rows if "absent" in r["status"].lower()),
-            "leave": sum(1 for r in rows if "leave" in r["status"].lower()),
             "half_day": sum(1 for r in rows if "half day" in r["status"].lower()),
             "late": sum(1 for r in rows if r["late_seconds"]),
             "early": sum(1 for r in rows if r["early_seconds"]),
@@ -533,7 +498,7 @@ def attendance_daily_report_pdf(request):
     story.append(
         Paragraph(
             f"Total: {summary['total']} | Present: {summary['present']} | "
-            f"Absent: {summary['absent']} | Leave: {summary['leave']} | Half Day: {summary['half_day']} | "
+            f"Absent: {summary['absent']} | Half Day: {summary['half_day']} | "
             f"Late: {summary['late']} | Early Out: {summary['early']}",
             styles["Normal"],
         )
