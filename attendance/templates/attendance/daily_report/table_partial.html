@@ -1,6 +1,6 @@
 {% load i18n %}
 
-<div class="grid grid-cols-2 md:grid-cols-6 gap-2 mb-3">
+<div class="grid grid-cols-2 md:grid-cols-7 gap-2 mb-3">
   <div class="border border-dark-50 rounded-md p-3">
     <div class="text-xs text-color-500">{% trans "Total Records" %}</div>
     <div class="text-xl font-semibold">{{ summary.total }}</div>
@@ -12,6 +12,10 @@
   <div class="border border-dark-50 rounded-md p-3">
     <div class="text-xs text-color-500">{% trans "Absent" %}</div>
     <div class="text-xl font-semibold">{{ summary.absent }}</div>
+  </div>
+  <div class="border border-dark-50 rounded-md p-3">
+    <div class="text-xs text-color-500">{% trans "Leave" %}</div>
+    <div class="text-xl font-semibold">{{ summary.leave }}</div>
   </div>
   <div class="border border-dark-50 rounded-md p-3">
     <div class="text-xs text-color-500">{% trans "Half Day" %}</div>
@@ -74,7 +78,7 @@
             <span class="px-2 py-1 rounded-full text-xs" style="background:#fde8e8;color:#b42318;">{{ row.status }}</span>
           {% elif "Present" in row.status %}
             <span class="px-2 py-1 rounded-full text-xs" style="background:#e8f7ee;color:#16794c;">{{ row.status }}</span>
-          {% elif "Half Day" in row.status %}
+          {% elif "Leave" in row.status %}
             <span class="px-2 py-1 rounded-full text-xs" style="background:#fff4d6;color:#9a6700;">{{ row.status }}</span>
           {% else %}
             <span class="px-2 py-1 rounded-full text-xs" style="background:#eef1f4;color:#56616f;">{{ row.status }}</span>
