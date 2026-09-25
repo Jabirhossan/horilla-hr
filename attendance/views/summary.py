@@ -290,10 +290,24 @@ def build_monthly_summary(from_date, to_date, employee_qs):
         _e = min(_lr.end_date or _lr.start_date, to_date)
         for _d in _iter_dates(_s, _e):
             leave_dates_per_emp[_lr.employee_id_id].add(_d)
-            if _lr.leave_type_id.payment == "paid":
+            _leave_type = _lr.leave_type_id
+            _payment_type = getattr(_leave_type, "payment_type", None)
+            if not _payment_type:
+                _payment_type = "paid" if getattr(_leave_type, "payment", "unpaid") == "paid" else "unpaid"
+            if _payment_type == "paid":
                 paid_day_dates_per_emp[_lr.employee_id_id].add(_d)
-            else:
+            elif _payment_type == "unpaid":
                 unpaid_day_dates_per_emp[_lr.employee_id_id].add(_d)
+            else:
+                _percentage = float(getattr(_leave_type, "payment_percentage", 0) or 0)
+                if _percentage >= 100:
+                    paid_day_dates_per_emp[_lr.employee_id_id].add(_d)
+                elif _percentage <= 0:
+                    unpaid_day_dates_per_emp[_lr.employee_id_id].add(_d)
+                else:
+                    # Partial-pay leave remains a paid leave for attendance
+                    # classification; payroll applies the configured percentage.
+                    paid_day_dates_per_emp[_lr.employee_id_id].add(_d)
 
     # -- 4. Roster-based week-off per employee (single DB hit) ---------------
     roster_qs = Roster.objects.filter(
