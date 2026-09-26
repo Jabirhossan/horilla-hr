@@ -14,37 +14,6 @@ from horilla.http.response import HorillaRedirect
 logger = logging.getLogger(__name__)
 from datetime import date, datetime, timedelta
 
-def attendance_window_flags(
-    now_sec,
-    check_in_window_start_sec,
-    check_in_window_end_sec,
-    check_out_window_start_sec,
-    check_out_window_end_sec,
-    is_night_shift=False,
-):
-    """Return whether a punch is outside the explicit biometric windows."""
-    current_sec = now_sec
-    if is_night_shift and current_sec < 12 * 60 * 60:
-        current_sec += 24 * 60 * 60
-
-    in_start = check_in_window_start_sec
-    in_end = check_in_window_end_sec
-    out_start = check_out_window_start_sec
-    out_end = check_out_window_end_sec
-
-    if is_night_shift:
-        if in_end < in_start:
-            in_end += 24 * 60 * 60
-        if out_start < in_start:
-            out_start += 24 * 60 * 60
-        if out_end < in_start:
-            out_end += 24 * 60 * 60
-
-    check_in_absent = not (in_start <= current_sec <= in_end)
-    check_out_absent = not (out_start <= current_sec <= out_end)
-    return check_in_absent, check_out_absent
-
-
 from django.contrib import messages
 from django.db.models import Q
 from django.http import HttpResponse
