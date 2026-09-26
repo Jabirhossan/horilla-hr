@@ -799,14 +799,6 @@ class DepartmentForm(ModelForm):
             if existing:
                 self.fields["manager"].initial = existing.manager_id
 
-    def clean_minimum_working_hour(self):
-        value = self.cleaned_data.get("minimum_working_hour")
-        if isinstance(value, str):
-            value = value.strip()
-            if value.isdigit() and 0 <= int(value) <= 23:
-                return f"{int(value):02d}:00"
-        return value
-
     def clean(self):
         cleaned_data = super().clean()
         return cleaned_data
@@ -1575,7 +1567,25 @@ class EmployeeTypeForm(ModelForm):
 
         model = EmployeeType
         fields = "__all__"
-        exclude = ["is_actclass EmployeeShiftScheduleUpdateForm(ModelForm):
+        exclude = ["is_active"]
+
+
+class EmployeeShiftForm(ModelForm):
+    """
+    EmployeeShift Form
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = EmployeeShift
+        fields = "__all__"
+        exclude = ["days", "is_active", "weekly_full_time", "full_time"]
+
+
+class EmployeeShiftScheduleUpdateForm(ModelForm):
     """
     EmployeeShiftSchedule model's form
     """
@@ -1591,10 +1601,6 @@ class EmployeeTypeForm(ModelForm):
         widgets = {
             "start_time": forms.TimeInput(attrs={"type": "time"}),
             "end_time": forms.TimeInput(attrs={"type": "time"}),
-            "check_in_window_start": forms.TimeInput(attrs={"type": "time"}),
-            "check_in_window_end": forms.TimeInput(attrs={"type": "time"}),
-            "check_out_window_start": forms.TimeInput(attrs={"type": "time"}),
-            "check_out_window_end": forms.TimeInput(attrs={"type": "time"}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -1657,21 +1663,6 @@ class EmployeeTypeForm(ModelForm):
                     raise ValidationError(
                         {
                             "auto_punch_out_time": _(
-                                "Automatic punch out time is required when automatic punch out is enabled."
-                            )
-                        }
-                    )
-                elif auto_punch_out_time < end_time:
-                    raise ValidationError(
-                        {
-                            "auto_punch_out_time": _(
-                                "Automatic punch out time cannot be earlier than the end time."
-                            )
-                        }
-                    )
-
-        return cleaned_data
-                          "auto_punch_out_time": _(
                                 "Automatic punch out time is required when automatic punch out is enabled."
                             )
                         }
