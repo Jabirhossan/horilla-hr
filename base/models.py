@@ -939,22 +939,6 @@ class EmployeeShiftSchedule(HorillaModel):
             "Time at which the horilla will automatically check out the employee attendance if they forget."
         ),
     )
-    check_in_window_minutes = models.PositiveIntegerField(
-        default=30,
-        validators=[MinValueValidator(0)],
-        verbose_name=_("Check-in Window (Minutes)"),
-        help_text=_(
-            "Number of minutes after shift start during which biometric check-in is allowed."
-        ),
-    )
-    check_out_window_minutes = models.PositiveIntegerField(
-        default=30,
-        validators=[MinValueValidator(0)],
-        verbose_name=_("Check-out Window (Minutes)"),
-        help_text=_(
-            "Number of minutes before shift end during which biometric check-out is allowed."
-        ),
-    )
     check_in_window_start = models.TimeField(
         null=True,
         blank=True,
