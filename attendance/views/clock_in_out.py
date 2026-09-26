@@ -240,33 +240,103 @@ def attendance_window_status(
 
 
 
-def process_biometric_punch(request, punch_code, device=None, source="ZKTeco"):
+def process_biometric_punch(
+    request,
+    punch_code,
+    device=None,
+    source="ZKTeco",
+    employee=None,
+    work_info=None,
+    raw_log=None,
+):
     """
-    Persist every biometric punch, while using only window-valid punches
-    for attendance calculation.
+    Persist the raw biometric punch first, then optionally use it for attendance.
+
+    The raw device event is independent from shift/window calculation. A valid
+    employee mapping is enough to retain the source punch; missing shift or
+    incomplete window configuration leaves the punch as raw-only.
     """
-    employee, work_info = employee_exists(request)
-    if not employee or work_info is None:
+    if employee is None:
+        employee, work_info = employee_exists(request)
+    elif work_info is None:
+        try:
+            work_info = employee.employee_work_info
+        except Exception:
+            work_info = None
+
+    if not employee:
+        logger.warning(
+            "Biometric punch could not be persisted because no employee mapping "
+            "was supplied: user_id=%s",
+            getattr(request, "biometric_user_id", None),
+        )
         return None
 
-    shift = work_info.shift_id
-    date_today = request.date if request.__dict__.get("date") else date.today()
+    date_today = (
+        request.date
+        if request.__dict__.get("date")
+        else date.today()
+    )
     punch_datetime = (
         request.datetime
         if request.__dict__.get("datetime")
         else timezone.localtime()
     )
+
+    if timezone.is_naive(punch_datetime):
+        punch_datetime = timezone.make_aware(
+            punch_datetime,
+            timezone.get_current_timezone(),
+        )
+
+    direction = "IN" if punch_code in {0, 3, 4} else "OUT"
+
+    # Raw persistence happens before any shift/window lookup. This guarantees
+    # that a device punch is retained even when attendance calculation cannot
+    # be performed.
+    if raw_log is None:
+        raw_log = BiometricPunchLog.objects.create(
+            employee_id=employee,
+            device_id=device,
+            biometric_user_id=str(
+                getattr(request, "biometric_user_id", "")
+                or getattr(request, "user_id", "")
+                or getattr(request.user, "username", "")
+            ),
+            punch_code=punch_code,
+            direction=direction,
+            punch_datetime=punch_datetime,
+            attendance_date=date_today,
+            shift_id=None,
+            window_status=None,
+            within_window=False,
+            source=source,
+            raw_payload={
+                "punch_code": punch_code,
+                "datetime": punch_datetime.isoformat(),
+                "device_id": str(device.pk) if device else None,
+            },
+        )
+
+    # No work information means the source punch is safely stored but cannot
+    # participate in attendance calculation.
+    if work_info is None:
+        return raw_log
+
+    shift = work_info.shift_id
+    if not shift:
+        return raw_log
+
     day = EmployeeShiftDay.objects.get(day=date_today.strftime("%A").lower())
     attendance_date = date_today
     now_sec = strtime_seconds(punch_datetime.strftime("%H:%M"))
     mid_day_sec = strtime_seconds("12:00")
 
     minimum_hour, start_time_sec, end_time_sec = shift_schedule_today(
-        day=day, shift=shift
+        day=day,
+        shift=shift,
     )
-    shift_schedule = (
-        shift.employeeshiftschedule_set.filter(day=day).first() if shift else None
-    )
+    shift_schedule = shift.employeeshiftschedule_set.filter(day=day).first()
 
     if start_time_sec > end_time_sec and mid_day_sec > now_sec:
         attendance_date = date_today - timedelta(days=1)
@@ -274,43 +344,44 @@ def process_biometric_punch(request, punch_code, device=None, source="ZKTeco"):
             day=attendance_date.strftime("%A").lower()
         )
         minimum_hour, start_time_sec, end_time_sec = shift_schedule_today(
-            day=day, shift=shift
+            day=day,
+            shift=shift,
         )
-        shift_schedule = (
-            shift.employeeshiftschedule_set.filter(day=day).first()
-            if shift
-            else None
-        )
+        shift_schedule = shift.employeeshiftschedule_set.filter(day=day).first()
+
+    # Keep the attendance date/shift on the raw row even when the window is
+    # incomplete. The raw event itself was already persisted above.
+    raw_log.attendance_date = attendance_date
+    raw_log.shift_id = shift
+
+    if not shift_schedule:
+        raw_log.save(update_fields=["attendance_date", "shift_id"])
+        return raw_log
 
     def time_to_seconds(value):
         return value.hour * 3600 + value.minute * 60 + value.second
 
     check_in_start_sec = (
         time_to_seconds(shift_schedule.check_in_window_start)
-        if shift_schedule and shift_schedule.check_in_window_start
+        if shift_schedule.check_in_window_start
         else None
     )
     check_in_end_sec = (
         time_to_seconds(shift_schedule.check_in_window_end)
-        if shift_schedule and shift_schedule.check_in_window_end
+        if shift_schedule.check_in_window_end
         else None
     )
     check_out_start_sec = (
         time_to_seconds(shift_schedule.check_out_window_start)
-        if shift_schedule and shift_schedule.check_out_window_start
+        if shift_schedule.check_out_window_start
         else None
     )
     check_out_end_sec = (
         time_to_seconds(shift_schedule.check_out_window_end)
-        if shift_schedule and shift_schedule.check_out_window_end
+        if shift_schedule.check_out_window_end
         else None
     )
 
-    direction = "IN" if punch_code in {0, 3, 4} else "OUT"
-
-    # Raw biometric punches must never be lost because a shift window is
-    # missing or incomplete. Window eligibility is calculated only when all
-    # four explicit window endpoints are configured.
     windows_configured = all(
         value is not None
         for value in (
@@ -323,6 +394,7 @@ def process_biometric_punch(request, punch_code, device=None, source="ZKTeco"):
 
     window_status = None
     within_window = False
+
     if windows_configured:
         window_status = attendance_window_status(
             now_sec,
@@ -338,27 +410,17 @@ def process_biometric_punch(request, punch_code, device=None, source="ZKTeco"):
             else window_status == "CHECKOUT_WINDOW"
         )
 
-    raw_log = BiometricPunchLog.objects.create(
-        employee_id=employee,
-        device_id=device,
-        biometric_user_id=str(
-            getattr(request, "biometric_user_id", "")
-            or getattr(request, "user_id", "")
-            or getattr(request.user, "username", "")
-        ),
-        punch_code=punch_code,
-        direction=direction,
-        punch_datetime=punch_datetime,
-        attendance_date=attendance_date,
-        shift_id=shift,
-        window_status=window_status,
-        within_window=within_window,
-        source=source,
-        raw_payload={
-            "punch_code": punch_code,
-            "datetime": punch_datetime.isoformat(),
-            "device_id": str(device.pk) if device else None,
-        },
+    raw_log.attendance_date = attendance_date
+    raw_log.shift_id = shift
+    raw_log.window_status = window_status
+    raw_log.within_window = within_window
+    raw_log.save(
+        update_fields=[
+            "attendance_date",
+            "shift_id",
+            "window_status",
+            "within_window",
+        ]
     )
 
     if not within_window:
@@ -370,7 +432,7 @@ def process_biometric_punch(request, punch_code, device=None, source="ZKTeco"):
     ).first()
 
     if direction == "IN":
-        # First valid IN wins. Later IN punches are raw logs only.
+        # First valid IN wins. Later valid/invalid IN punches remain raw-only.
         if attendance and attendance.attendance_clock_in:
             return raw_log
 
@@ -423,17 +485,24 @@ def process_biometric_punch(request, punch_code, device=None, source="ZKTeco"):
     if not attendance or not attendance.attendance_clock_in:
         return raw_log
 
-    # Latest valid OUT becomes final OUT; old raw rows remain untouched.
+    # Latest valid OUT becomes final OUT; previous selected OUT is demoted.
     BiometricPunchLog.objects.filter(
         attendance_id=attendance,
         direction="OUT",
         used_for_attendance=True,
-    ).update(used_for_attendance=False, selection_role=None)
+    ).exclude(pk=raw_log.pk).update(
+        used_for_attendance=False,
+        selection_role=None,
+    )
 
-    activity = AttendanceActivity.objects.filter(
-        employee_id=employee,
-        attendance_date=attendance_date,
-    ).order_by("-id").first()
+    activity = (
+        AttendanceActivity.objects.filter(
+            employee_id=employee,
+            attendance_date=attendance_date,
+        )
+        .order_by("-id")
+        .first()
+    )
     if not activity:
         return raw_log
 
