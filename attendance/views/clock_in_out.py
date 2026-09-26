@@ -235,56 +235,40 @@ def clock_in_attendance_and_activity(
 
 def attendance_window_status(
     now_sec,
-    start_time_sec,
-    end_time_sec,
-    check_in_window_minutes=0,
-    check_out_window_minutes=0,
-    check_in_window_start_sec=None,
-    check_in_window_end_sec=None,
-    check_out_window_start_sec=None,
-    check_out_window_end_sec=None,
+    check_in_window_start_sec,
+    check_in_window_end_sec,
+    check_out_window_start_sec,
+    check_out_window_end_sec,
+    is_night_shift=False,
 ):
-    """Classify a punch against the configured shift windows."""
-    is_night_shift = start_time_sec > end_time_sec and start_time_sec != end_time_sec
+    """Classify a biometric punch using only explicit window start/end times."""
+    current_sec = now_sec
+    if is_night_shift and current_sec < 12 * 60 * 60:
+        current_sec += 24 * 60 * 60
+
+    in_start = check_in_window_start_sec
+    in_end = check_in_window_end_sec
+    out_start = check_out_window_start_sec
+    out_end = check_out_window_end_sec
+
     if is_night_shift:
-        current_sec = now_sec + (24 * 60 * 60 if now_sec < 12 * 60 * 60 else 0)
-        start_sec = start_time_sec
-        end_sec = end_time_sec + 24 * 60 * 60
-    else:
-        current_sec = now_sec
-        start_sec = start_time_sec
-        end_sec = end_time_sec
-
-    if check_in_window_start_sec is not None and check_in_window_end_sec is not None:
-        in_start = check_in_window_start_sec
-        in_end = check_in_window_end_sec
-        if is_night_shift and in_end < in_start:
+        if in_end < in_start:
             in_end += 24 * 60 * 60
-    else:
-        in_start = start_sec
-        in_end = start_sec + max(check_in_window_minutes, 0) * 60
-
-    if check_out_window_start_sec is not None and check_out_window_end_sec is not None:
-        out_start = check_out_window_start_sec
-        out_end = check_out_window_end_sec
-        if is_night_shift and out_end < out_start:
+        if out_start < in_start:
+            out_start += 24 * 60 * 60
+        if out_end < in_start:
             out_end += 24 * 60 * 60
-    else:
-        out_start = end_sec - max(check_out_window_minutes, 0) * 60
-        out_end = end_sec
 
-    in_window = in_start <= current_sec <= in_end
-    out_window = out_start <= current_sec <= out_end
-
-    if in_window:
+    if in_start <= current_sec <= in_end:
         return "CHECKIN_WINDOW"
-    if out_window:
+    if out_start <= current_sec <= out_end:
         return "CHECKOUT_WINDOW"
     if current_sec < in_start:
         return "BEFORE_CHECKIN_WINDOW"
     if current_sec > out_end:
         return "AFTER_CHECKOUT_WINDOW"
     return "BETWEEN_WINDOWS"
+
 
 
 def process_biometric_punch(request, punch_code, device=None, source="ZKTeco"):
