@@ -97,9 +97,15 @@ class BiometricCardView(HorillaCardView):
                 "attrs": """
                     hx-get="{get_fetch_url}"
                     class="oh-dropdown__link"
+                    hx-target="#BiometricDeviceTestFormTarget"
+                    hx-swap="innerHTML"
                     data-toggle="oh-modal-toggle"
                     data-target="#BiometricDeviceTestModal"
-                    hx-target="#BiometricDeviceTestFormTarget"
+                    hx-on::after-request="
+                        if (event.detail.successful) {
+                            $('#BiometricDeviceTestModal').addClass('oh-modal--show');
+                        }
+                    "
                     """,
             },
             {
