@@ -32,6 +32,7 @@ from attendance.models import AttendanceActivity, BiometricPunchLog
 from attendance.views.clock_in_out import (
     clock_in,
     clock_out,
+    persist_raw_biometric_punch,
     process_biometric_punch,
 )
 from base.methods import get_key_instances, get_pagination
@@ -159,16 +160,8 @@ class ZKBioAttendance(Thread):
             user_id=user_id, device_id=device
         ).select_related("employee_id__employee_user_id").first()
 
-        if not bio_id:
-            logger.warning(
-                "Live biometric punch ignored: device=%s user_id=%s is not mapped",
-                device.name if device else self.machine_ip,
-                user_id,
-            )
-            return
-
         request_data = Request(
-            user=bio_id.employee_id.employee_user_id,
+            user=bio_id.employee_id.employee_user_id if bio_id else None,
             date=date_time.date(),
             time=date_time.time(),
             datetime=date_time,
@@ -177,12 +170,34 @@ class ZKBioAttendance(Thread):
 
         try:
             if punch_code in {0, 3, 4, 1, 2, 5}:
-                process_biometric_punch(
-                    request_data,
-                    punch_code,
-                    device=device,
-                    source="ZKTeco",
-                )
+                if not bio_id:
+                    existing_log = BiometricPunchLog.objects.filter(
+                        device_id=device,
+                        employee_id__isnull=True,
+                        biometric_user_id=user_id,
+                        punch_datetime=date_time,
+                        punch_code=punch_code,
+                    ).first()
+                    if existing_log is None:
+                        persist_raw_biometric_punch(
+                            request_data,
+                            punch_code,
+                            device=device,
+                            source="ZKTeco",
+                            employee=None,
+                        )
+                    logger.warning(
+                        "Live biometric punch stored as raw-only: device=%s user_id=%s is not mapped",
+                        device.name if device else self.machine_ip,
+                        user_id,
+                    )
+                else:
+                    process_biometric_punch(
+                        request_data,
+                        punch_code,
+                        device=device,
+                        source="ZKTeco",
+                    )
             else:
                 logger.warning(
                     "Live biometric punch has unsupported punch code: user_id=%s punch=%s",
@@ -2238,16 +2253,47 @@ def zk_biometric_attendance_logs(device_or_devices):
             bio_id = bio_id_map.get((device.id, user_id))
 
             if not bio_id:
+                request_data = Request(
+                    user=None,
+                    date=date,
+                    time=time,
+                    datetime=date_time,
+                )
+                request_data.biometric_user_id = user_id
+
+                if punch_code not in {0, 3, 4, 1, 2, 5}:
+                    device.last_fetch_date = date
+                    device.last_fetch_time = time
+                    device.save(
+                        update_fields=["last_fetch_date", "last_fetch_time"]
+                    )
+                    continue
+
+                existing_log = BiometricPunchLog.objects.filter(
+                    device_id=device,
+                    employee_id__isnull=True,
+                    biometric_user_id=user_id,
+                    punch_datetime=date_time,
+                    punch_code=punch_code,
+                ).first()
+                if existing_log is None:
+                    persist_raw_biometric_punch(
+                        request_data,
+                        punch_code,
+                        device=device,
+                        source="ZKTeco",
+                        employee=None,
+                    )
                 logger.warning(
-                    "[Device: %s] Punch has no employee mapping: user_id=%s",
+                    "[Device: %s] Punch stored as raw-only; no employee mapping: user_id=%s",
                     device.name,
                     user_id,
                 )
-                errors.append(
-                    f"[{device.name}] No employee mapping for user {user_id}"
+                device.last_fetch_date = date
+                device.last_fetch_time = time
+                device.save(
+                    update_fields=["last_fetch_date", "last_fetch_time"]
                 )
-                # Do not advance the cursor: the punch must be retried after
-                # the device user is mapped.
                 continue
 
             request_data = Request(
