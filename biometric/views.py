@@ -117,16 +117,69 @@ def biometric_paginator_qry(data_list, page_number, per_page=25):
 
 def biometric_set_time(conn):
     """
-    Sets the time on the biometric device using the provided connection.
-
-    Parameters:
-    - conn: The connection to the biometric device.
-
-    Returns:
-    None
+    Sets the time on the biometric device using the application local time.
     """
-    new_time = datetime.today()
+    new_time = django_timezone.localtime().replace(tzinfo=None, microsecond=0)
     conn.set_time(new_time)
+
+
+def get_or_create_zk_employee_mapping(device, user_id, uid=None):
+    """
+    Resolve a ZKTeco user to a Horilla employee.
+
+    ZKTeco user IDs are intentionally aligned with Employee.badge_id in this
+    installation. If an explicit device mapping is missing, create it from
+    that badge ID so attendance fetching is not left as raw-only.
+    """
+    user_id = str(user_id)
+    mapping = (
+        BiometricEmployees.objects.filter(device_id=device, user_id=user_id)
+        .select_related("employee_id__employee_user_id", "employee_id__employee_work_info")
+        .first()
+    )
+    if mapping:
+        return mapping
+
+    employees = list(Employee.objects.filter(badge_id=user_id)[:2])
+    if len(employees) != 1:
+        return None
+
+    employee = employees[0]
+    mapping = BiometricEmployees.objects.create(
+        uid=uid,
+        user_id=user_id,
+        employee_id=employee,
+        device_id=device,
+    )
+    mapping.employee_id = employee
+    return mapping
+
+
+def sync_zk_device_time(conn, device):
+    """
+    Correct a badly drifting ZKTeco clock before attendance is processed.
+
+    The device in this installation was observed reporting a future year.
+    Only a significant clock drift is corrected; normal device clocks are
+    left untouched.
+    """
+    try:
+        device_time = conn.get_time()
+        local_time = django_timezone.localtime().replace(tzinfo=None, microsecond=0)
+        drift_seconds = abs((device_time - local_time).total_seconds())
+        if drift_seconds > 300:
+            conn.set_time(local_time)
+            logger.warning(
+                "ZKTeco device clock corrected: device=%s old=%s new=%s drift_seconds=%s",
+                device.name,
+                device_time,
+                local_time,
+                int(drift_seconds),
+            )
+            return True
+    except Exception:
+        logger.exception("Unable to verify/sync ZKTeco device clock: %s", device.name)
+    return False
 
 
 class ZKBioAttendance(Thread):
@@ -156,9 +209,11 @@ class ZKBioAttendance(Thread):
         else:
             date_time = date_time.astimezone(django_timezone.get_current_timezone())
 
-        bio_id = BiometricEmployees.objects.filter(
-            user_id=user_id, device_id=device
-        ).select_related("employee_id__employee_user_id").first()
+        bio_id = get_or_create_zk_employee_mapping(
+            device=device,
+            user_id=user_id,
+            uid=getattr(attendance, "uid", None),
+        )
 
         request_data = Request(
             user=bio_id.employee_id.employee_user_id if bio_id else None,
@@ -248,6 +303,8 @@ class ZKBioAttendance(Thread):
 
                 if not conn:
                     raise ConnectionError("ZKTeco connection returned no connection")
+
+                sync_zk_device_time(conn, device)
 
                 logger.info(
                     "ZKTeco live capture connected: device=%s ip=%s port=%s",
@@ -2298,12 +2355,29 @@ def zk_biometric_attendance_logs(device_or_devices):
         try:
             conn = zk_device.connect()
             conn.enable_device()
+
+            clock_corrected = sync_zk_device_time(conn, device)
+            if clock_corrected:
+                # A corrected device clock invalidates a future-dated fetch cursor.
+                device.last_fetch_date = None
+                device.last_fetch_time = None
+                device.save(update_fields=["last_fetch_date", "last_fetch_time"])
+
             attendances = conn.get_attendance()
 
             if not attendances:
                 continue
 
-            if device.last_fetch_date and device.last_fetch_time:
+            if clock_corrected:
+                local_now = django_timezone.localtime().replace(
+                    tzinfo=None, microsecond=0
+                )
+                filtered = [
+                    att
+                    for att in attendances
+                    if att.timestamp <= local_now + timedelta(days=1)
+                ]
+            elif device.last_fetch_date and device.last_fetch_time:
                 # Keep a recovery overlap. Raw rows are deduplicated by the
                 # device/user/timestamp/punch-code identity below.
                 cursor = datetime.combine(
@@ -2360,6 +2434,14 @@ def zk_biometric_attendance_logs(device_or_devices):
             time = date_time.time()
             device = attendance.device
             bio_id = bio_id_map.get((device.id, user_id))
+            if not bio_id:
+                bio_id = get_or_create_zk_employee_mapping(
+                    device=device,
+                    user_id=user_id,
+                    uid=getattr(attendance, "uid", None),
+                )
+                if bio_id:
+                    bio_id_map[(device.id, user_id)] = bio_id
 
             if not bio_id:
                 request_data = Request(
