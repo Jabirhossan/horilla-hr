@@ -13,7 +13,7 @@ from attendance.models import BiometricPunchLog
 from base.methods import get_session_company
 from biometric.models import BiometricDevices
 from base.models import Department
-from employee.models import Employee
+from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import login_required, permission_required
 
 
@@ -81,8 +81,12 @@ def raw_punch_report(request):
         is_active=True,
         employee_work_info__company_id=company,
     ).order_by("employee_first_name", "employee_last_name")
+    department_ids = EmployeeWorkInformation.objects.filter(
+        company_id=company,
+        department_id__isnull=False,
+    ).values_list("department_id", flat=True).distinct()
     departments = Department.objects.filter(
-        employee_work_info__company_id=company
+        id__in=department_ids
     ).order_by("department")
     devices = BiometricDevices.objects.filter(company_id=company).order_by("name")
 
