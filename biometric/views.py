@@ -1194,6 +1194,8 @@ def find_employees_in_zk(device_id):
         port=device.port,
         password=int(device.zk_password),
         timeout=60,
+        force_udp=False,
+        ommit_ping=True,
     )
     conn = zk_device.connect()
     zk_users = {user.user_id: user.uid for user in conn.get_users()}
