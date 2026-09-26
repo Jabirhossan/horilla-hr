@@ -29,7 +29,11 @@ from zk import exception as zk_exception
 
 from attendance.methods.utils import Request
 from attendance.models import AttendanceActivity
-from attendance.views.clock_in_out import clock_in, clock_out
+from attendance.views.clock_in_out import (
+    clock_in,
+    clock_out,
+    process_biometric_punch,
+)
 from base.methods import get_key_instances, get_pagination
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import (
@@ -169,12 +173,16 @@ class ZKBioAttendance(Thread):
             time=date_time.time(),
             datetime=date_time,
         )
+        request_data.biometric_user_id = user_id
 
         try:
-            if punch_code in {0, 3, 4}:
-                clock_in(request_data)
-            elif punch_code in {1, 2, 5}:
-                clock_out(request_data)
+            if punch_code in {0, 3, 4, 1, 2, 5}:
+                process_biometric_punch(
+                    request_data,
+                    punch_code,
+                    device=device,
+                    source="ZKTeco",
+                )
             else:
                 logger.warning(
                     "Live biometric punch has unsupported punch code: user_id=%s punch=%s",
@@ -2355,11 +2363,15 @@ def zk_biometric_attendance_logs(device_or_devices):
                 time=time,
                 datetime=date_time,
             )
+            request_data.biometric_user_id = str(user_id)
             try:
-                if punch_code in {0, 3, 4}:
-                    clock_in(request_data)
-                elif punch_code in {1, 2, 5}:
-                    clock_out(request_data)
+                if punch_code in {0, 3, 4, 1, 2, 5}:
+                    process_biometric_punch(
+                        request_data,
+                        punch_code,
+                        device=attendance.device,
+                        source="ZKTeco",
+                    )
             except Exception:
                 logger.error(
                     f"[Device: {attendance.device.name}] Punch processing error",
