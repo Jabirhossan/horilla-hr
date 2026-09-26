@@ -1575,25 +1575,7 @@ class EmployeeTypeForm(ModelForm):
 
         model = EmployeeType
         fields = "__all__"
-        exclude = ["is_active"]
-
-
-class EmployeeShiftForm(ModelForm):
-    """
-    EmployeeShift Form
-    """
-
-    class Meta:
-        """
-        Meta class for additional options
-        """
-
-        model = EmployeeShift
-        fields = "__all__"
-        exclude = ["days", "is_active", "weekly_full_time", "full_time"]
-
-
-class EmployeeShiftScheduleUpdateForm(ModelForm):
+        exclude = ["is_actclass EmployeeShiftScheduleUpdateForm(ModelForm):
     """
     EmployeeShiftSchedule model's form
     """
@@ -1609,9 +1591,6 @@ class EmployeeShiftScheduleUpdateForm(ModelForm):
         widgets = {
             "start_time": forms.TimeInput(attrs={"type": "time"}),
             "end_time": forms.TimeInput(attrs={"type": "time"}),
-            "minimum_working_hour": forms.TextInput(
-                attrs={"placeholder": "HH:MM", "inputmode": "numeric"}
-            ),
             "check_in_window_start": forms.TimeInput(attrs={"type": "time"}),
             "check_in_window_end": forms.TimeInput(attrs={"type": "time"}),
             "check_out_window_start": forms.TimeInput(attrs={"type": "time"}),
@@ -1629,6 +1608,16 @@ class EmployeeShiftScheduleUpdateForm(ModelForm):
             self.fields["end_time"].initial = (
                 instance.end_time.strftime("%H:%M") if instance.end_time else None
             )
+            for field_name in (
+                "check_in_window_start",
+                "check_in_window_end",
+                "check_out_window_start",
+                "check_out_window_end",
+            ):
+                value = getattr(instance, field_name, None)
+                self.fields[field_name].initial = (
+                    value.strftime("%H:%M") if value else None
+                )
             if apps.is_installed("attendance"):
                 self.fields["auto_punch_out_time"].initial = (
                     instance.auto_punch_out_time.strftime("%H:%M")
@@ -1648,8 +1637,13 @@ class EmployeeShiftScheduleUpdateForm(ModelForm):
             )
 
     def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+
         context = {"form": self}
-        return render_to_string("horilla_form.html", context)
+        table_html = render_to_string("horilla_form.html", context)
+        return table_html
 
     def clean(self):
         cleaned_data = super().clean()
@@ -1677,11 +1671,26 @@ class EmployeeShiftScheduleUpdateForm(ModelForm):
                     )
 
         return cleaned_data
+                          "auto_punch_out_time": _(
+                                "Automatic punch out time is required when automatic punch out is enabled."
+                            )
+                        }
+                    )
+                elif auto_punch_out_time < end_time:
+                    raise ValidationError(
+                        {
+                            "auto_punch_out_time": _(
+                                "Automatic punch out time cannot be earlier than the end time."
+                            )
+                        }
+                    )
+
+        return cleaned_data
 
 
 class EmployeeShiftScheduleForm(ModelForm):
     """
-    EmployeeShiftSchedule model's form.
+    EmployeeShiftSchedule model's form
     """
 
     cols = {"day": 12}
@@ -1691,11 +1700,15 @@ class EmployeeShiftScheduleForm(ModelForm):
     )
 
     class Meta:
+        """
+        Meta class for additional options
+        """
+
         model = EmployeeShiftSchedule
         fields = "__all__"
         exclude = ["is_active", "day"]
         widgets = {
-            "start_time": forms.TimeInput(attrs={"type": "time"}),
+            "start_time": forms.TimeInput(),
             "end_time": forms.TimeInput(attrs={"type": "time"}),
             "check_in_window_start": forms.TimeInput(attrs={"type": "time"}),
             "check_in_window_end": forms.TimeInput(attrs={"type": "time"}),
@@ -1713,9 +1726,7 @@ class EmployeeShiftScheduleForm(ModelForm):
             "check_out_window_start",
             "check_out_window_end",
         ):
-            if field_name in self.fields:
-                self.fields[field_name].required = True
-
+            self.fields[field_name].required = True
         if self.instance.pk:
             self.fields["day"] = forms.ModelChoiceField(
                 queryset=EmployeeShiftDay.objects.all(),
@@ -1726,10 +1737,8 @@ class EmployeeShiftScheduleForm(ModelForm):
                     }
                 ),
             )
-
         self.fields["day"].widget.attrs.update({"id": str(uuid.uuid4())})
         self.fields["shift_id"].widget.attrs.update({"id": str(uuid.uuid4())})
-
         if not apps.is_installed("attendance"):
             self.fields.pop("auto_punch_out_time", None)
             self.fields.pop("is_auto_punch_out_enabled", None)
@@ -1742,27 +1751,20 @@ class EmployeeShiftScheduleForm(ModelForm):
             )
 
     def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+
         context = {"form": self}
-        return render_to_string("horilla_form.html", context)
+        table_html = render_to_string("horilla_form.html", context)
+        return table_html
 
     def clean(self):
         cleaned_data = super().clean()
-
-        in_start = cleaned_data.get("check_in_window_start")
-        in_end = cleaned_data.get("check_in_window_end")
-        out_start = cleaned_data.get("check_out_window_start")
-        out_end = cleaned_data.get("check_out_window_end")
-
-        if not all((in_start, in_end, out_start, out_end)):
-            raise ValidationError(
-                _("All biometric check-in and check-out window times are required.")
-            )
-
         if apps.is_installed("attendance"):
-            auto_punch_out_enabled = cleaned_data.get("is_auto_punch_out_enabled")
-            auto_punch_out_time = cleaned_data.get("auto_punch_out_time")
-            end_time = cleaned_data.get("end_time")
-
+            auto_punch_out_enabled = self.cleaned_data["is_auto_punch_out_enabled"]
+            auto_punch_out_time = self.cleaned_data["auto_punch_out_time"]
+            end_time = self.cleaned_data["end_time"]
             if auto_punch_out_enabled:
                 if not auto_punch_out_time:
                     raise ValidationError(
@@ -1772,7 +1774,8 @@ class EmployeeShiftScheduleForm(ModelForm):
                             )
                         }
                     )
-                if end_time and auto_punch_out_time < end_time:
+            if auto_punch_out_enabled and auto_punch_out_time and end_time:
+                if auto_punch_out_time < end_time:
                     raise ValidationError(
                         {
                             "auto_punch_out_time": _(
@@ -1780,9 +1783,57 @@ class EmployeeShiftScheduleForm(ModelForm):
                             )
                         }
                     )
+        if self.instance.pk:
+            shift_id = cleaned_data.get("shift_id")
+            day_field = self["day"].value()
+            if day_field and not hasattr(day_field, "__iter__"):
+                day_field = [day_field]
 
+            if self.instance.pk and shift_id and day_field:
+                shift = EmployeeShiftSchedule.objects.filter(
+                    day=day_field, shift_id=shift_id
+                )
+                shifts = shift.first()
+                if shift.exclude(pk=self.instance.pk).exists():
+                    raise ValidationError(
+                        _(
+                            f"Shift schedule already exists for '{shifts.day}' on '{shift_id}' "
+                        )
+                    )
         return cleaned_data
 
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if not self.instance.pk:
+            for day in self.data.getlist("day"):
+                # if int(day) != int(instance.day.id):
+                data_copy = self.data.copy()
+                data_copy.update({"day": str(day)})
+                shift_schedule = EmployeeShiftScheduleUpdateForm(data_copy).save(
+                    commit=False
+                )
+                shift_schedule.save()
+        return instance
+
+    def clean_day(self):
+        """
+        Validation to day field
+        """
+        if not self.instance.pk:
+            days = self.cleaned_data["day"]
+            for day in days:
+                attendance = EmployeeShiftSchedule.objects.filter(
+                    day=day, shift_id=self.data["shift_id"]
+                ).first()
+                if attendance is not None:
+                    raise ValidationError(
+                        _("Shift schedule is already exist for {day}").format(
+                            day=_(day.day)
+                        )
+                    )
+            if days.first() is None:
+                raise ValidationError(_("Employee not chosen"))
+            return days.first()
 
 
 class RotatingShiftForm(ModelForm):
