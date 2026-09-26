@@ -13,7 +13,6 @@ from threading import Event, Thread
 from urllib.parse import parse_qs, unquote
 
 import pytz
-from apscheduler.schedulers.background import BackgroundScheduler
 from django.conf import settings
 from django.contrib import messages
 from django.db.models import Q
@@ -559,60 +558,19 @@ def biometric_device_schedule(request, device_id):
                 # The registered global Horilla scheduler polls scheduled
                 # biometric devices independently.
                 return HorillaRedirect(request)
-            elif device.machine_type == "anviz":
-                device.is_scheduler = True
-                device.scheduler_duration = duration
-                device.save()
-                scheduler = BackgroundScheduler()
-                scheduler.add_job(
-                    lambda: anviz_biometric_attendance_scheduler(device.id),
-                    "interval",
-                    seconds=str_time_seconds(device.scheduler_duration),
-                )
-                scheduler.start()
-                return HorillaRedirect(request)
-            elif device.machine_type == "dahua":
+            elif device.machine_type in {"anviz", "dahua", "cosec", "etimeoffice"}:
+                # Scheduling is owned by the single persistent Horilla scheduler
+                # process. Do not start a BackgroundScheduler from an HTTP worker.
                 device.is_scheduler = True
                 device.is_live = False
                 device.scheduler_duration = duration
-                device.save()
-                scheduler = BackgroundScheduler()
-                scheduler.add_job(
-                    lambda: dahua_biometric_attendance_scheduler(device.id),
-                    "interval",
-                    seconds=str_time_seconds(device.scheduler_duration),
+                device.save(
+                    update_fields=[
+                        "scheduler_duration",
+                        "is_scheduler",
+                        "is_live",
+                    ]
                 )
-                scheduler.start()
-                return HorillaRedirect(request)
-            elif device.machine_type == "cosec":
-                device.is_scheduler = True
-                device.is_live = False
-                device.scheduler_duration = duration
-                device.save()
-                scheduler = BackgroundScheduler()
-                existing_thread = _LIVE_BIO_THREADS.get(device.id)
-                if existing_thread:
-                    existing_thread.stop()
-                    del _LIVE_BIO_THREADS[device.id]
-                scheduler.add_job(
-                    lambda: cosec_biometric_attendance_scheduler(device.id),
-                    "interval",
-                    seconds=str_time_seconds(device.scheduler_duration),
-                )
-                scheduler.start()
-                return HorillaRedirect(request)
-            elif device.machine_type == "etimeoffice":
-                device.is_scheduler = True
-                device.is_live = False
-                device.scheduler_duration = duration
-                device.save()
-                scheduler = BackgroundScheduler()
-                scheduler.add_job(
-                    lambda: etimeoffice_biometric_attendance_scheduler(device.id),
-                    "interval",
-                    seconds=str_time_seconds(device.scheduler_duration),
-                )
-                scheduler.start()
                 return HorillaRedirect(request)
             else:
                 return HorillaRedirect(request)
@@ -2227,12 +2185,19 @@ def biometric_device_live(request):
                     ommit_ping=True,
                 )
                 conn = zk_device.connect()
-                instance = ZKBioAttendance(machine_ip, port_no, password, device.id)
-                conn.test_voice(index=14)
                 if conn:
+                    # Keep live capture independent from optional device voice
+                    # commands. A successful attendance connection is enough.
+                    sync_zk_device_time(conn, device)
+                    existing_thread = _LIVE_BIO_THREADS.get(device.id)
+                    if existing_thread and existing_thread.is_alive():
+                        existing_thread.stop()
+                    instance = ZKBioAttendance(
+                        machine_ip, port_no, password, device.id
+                    )
                     device.is_live = True
                     device.is_scheduler = False
-                    device.save()
+                    device.save(update_fields=["is_live", "is_scheduler"])
                     instance.start()
                     _LIVE_BIO_THREADS[device.id] = instance
             elif device.machine_type == "cosec":
@@ -2294,7 +2259,12 @@ def biometric_device_live(request):
     else:
         device.is_live = False
         device.save()
-        if device.machine_type in {"zk", "cosec"}:
+        if device.machine_type == "zk":
+            existing_thread = _LIVE_BIO_THREADS.get(device.id)
+            if existing_thread:
+                existing_thread.stop()
+                del _LIVE_BIO_THREADS[device.id]
+        elif device.machine_type == "cosec":
             existing_thread = settings.BIO_DEVICE_THREADS.get(device.id)
             if existing_thread:
                 existing_thread.stop()
