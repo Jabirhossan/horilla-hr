@@ -28,7 +28,7 @@ from zk import ZK
 from zk import exception as zk_exception
 
 from attendance.methods.utils import Request
-from attendance.models import AttendanceActivity
+from attendance.models import AttendanceActivity, BiometricPunchLog
 from attendance.views.clock_in_out import (
     clock_in,
     clock_out,
@@ -2311,14 +2311,17 @@ def zk_biometric_attendance_logs(device_or_devices):
             last_attendance_datetime = attendances[-1].timestamp
 
             if device.last_fetch_date and device.last_fetch_time:
+                # Re-read a short recovery window so punches that were fetched
+                # before a processing error are not permanently lost. Existing
+                # raw rows are deduplicated below.
+                cursor = datetime.combine(
+                    device.last_fetch_date,
+                    device.last_fetch_time,
+                ) - timedelta(hours=24)
                 filtered = [
                     att
                     for att in attendances
-                    if (att.timestamp.date() > device.last_fetch_date)
-                    or (
-                        att.timestamp.date() == device.last_fetch_date
-                        and att.timestamp.time() > device.last_fetch_time
-                    )
+                    if att.timestamp > cursor
                 ]
             else:
                 filtered = attendances
@@ -2364,21 +2367,41 @@ def zk_biometric_attendance_logs(device_or_devices):
             )
             request_data.biometric_user_id = str(user_id)
             try:
-                if punch_code in {0, 3, 4, 1, 2, 5}:
-                    process_biometric_punch(
-                        request_data,
-                        punch_code,
-                        device=attendance.device,
-                        source="ZKTeco",
-                    )
-                else:
+                if punch_code not in {0, 3, 4, 1, 2, 5}:
                     logger.warning(
                         "[Device: %s] Unsupported punch code %s for user %s",
                         attendance.device.name,
                         punch_code,
                         user_id,
                     )
+                    # Unsupported records are still considered fetched.
+                    attendance.device.last_fetch_date = date
+                    attendance.device.last_fetch_time = time
+                    attendance.device.save(
+                        update_fields=["last_fetch_date", "last_fetch_time"]
+                    )
                     continue
+
+                existing_log = BiometricPunchLog.objects.filter(
+                    device_id=attendance.device,
+                    biometric_user_id=str(user_id),
+                    punch_datetime=date_time,
+                    punch_code=punch_code,
+                ).first()
+                if existing_log:
+                    attendance.device.last_fetch_date = date
+                    attendance.device.last_fetch_time = time
+                    attendance.device.save(
+                        update_fields=["last_fetch_date", "last_fetch_time"]
+                    )
+                    continue
+
+                process_biometric_punch(
+                    request_data,
+                    punch_code,
+                    device=attendance.device,
+                    source="ZKTeco",
+                )
 
                 # Advance the cursor only after this record has been handled.
                 attendance.device.last_fetch_date = date
