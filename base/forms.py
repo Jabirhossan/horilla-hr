@@ -1601,6 +1601,9 @@ class EmployeeShiftScheduleUpdateForm(ModelForm):
         widgets = {
             "start_time": forms.TimeInput(attrs={"type": "time"}),
             "end_time": forms.TimeInput(attrs={"type": "time"}),
+            "minimum_working_hour": forms.TextInput(
+                attrs={"placeholder": "HH:MM", "inputmode": "numeric"}
+            ),
             "check_in_window_start": forms.TimeInput(attrs={"type": "time"}),
             "check_in_window_end": forms.TimeInput(attrs={"type": "time"}),
             "check_out_window_start": forms.TimeInput(attrs={"type": "time"}),
@@ -1736,6 +1739,12 @@ class EmployeeShiftScheduleForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+
+        minimum_hour = cleaned_data.get("minimum_working_hour")
+        if isinstance(minimum_hour, str):
+            minimum_hour = minimum_hour.strip()
+            if minimum_hour.isdigit() and 0 <= int(minimum_hour) <= 23:
+                cleaned_data["minimum_working_hour"] = f"{int(minimum_hour):02d}:00"
 
         in_start = cleaned_data.get("check_in_window_start")
         in_end = cleaned_data.get("check_in_window_end")
