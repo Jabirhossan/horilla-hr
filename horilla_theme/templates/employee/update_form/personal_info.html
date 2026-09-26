@@ -38,6 +38,11 @@
                                 {{ form.badge_id.errors }}
                             </div>
                             <div>
+                                <label class="block text-xs font-medium text-color-600 mb-1" for="id_employee_id">{% trans "Employee ID / User ID" %} <span class="text-primary-600">*</span></label>
+                                {{ form.employee_id|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
+                                {{ form.employee_id.errors }}
+                            </div>
+                            <div>
                                 <label class="block text-xs font-medium text-color-600 mb-1" for="id_employee_first_name">{% trans "First Name" %} <span class="text-primary-600">*</span></label>
                                 {{ form.employee_first_name|add_class:"emp-input w-full h-9 px-3 text-xs border border-secondary-200 rounded-md bg-white text-dark-500" }}
                                 {{ form.employee_first_name.errors }}
