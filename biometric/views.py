@@ -61,6 +61,9 @@ from .models import BiometricDevices, BiometricEmployees, COSECAttendanceArgumen
 
 logger = logging.getLogger(__name__)
 
+# Long-running biometric live-capture threads owned by this Django worker.
+_LIVE_BIO_THREADS = {}
+
 
 def str_time_seconds(time):
     """
@@ -533,10 +536,10 @@ def biometric_device_schedule(request, device_id):
                 device.scheduler_duration = duration
                 device.save()
                 scheduler = BackgroundScheduler()
-                existing_thread = settings.BIO_DEVICE_THREADS.get(device.id)
+                existing_thread = _LIVE_BIO_THREADS.get(device.id)
                 if existing_thread:
                     existing_thread.stop()
-                    del settings.BIO_DEVICE_THREADS[device.id]
+                    del _LIVE_BIO_THREADS[device.id]
                 scheduler.add_job(
                     lambda: cosec_biometric_attendance_scheduler(device.id),
                     "interval",
@@ -2195,7 +2198,7 @@ def biometric_device_live(request):
                     device.is_scheduler = False
                     device.save()
                     instance.start()
-                    settings.BIO_DEVICE_THREADS[device.id] = instance
+                    _LIVE_BIO_THREADS[device.id] = instance
             elif device.machine_type == "cosec":
                 cosec = COSECBiometric(
                     device.machine_ip,
