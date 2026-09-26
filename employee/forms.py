@@ -229,6 +229,8 @@ class EmployeeForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["email"].widget.attrs["autocomplete"] = "email"
         self.fields["phone"].widget.attrs["autocomplete"] = "phone"
+        self.fields["employee_id"].required = not bool(self.instance and self.instance.pk)
+        self.fields["employee_id"].widget.attrs["placeholder"] = _("Employee ID / User ID")
         self.fields["address"].widget.attrs["autocomplete"] = "address"
         if instance := kwargs.get("instance"):
             # ----
@@ -324,6 +326,22 @@ class EmployeeForm(ModelForm):
             logger.exception(e)
             prefix = get_initial_prefix(None)["get_initial_prefix"]
         return prefix
+
+    def clean_employee_id(self):
+        """Validate the manually assigned employee/user ID."""
+        employee_id = self.cleaned_data.get("employee_id")
+        if not employee_id:
+            if not (self.instance and self.instance.pk):
+                raise forms.ValidationError(_("Employee ID / User ID is required."))
+            return employee_id
+
+        employee_id = str(employee_id).strip()
+        queryset = Employee.objects.entire().filter(employee_id=employee_id)
+        if self.instance and self.instance.pk:
+            queryset = queryset.exclude(pk=self.instance.pk)
+        if queryset.exists():
+            raise forms.ValidationError(_("Employee ID / User ID must be unique."))
+        return employee_id
 
     def clean_badge_id(self):
         """
