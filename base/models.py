@@ -955,6 +955,26 @@ class EmployeeShiftSchedule(HorillaModel):
             "Number of minutes before shift end during which biometric check-out is allowed."
         ),
     )
+    check_in_window_start = models.TimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Check-in Window Start"),
+    )
+    check_in_window_end = models.TimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Check-in Window End"),
+    )
+    check_out_window_start = models.TimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Check-out Window Start"),
+    )
+    check_out_window_end = models.TimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("Check-out Window End"),
+    )
 
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
 
