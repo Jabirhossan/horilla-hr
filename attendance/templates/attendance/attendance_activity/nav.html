@@ -42,10 +42,6 @@
             </div>
 
             <div class="oh-main__titlebar-button-container">
-            <a href="{% url 'raw-punch-report' %}" class="oh-btn oh-btn--primary ml-2">
-                <ion-icon name="finger-print-outline" class="mr-1"></ion-icon>
-                {% trans "Raw Punch Report" %}
-            </a>
                 <div class="oh-dropdown" x-data="{open: false}">
                     <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
                         <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
