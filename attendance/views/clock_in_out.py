@@ -240,6 +240,54 @@ def attendance_window_status(
 
 
 
+def persist_raw_biometric_punch(
+    request,
+    punch_code,
+    device=None,
+    source="ZKTeco",
+    employee=None,
+):
+    """
+    Persist a source biometric event even when the device user is not mapped
+    to an employee. Such a row is raw-only until the mapping is created.
+    """
+    punch_datetime = (
+        request.datetime
+        if request.__dict__.get("datetime")
+        else timezone.localtime()
+    )
+    if timezone.is_naive(punch_datetime):
+        punch_datetime = timezone.make_aware(
+            punch_datetime,
+            timezone.get_current_timezone(),
+        )
+
+    return BiometricPunchLog.objects.create(
+        employee_id=employee,
+        device_id=device,
+        biometric_user_id=str(
+            getattr(request, "biometric_user_id", "")
+            or getattr(request, "user_id", "")
+            or getattr(request.user, "username", "")
+        ),
+        punch_code=punch_code,
+        direction="IN" if punch_code in {0, 3, 4} else "OUT",
+        punch_datetime=punch_datetime,
+        attendance_date=getattr(request, "date", None),
+        shift_id=None,
+        window_status=None,
+        within_window=False,
+        used_for_attendance=False,
+        source=source,
+        raw_payload={
+            "punch_code": punch_code,
+            "datetime": punch_datetime.isoformat(),
+            "device_id": str(device.pk) if device else None,
+            "employee_mapping": "unmapped" if employee is None else "mapped",
+        },
+    )
+
+
 def process_biometric_punch(
     request,
     punch_code,
