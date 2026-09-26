@@ -8,6 +8,7 @@ from django.contrib import admin
 
 from .models import (
     Attendance,
+    BiometricPunchLog,
     AttendanceActivity,
     AttendanceLateComeEarlyOut,
     AttendanceOverTime,
@@ -26,3 +27,5 @@ admin.site.register(AttendanceValidationCondition)
 admin.site.register(GraceTime)
 admin.site.register(AttendanceRequestComment)
 admin.site.register(WorkRecords)
+
+admin.site.register(BiometricPunchLog)
