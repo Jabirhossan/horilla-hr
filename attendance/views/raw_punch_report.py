@@ -20,10 +20,14 @@ from horilla.decorators import login_required, permission_required
 
 def _report_queryset(request):
     company = get_session_company(request)
-    qs = BiometricPunchLog.objects.filter(
-        Q(employee_id__employee_work_info__company_id=company)
-        | Q(device_id__company_id=company)
-    ).select_related("employee_id", "device_id", "shift_id", "attendance_id")
+    qs = BiometricPunchLog.objects.all().select_related(
+        "employee_id", "device_id", "shift_id", "attendance_id"
+    )
+    if company is not None:
+        qs = qs.filter(
+            Q(employee_id__employee_work_info__company_id=company)
+            | Q(device_id__company_id=company)
+        )
 
     start = request.GET.get("start_date")
     end = request.GET.get("end_date")
@@ -57,13 +61,10 @@ def _report_queryset(request):
         qs = qs.filter(used_for_attendance=(used == "yes"))
     if search:
         qs = qs.filter(
-            employee_id__employee_first_name__icontains=search
-        ) | qs.filter(
-            employee_id__employee_last_name__icontains=search
-        ) | qs.filter(
-            employee_id__employee_id__icontains=search
-        ) | qs.filter(
-            biometric_user_id__icontains=search
+            Q(employee_id__employee_first_name__icontains=search)
+            | Q(employee_id__employee_last_name__icontains=search)
+            | Q(employee_id__employee_id__icontains=search)
+            | Q(biometric_user_id__icontains=search)
         )
 
     return qs.order_by("-punch_datetime", "-id")
@@ -79,18 +80,27 @@ def raw_punch_report(request):
     page = paginator.get_page(request.GET.get("page", 1))
 
     company = get_session_company(request)
-    employees = Employee.objects.filter(
-        is_active=True,
-        employee_work_info__company_id=company,
-    ).order_by("employee_first_name", "employee_last_name")
-    department_ids = EmployeeWorkInformation.objects.filter(
-        company_id=company,
+    employees = Employee.objects.filter(is_active=True)
+    if company is not None:
+        employees = employees.filter(employee_work_info__company_id=company)
+    employees = employees.order_by("employee_first_name", "employee_last_name").distinct()
+
+    work_info_qs = EmployeeWorkInformation.objects.filter(
         department_id__isnull=False,
-    ).values_list("department_id", flat=True).distinct()
+    )
+    if company is not None:
+        work_info_qs = work_info_qs.filter(company_id=company)
+    department_ids = work_info_qs.values_list(
+        "department_id", flat=True
+    ).distinct()
     departments = Department.objects.filter(
         id__in=department_ids
     ).order_by("department")
-    devices = BiometricDevices.objects.filter(company_id=company).order_by("name")
+
+    devices = BiometricDevices.objects.all()
+    if company is not None:
+        devices = devices.filter(company_id=company)
+    devices = devices.order_by("name")
 
     stats_qs = qs
     total = stats_qs.count()
