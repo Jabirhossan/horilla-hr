@@ -1729,55 +1729,116 @@ def add_biometric_user(request, device_id):
                 )
                 conn = zk_device.connect()
                 conn.enable_device()
-                # Fetch once: get_users() is a round trip to the device.
+                # ZKTeco attendance records identify employees by the
+                # device user_id. For this Horilla setup, that ID must always
+                # match the employee's badge_id. Reuse an existing device user
+                # when the badge_id is already enrolled; otherwise create the
+                # device user with the badge_id instead of generating 1000+ IDs.
                 device_users = conn.get_users()
-                existing_uids = [user.uid for user in device_users]
-                # The device reports user_id as a string. Compare like with like,
-                # otherwise the guard below never detects a taken user_id and can
-                # hand out one that already belongs to an enrolled employee.
-                existing_user_ids = {str(user.user_id) for user in device_users}
-                uid = 1
-                user_id = 1000
+                device_users_by_user_id = {
+                    str(user.user_id): user for user in device_users
+                }
+                existing_uids = {user.uid for user in device_users}
                 employee_ids = request.POST.getlist("employee_ids")
+
                 for obj_id in employee_ids:
                     employee = Employee.objects.get(id=obj_id)
                     existing_biometric_employee = BiometricEmployees.objects.filter(
                         employee_id=employee, device_id=device
                     ).first()
-                    if existing_biometric_employee is None:
-                        while uid in existing_uids or str(user_id) in existing_user_ids:
-                            uid += 1
-                            user_id += 1
-                        existing_uids.append(uid)
-                        existing_user_ids.add(str(user_id))
-                        employee_name = employee.get_full_name()
-                        conn.set_user(
-                            uid=uid,
-                            name=employee_name,
-                            password="",
-                            group_id="",
-                            user_id=str(user_id),
-                            card=0,
+
+                    if existing_biometric_employee is not None:
+                        messages.info(
+                            request,
+                            _("{} already added to biometric device").format(employee),
                         )
-                        # The ZK Biometric user ID must be a character value
-                        # that can be converted to an integer.
+                        continue
+
+                    badge_id = str(employee.badge_id or "").strip()
+                    if not badge_id:
+                        messages.error(
+                            request,
+                            _(
+                                "{} cannot be added because Badge ID is empty. "
+                                "Set the Badge ID first."
+                            ).format(employee),
+                        )
+                        continue
+
+                    if not badge_id.isdigit():
+                        messages.error(
+                            request,
+                            _(
+                                "{} cannot be added because Badge ID must be numeric "
+                                "for ZKTeco."
+                            ).format(employee),
+                        )
+                        continue
+
+                    existing_device_user = device_users_by_user_id.get(badge_id)
+                    existing_mapping = BiometricEmployees.objects.filter(
+                        device_id=device, user_id=badge_id
+                    ).first()
+
+                    if existing_mapping and existing_mapping.employee_id_id != employee.id:
+                        messages.error(
+                            request,
+                            _(
+                                "Badge ID {} is already mapped to {} on this device."
+                            ).format(badge_id, existing_mapping.employee_id),
+                        )
+                        continue
+
+                    if existing_device_user is not None:
+                        # The employee is already enrolled on the K60 with the
+                        # correct badge/user ID. Do not create another biometric
+                        # user; simply map the existing device user to Horilla.
                         BiometricEmployees.objects.create(
-                            uid=uid,
-                            user_id=str(user_id),
+                            uid=existing_device_user.uid,
+                            user_id=badge_id,
                             employee_id=employee,
                             device_id=device,
                         )
                         messages.success(
                             request,
-                            _("{} added to biometric device successfully").format(
-                                employee
-                            ),
+                            _(
+                                "{} mapped to existing biometric user {} successfully"
+                            ).format(employee, badge_id),
                         )
-                    else:
-                        messages.info(
-                            request,
-                            _("{} already added to biometric device").format(employee),
-                        )
+                        continue
+
+                    # Badge ID is not on the device yet, so create the K60 user
+                    # using the same ID as the employee badge.
+                    uid = 1
+                    while uid in existing_uids:
+                        uid += 1
+
+                    employee_name = employee.get_full_name()
+                    conn.set_user(
+                        uid=uid,
+                        name=employee_name,
+                        password="",
+                        group_id="",
+                        user_id=badge_id,
+                        card=0,
+                    )
+                    existing_uids.add(uid)
+                    device_users_by_user_id[badge_id] = type(
+                        "ZKUserRef",
+                        (),
+                        {"uid": uid, "user_id": badge_id},
+                    )()
+
+                    BiometricEmployees.objects.create(
+                        uid=uid,
+                        user_id=badge_id,
+                        employee_id=employee,
+                        device_id=device,
+                    )
+                    messages.success(
+                        request,
+                        _("{} added to biometric device successfully").format(employee),
+                    )
             else:
                 cosec = COSECBiometric(
                     device.machine_ip,
