@@ -2265,12 +2265,10 @@ def biometric_device_live(request):
 
 def zk_biometric_attendance_logs(device_or_devices):
     """
-    Retrieve and process attendance logs from one or more ZKTeco biometric devices.
+    Retrieve ZKTeco attendance records and persist every mapped device punch.
 
-    Handles scenarios where the same user_id may exist across multiple devices for the same employee.
-
-    :param device_or_devices: A single BiometricDevice instance or a queryset/list of them.
-    :return: Tuple (number_of_attendance_processed, error_message or None)
+    Return:
+        (fetched_count, raw_saved_count, attendance_used_count, raw_only_count, error)
     """
     if hasattr(device_or_devices, "__iter__") and not isinstance(
         device_or_devices, dict
@@ -2284,138 +2282,178 @@ def zk_biometric_attendance_logs(device_or_devices):
     patch_direction = {"in": 0, "out": 1}
 
     bio_id_map = {
-        (bio.device_id_id, bio.user_id): bio
+        (bio.device_id_id, str(bio.user_id)): bio
         for bio in BiometricEmployees.objects.filter(device_id__in=devices)
+        .select_related("employee_id__employee_user_id", "employee_id__employee_work_info")
     }
 
     for device in devices:
-        port_no = device.port
-        machine_ip = device.machine_ip
-        conn = None
         zk_device = ZK(
-            machine_ip,
-            port=port_no,
+            device.machine_ip,
+            port=device.port,
             timeout=60,
             password=int(device.zk_password),
             force_udp=False,
             ommit_ping=True,
         )
+        conn = None
 
         try:
             conn = zk_device.connect()
             conn.enable_device()
             attendances = conn.get_attendance()
+
             if not attendances:
                 continue
 
-            last_attendance_datetime = attendances[-1].timestamp
-
             if device.last_fetch_date and device.last_fetch_time:
-                # Re-read a short recovery window so punches that were fetched
-                # before a processing error are not permanently lost. Existing
-                # raw rows are deduplicated below.
+                # Keep a recovery overlap. Raw rows are deduplicated by the
+                # device/user/timestamp/punch-code identity below.
                 cursor = datetime.combine(
                     device.last_fetch_date,
                     device.last_fetch_time,
                 ) - timedelta(hours=24)
                 filtered = [
-                    att
-                    for att in attendances
-                    if att.timestamp > cursor
+                    att for att in attendances if att.timestamp > cursor
                 ]
             else:
                 filtered = attendances
 
-            # Do not advance the device cursor before processing.
-            # If attendance calculation fails, the same device record must be
-            # retried on the next polling cycle instead of being lost.
             for attendance in filtered:
-                attendance.device = device  # Attach device info
+                attendance.device = device
                 attendance.punch = (
                     patch_direction[device.device_direction]
                     if device.device_direction in patch_direction
                     else attendance.punch
-                )  # Update punch code based on device direction
+                )
                 combined_attendances.append(attendance)
 
         except zk_exception.ZKErrorResponse as e:
             errors.append(f"[{device.name}] ZKError: {str(e)}")
         except Exception as e:
-            logger.error(f"[{device.name}] General Error", exc_info=True)
+            logger.exception(f"[{device.name}] General Error")
             errors.append(f"[{device.name}] Error: {str(e)}")
         finally:
             if conn:
                 conn.disconnect()
 
-    # Sort all filtered attendances by time
     combined_attendances.sort(key=lambda a: a.timestamp)
 
+    fetched_count = len(combined_attendances)
+    raw_saved_count = 0
+    attendance_used_count = 0
+
     for attendance in combined_attendances:
-        user_id = attendance.user_id
+        user_id = str(attendance.user_id)
         punch_code = attendance.punch
-        date_time = django_timezone.make_aware(attendance.timestamp)
-        date = date_time.date()
-        time = date_time.time()
-        device_id = attendance.device.id
-        bio_id = bio_id_map.get((device_id, user_id))
-        if bio_id:
+
+        try:
+            date_time = attendance.timestamp
+            if django_timezone.is_naive(date_time):
+                date_time = django_timezone.make_aware(
+                    date_time,
+                    django_timezone.get_current_timezone(),
+                )
+            else:
+                date_time = date_time.astimezone(
+                    django_timezone.get_current_timezone()
+                )
+
+            date = date_time.date()
+            time = date_time.time()
+            device = attendance.device
+            bio_id = bio_id_map.get((device.id, user_id))
+
+            if not bio_id:
+                logger.warning(
+                    "[Device: %s] Punch has no employee mapping: user_id=%s",
+                    device.name,
+                    user_id,
+                )
+                errors.append(
+                    f"[{device.name}] No employee mapping for user {user_id}"
+                )
+                # Do not advance the cursor: the punch must be retried after
+                # the device user is mapped.
+                continue
+
             request_data = Request(
                 user=bio_id.employee_id.employee_user_id,
                 date=date,
                 time=time,
                 datetime=date_time,
             )
-            request_data.biometric_user_id = str(user_id)
-            try:
-                if punch_code not in {0, 3, 4, 1, 2, 5}:
-                    logger.warning(
-                        "[Device: %s] Unsupported punch code %s for user %s",
-                        attendance.device.name,
-                        punch_code,
-                        user_id,
-                    )
-                    # Unsupported records are still considered fetched.
-                    attendance.device.last_fetch_date = date
-                    attendance.device.last_fetch_time = time
-                    attendance.device.save(
-                        update_fields=["last_fetch_date", "last_fetch_time"]
-                    )
-                    continue
+            request_data.biometric_user_id = user_id
 
-                existing_log = BiometricPunchLog.objects.filter(
-                    device_id=attendance.device,
-                    biometric_user_id=str(user_id),
-                    punch_datetime=date_time,
-                    punch_code=punch_code,
-                ).first()
-                if existing_log:
-                    attendance.device.last_fetch_date = date
-                    attendance.device.last_fetch_time = time
-                    attendance.device.save(
-                        update_fields=["last_fetch_date", "last_fetch_time"]
-                    )
-                    continue
-
-                process_biometric_punch(
-                    request_data,
+            if punch_code not in {0, 3, 4, 1, 2, 5}:
+                logger.warning(
+                    "[Device: %s] Unsupported punch code %s for user %s",
+                    device.name,
                     punch_code,
-                    device=attendance.device,
-                    source="ZKTeco",
+                    user_id,
                 )
-
-                # Advance the cursor only after this record has been handled.
-                attendance.device.last_fetch_date = date
-                attendance.device.last_fetch_time = time
-                attendance.device.save(
+                # Unsupported records are not attendance events, but they have
+                # been consumed from the device successfully.
+                device.last_fetch_date = date
+                device.last_fetch_time = time
+                device.save(
                     update_fields=["last_fetch_date", "last_fetch_time"]
                 )
-            except Exception:
-                logger.error(
-                    f"[Device: {attendance.device.name}] Punch processing error",
-                    exc_info=True,
+                continue
+
+            existing_log = BiometricPunchLog.objects.filter(
+                device_id=device,
+                biometric_user_id=user_id,
+                punch_datetime=date_time,
+                punch_code=punch_code,
+            ).first()
+
+            raw_log = process_biometric_punch(
+                request_data,
+                punch_code,
+                device=device,
+                source="ZKTeco",
+                employee=bio_id.employee_id,
+                work_info=getattr(bio_id.employee_id, "employee_work_info", None),
+                raw_log=existing_log,
+            )
+
+            if raw_log is None:
+                raise RuntimeError(
+                    f"Raw biometric punch was not persisted for user {user_id}"
                 )
 
-    return len(combined_attendances), "; ".join(errors) if errors else None
+            raw_saved_count += 1
+            if raw_log.used_for_attendance:
+                attendance_used_count += 1
+
+            # Advance the cursor only after the punch has been persisted and
+            # its attendance decision has completed.
+            device.last_fetch_date = date
+            device.last_fetch_time = time
+            device.save(
+                update_fields=["last_fetch_date", "last_fetch_time"]
+            )
+
+        except Exception as error:
+            logger.exception(
+                "[Device: %s] Punch processing error for user %s",
+                getattr(attendance.device, "name", "unknown"),
+                user_id,
+            )
+            errors.append(
+                f"[{getattr(attendance.device, 'name', 'unknown')}] "
+                f"user {user_id}: {error}"
+            )
+
+    raw_only_count = max(raw_saved_count - attendance_used_count, 0)
+    return (
+        fetched_count,
+        raw_saved_count,
+        attendance_used_count,
+        raw_only_count,
+        "; ".join(errors) if errors else None,
+    )
 
 
 def zk_biometric_attendance_scheduler(device_id):
