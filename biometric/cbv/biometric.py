@@ -245,91 +245,25 @@ class BiometricSheduleForm(HorillaFormView):
             if form.instance.pk:
                 message = _("Biometric device updated successfully.")
                 device = BiometricDevices.objects.get(id=self.form.instance.pk)
+                duration = form.cleaned_data["scheduler_duration"]
 
-                if device.machine_type == "zk":
-                    try:
-                        port_no = device.port
-                        machine_ip = device.machine_ip
-                        conn = None
-                        zk_device = ZK(
-                            machine_ip,
-                            port=port_no,
-                            timeout=5,
-                            password=0,
-                            force_udp=False,
-                            ommit_ping=False,
-                        )
-                        conn = zk_device.connect()
-                        conn.test_voice(index=0)
-                        duration = self.request.POST.get("scheduler_duration")
-                        device = BiometricDevices.objects.get(id=self.form.instance.pk)
-                        device.scheduler_duration = duration
-                        device.is_scheduler = True
-                        device.is_live = False
-                        device.save()
-                        scheduler = BackgroundScheduler()
-                        scheduler.add_job(
-                            lambda: zk_biometric_attendance_scheduler(device.id),
-                            "interval",
-                            seconds=str_time_seconds(device.scheduler_duration),
-                        )
-                        scheduler.start()
-                        return HorillaRedirect(self.request)
-                    except Exception as error:
-                        logger.error(
-                            "An error comes in biometric_device_schedule ", error
-                        )
-                        script = """
-                        <script>
-                            Swal.fire({
-                            title : "Schedule Attendance unsuccessful",
-                            text: "Please double-check the accuracy of the provided IP Address and Port Number for correctness",
-                            icon: "warning",
-                            showConfirmButton: false,
-                            timer: 3500,
-                            timerProgressBar: true,
-                            didClose: () => {
-                                location.reload();
-                                },
-                            });
-                        </script>
-                        """
-                        return HttpResponse(script)
-                elif device.machine_type == "anviz":
-                    duration = self.request.POST.get("scheduler_duration")
-                    device.is_scheduler = True
-                    device.scheduler_duration = duration
-                    device.save()
-                    scheduler = BackgroundScheduler()
-                    scheduler.add_job(
-                        lambda: anviz_biometric_attendance_scheduler(device.id),
-                        "interval",
-                        seconds=str_time_seconds(device.scheduler_duration),
-                    )
-                    scheduler.start()
-                    return HorillaRedirect(self.request)
-                else:
-                    duration = self.request.POST.get("scheduler_duration")
-                    device.is_scheduler = True
-                    device.is_live = False
-                    device.scheduler_duration = duration
-                    device.save()
-                    scheduler = BackgroundScheduler()
-                    existing_thread = settings.BIO_DEVICE_THREADS.get(device.id)
-                    if existing_thread:
-                        existing_thread.stop()
-                        del settings.BIO_DEVICE_THREADS[device.id]
-                    scheduler.add_job(
-                        lambda: cosec_biometric_attendance_scheduler(device.id),
-                        "interval",
-                        seconds=str_time_seconds(device.scheduler_duration),
-                    )
-                    scheduler.start()
-                    return HorillaRedirect(self.request)
-            # else:
-            #     message = _("Biometric device added successfully.")
+                # Scheduling must not depend on a live ZKTeco connection.
+                # K60 keeps attendance logs locally, and the global Horilla
+                # scheduler will fetch them when the device is reachable.
+                device.scheduler_duration = duration
+                device.is_scheduler = True
+                device.is_live = False
+                device.save(
+                    update_fields=[
+                        "scheduler_duration",
+                        "is_scheduler",
+                        "is_live",
+                    ]
+                )
+
+                messages.success(self.request, message)
+                return HorillaRedirect(self.request)
+
             form.save()
-
-            messages.success(self.request, message)
-            # return self.HttpResponse("<script>location.reload();</script>")
+            messages.success(self.request, _("Biometric device added successfully."))
         return super().form_valid(form)
