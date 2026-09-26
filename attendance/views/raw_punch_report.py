@@ -6,6 +6,7 @@ from datetime import date, datetime, time, timedelta
 
 import pandas as pd
 from django.http import HttpResponse
+from django.db.models import Q
 from django.shortcuts import render
 from django.utils import timezone
 
@@ -20,7 +21,8 @@ from horilla.decorators import login_required, permission_required
 def _report_queryset(request):
     company = get_session_company(request)
     qs = BiometricPunchLog.objects.filter(
-        employee_id__employee_work_info__company_id=company
+        Q(employee_id__employee_work_info__company_id=company)
+        | Q(device_id__company_id=company)
     ).select_related("employee_id", "device_id", "shift_id", "attendance_id")
 
     start = request.GET.get("start_date")
@@ -122,8 +124,8 @@ def raw_punch_report_export(request):
     for punch in qs:
         employee = punch.employee_id
         rows.append({
-            "Employee": employee.get_full_name(),
-            "Employee ID": employee.employee_id or "",
+            "Employee": employee.get_full_name() if employee else "Unmapped",
+            "Employee ID": employee.employee_id if employee else "",
             "Device": punch.device_id.name if punch.device_id else "",
             "Device User ID": punch.biometric_user_id,
             "Punch Date": timezone.localtime(punch.punch_datetime).strftime("%Y-%m-%d"),
