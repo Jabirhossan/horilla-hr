@@ -1783,6 +1783,18 @@ class EmployeeShiftScheduleForm(ModelForm):
         ),
     )
 
+
+    check_in_window_range = forms.CharField(
+        label=_("Check-In Window Start - End"),
+        required=False,
+        widget=forms.TextInput(attrs={"type": "text"}),
+    )
+    check_out_window_range = forms.CharField(
+        label=_("Check-Out Window Start - End"),
+        required=False,
+        widget=forms.TextInput(attrs={"type": "text"}),
+    )
+
     cols = {"day": 12}
 
     day = forms.ModelMultipleChoiceField(
@@ -1798,14 +1810,30 @@ class EmployeeShiftScheduleForm(ModelForm):
         fields = "__all__"
         exclude = ["is_active", "day"]
         widgets = {
-            "start_time": forms.TimeInput(),
-            "end_time": forms.TimeInput(),
+            "start_time": forms.TimeInput(attrs={"type": "time"}),
+            "end_time": forms.TimeInput(attrs={"type": "time"}),
+            "check_in_window_start": forms.TimeInput(attrs={"type": "time"}),
+            "check_in_window_end": forms.TimeInput(attrs={"type": "time"}),
+            "check_out_window_start": forms.TimeInput(attrs={"type": "time"}),
+            "check_out_window_end": forms.TimeInput(attrs={"type": "time"}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.fields["end_time"].initial = None
+
+        if self.instance.pk:
+            self.fields["check_in_window_range"].initial = (
+                f"{self.instance.check_in_window_start:%H:%M} - {self.instance.check_in_window_end:%H:%M}"
+                if self.instance.check_in_window_start and self.instance.check_in_window_end
+                else ""
+            )
+            self.fields["check_out_window_range"].initial = (
+                f"{self.instance.check_out_window_start:%H:%M} - {self.instance.check_out_window_end:%H:%M}"
+                if self.instance.check_out_window_start and self.instance.check_out_window_end
+                else ""
+            )
         if self.instance.pk:
             self.fields["day"] = forms.ModelChoiceField(
                 queryset=EmployeeShiftDay.objects.all(),
@@ -1831,15 +1859,54 @@ class EmployeeShiftScheduleForm(ModelForm):
 
     def as_p(self):
         """
-        Render the form fields as HTML table rows with Bootstrap styling.
+        Render the shift schedule form.
+        Window Start/End fields are editable and stored as actual times.
         """
-
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
-        return table_html
+        return render_to_string("horilla_form.html", context)
 
     def clean(self):
         cleaned_data = super().clean()
+
+        start_time = cleaned_data.get("start_time")
+        end_time = cleaned_data.get("end_time")
+        in_start = cleaned_data.get("check_in_window_start")
+        in_end = cleaned_data.get("check_in_window_end")
+        out_start = cleaned_data.get("check_out_window_start")
+        out_end = cleaned_data.get("check_out_window_end")
+
+        # Keep the minute fields for compatibility, but actual editable
+        # window start/end values are the source of truth.
+        if start_time and end_time:
+            if not in_start:
+                in_start = start_time
+                cleaned_data["check_in_window_start"] = in_start
+            if not in_end:
+                total = start_time.hour * 60 + start_time.minute + int(
+                    cleaned_data.get("check_in_window_minutes") or 0
+                )
+                cleaned_data["check_in_window_end"] = datetime.min.time().replace(
+                    hour=(total // 60) % 24, minute=total % 60
+                )
+            if not out_end:
+                cleaned_data["check_out_window_end"] = end_time
+            if not out_start:
+                total = end_time.hour * 60 + end_time.minute - int(
+                    cleaned_data.get("check_out_window_minutes") or 0
+                )
+                total %= 1440
+                cleaned_data["check_out_window_start"] = datetime.min.time().replace(
+                    hour=total // 60, minute=total % 60
+                )
+
+        if in_start and in_end and out_start and out_end:
+            cleaned_data["check_in_window_range"] = (
+                f"{in_start.strftime('%H:%M')} - {in_end.strftime('%H:%M')}"
+            )
+            cleaned_data["check_out_window_range"] = (
+                f"{out_start.strftime('%H:%M')} - {out_end.strftime('%H:%M')}"
+            )
+
         if apps.is_installed("attendance"):
             auto_punch_out_enabled = self.cleaned_data["is_auto_punch_out_enabled"]
             auto_punch_out_time = self.cleaned_data["auto_punch_out_time"]
