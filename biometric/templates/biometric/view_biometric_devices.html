@@ -73,6 +73,25 @@
     </div>
 </div>
 <script>
+    // Keep Fetch Logs modal opening reliable for cards loaded/reloaded through HTMX.
+    $(document)
+        .off("click.biometricFetchLogs", '#biometricDeviceList a[data-target="#BiometricDeviceTestModal"]')
+        .on(
+            "click.biometricFetchLogs",
+            '#biometricDeviceList a[data-target="#BiometricDeviceTestModal"]',
+            function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                var modal = document.getElementById("BiometricDeviceTestModal");
+                if (modal) {
+                    modal.classList.add("oh-modal--show");
+                    modal.setAttribute("aria-hidden", "false");
+                }
+            }
+        );
+</script>
+<script>
     function machineTypeChange(selectElement) {
         var machineType = selectElement.val();
         var allElements = [
