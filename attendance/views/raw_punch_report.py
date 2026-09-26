@@ -12,7 +12,7 @@ from django.utils import timezone
 from attendance.models import BiometricPunchLog
 from base.methods import get_session_company
 from biometric.models import BiometricDevices
-from department.models import Department
+from base.models import Department
 from employee.models import Employee
 from horilla.decorators import login_required, permission_required
 
