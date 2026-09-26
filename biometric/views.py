@@ -459,74 +459,26 @@ def biometric_device_schedule(request, device_id):
         if scheduler_form.is_valid():
             duration = scheduler_form.cleaned_data["scheduler_duration"]
             if device.machine_type == "zk":
-                conn = None
-                try:
-                    port_no = device.port
-                    machine_ip = device.machine_ip
-                    password = device.zk_password
+                # Scheduling must not depend on a live connection. The K60
+                # keeps attendance logs locally, and the background scheduler
+                # will connect and fetch them when network access is available.
+                # This also prevents a harmless device command/connection
+                # failure from blocking scheduler activation.
+                device.scheduler_duration = duration
+                device.is_scheduler = True
+                device.is_live = False
+                device.save(
+                    update_fields=[
+                        "scheduler_duration",
+                        "is_scheduler",
+                        "is_live",
+                    ]
+                )
 
-                    # Only verify TCP/ZKTeco connectivity here. Do not call
-                    # test_voice(): some ZKTeco models (including K60) can
-                    # reject that command even though attendance APIs work.
-                    zk_device = ZK(
-                        machine_ip,
-                        port=port_no,
-                        timeout=15,
-                        password=int(password),
-                        force_udp=False,
-                        ommit_ping=True,
-                    )
-                    conn = zk_device.connect()
-                    if not conn:
-                        raise ConnectionError(
-                            "ZKTeco connection returned no connection"
-                        )
-
-                    device = BiometricDevices.objects.get(id=device_id)
-                    device.scheduler_duration = duration
-                    device.is_scheduler = True
-                    device.is_live = False
-                    device.save(
-                        update_fields=[
-                            "scheduler_duration",
-                            "is_scheduler",
-                            "is_live",
-                        ]
-                    )
-
-                    # Attendance polling is handled by the single global
-                    # Horilla scheduler job (poll_biometric_devices). Do not
-                    # start a BackgroundScheduler per HTTP request.
-                    return HorillaRedirect(request)
-                except Exception as error:
-                    logger.exception(
-                        "ZKTeco schedule activation failed for device %s",
-                        device_id,
-                    )
-                    script = """
-                    <script>
-                        Swal.fire({
-                          title : "Schedule Attendance unsuccessful",
-                          text: "Please double-check the accuracy of the provided IP Address and Port Number for correctness",
-                          icon: "warning",
-                          showConfirmButton: false,
-                          timer: 3500,
-                          timerProgressBar: true,
-                          didClose: () => {
-                            location.reload();
-                            },
-                        });
-                    </script>
-                    """
-                    return HttpResponse(script)
-                finally:
-                    if conn:
-                        try:
-                            conn.disconnect()
-                        except Exception:
-                            logger.exception(
-                                "Failed to disconnect ZKTeco schedule test connection"
-                            )
+                # Do not start a BackgroundScheduler from this HTTP request.
+                # The registered global Horilla scheduler polls scheduled
+                # biometric devices independently.
+                return HorillaRedirect(request)
             elif device.machine_type == "anviz":
                 device.is_scheduler = True
                 device.scheduler_duration = duration
