@@ -2336,6 +2336,15 @@ def zk_biometric_attendance_logs(device_or_devices):
             attendances = conn.get_attendance()
 
             if not attendances:
+                # A successful fetch with no device records must still advance
+                # the scheduler checkpoint, otherwise a scheduled device with
+                # no new punch would be fetched on every scheduler tick.
+                now = django_timezone.localtime().replace(
+                    tzinfo=None, microsecond=0
+                )
+                device.last_fetch_date = now.date()
+                device.last_fetch_time = now.time()
+                device.save(update_fields=["last_fetch_date", "last_fetch_time"])
                 continue
 
             if clock_corrected:
@@ -2348,12 +2357,13 @@ def zk_biometric_attendance_logs(device_or_devices):
                     if att.timestamp <= local_now + timedelta(days=1)
                 ]
             elif device.last_fetch_date and device.last_fetch_time:
-                # Keep a recovery overlap. Raw rows are deduplicated by the
-                # device/user/timestamp/punch-code identity below.
+                # Only re-read a tiny overlap around the checkpoint. The old
+                # 24-hour overlap caused every manual/scheduled fetch to scan
+                # and re-process the same day's punches.
                 cursor = datetime.combine(
                     device.last_fetch_date,
                     device.last_fetch_time,
-                ) - timedelta(hours=24)
+                ) - timedelta(seconds=5)
                 filtered = [
                     att for att in attendances if att.timestamp > cursor
                 ]
@@ -2383,6 +2393,7 @@ def zk_biometric_attendance_logs(device_or_devices):
     fetched_count = len(combined_attendances)
     raw_saved_count = 0
     attendance_used_count = 0
+    processed_devices = set()
 
     for attendance in combined_attendances:
         user_id = str(attendance.user_id)
@@ -2445,7 +2456,7 @@ def zk_biometric_attendance_logs(device_or_devices):
                         source="ZKTeco",
                         employee=None,
                     )
-                raw_saved_count += 1
+                    raw_saved_count += 1
                 logger.warning(
                     "[Device: %s] Punch stored as raw-only; no employee mapping: user_id=%s",
                     device.name,
@@ -2504,8 +2515,11 @@ def zk_biometric_attendance_logs(device_or_devices):
                     f"Raw biometric punch was not persisted for user {user_id}"
                 )
 
-            raw_saved_count += 1
-            if raw_log.used_for_attendance:
+            if existing_log is None:
+                raw_saved_count += 1
+            if raw_log.used_for_attendance and (
+                existing_log is None or not existing_log.used_for_attendance
+            ):
                 attendance_used_count += 1
 
             # Advance the cursor only after the punch has been persisted and
@@ -2526,6 +2540,16 @@ def zk_biometric_attendance_logs(device_or_devices):
                 f"[{getattr(attendance.device, 'name', 'unknown')}] "
                 f"user {user_id}: {error}"
             )
+
+    # If the device returned successfully but there were no new
+    # attendance rows, advance its checkpoint to now. When records were
+    # returned, the per-punch loop already advanced it to the newest event.
+    if not errors and not combined_attendances:
+        now = django_timezone.localtime().replace(tzinfo=None, microsecond=0)
+        for device in devices:
+            device.last_fetch_date = now.date()
+            device.last_fetch_time = now.time()
+            device.save(update_fields=["last_fetch_date", "last_fetch_time"])
 
     raw_only_count = max(raw_saved_count - attendance_used_count, 0)
     return (
