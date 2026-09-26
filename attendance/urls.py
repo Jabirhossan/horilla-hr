@@ -30,9 +30,19 @@ from base.forms import AttendanceAllowedIPForm
 from base.models import AttendanceAllowedIP
 from base.views import add_remove_dynamic_fields
 
-from .views import daily_report, summary, views
+from .views import daily_report, raw_punch_report, summary, views
 
 urlpatterns = [
+    path(
+        "raw-punch-report/",
+        raw_punch_report.raw_punch_report,
+        name="raw-punch-report",
+    ),
+    path(
+        "raw-punch-report/export/",
+        raw_punch_report.raw_punch_report_export,
+        name="raw-punch-report-export",
+    ),
     path(
         "daily-report/",
         daily_report.attendance_daily_report,
