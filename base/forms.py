@@ -799,6 +799,14 @@ class DepartmentForm(ModelForm):
             if existing:
                 self.fields["manager"].initial = existing.manager_id
 
+    def clean_minimum_working_hour(self):
+        value = self.cleaned_data.get("minimum_working_hour")
+        if isinstance(value, str):
+            value = value.strip()
+            if value.isdigit() and 0 <= int(value) <= 23:
+                return f"{int(value):02d}:00"
+        return value
+
     def clean(self):
         cleaned_data = super().clean()
         return cleaned_data
@@ -1739,12 +1747,6 @@ class EmployeeShiftScheduleForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-
-        minimum_hour = cleaned_data.get("minimum_working_hour")
-        if isinstance(minimum_hour, str):
-            minimum_hour = minimum_hour.strip()
-            if minimum_hour.isdigit() and 0 <= int(minimum_hour) <= 23:
-                cleaned_data["minimum_working_hour"] = f"{int(minimum_hour):02d}:00"
 
         in_start = cleaned_data.get("check_in_window_start")
         in_end = cleaned_data.get("check_in_window_end")
