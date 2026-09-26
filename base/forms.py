@@ -1811,6 +1811,14 @@ class EmployeeShiftScheduleForm(ModelForm):
         super().__init__(*args, **kwargs)
 
         self.fields["end_time"].initial = None
+        for window_field in (
+            "check_in_window_start",
+            "check_in_window_end",
+            "check_out_window_start",
+            "check_out_window_end",
+        ):
+            if window_field in self.fields:
+                self.fields[window_field].required = True
 
         if self.instance.pk:
         if self.instance.pk:
