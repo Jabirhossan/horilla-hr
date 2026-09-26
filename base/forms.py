@@ -1784,17 +1784,6 @@ class EmployeeShiftScheduleForm(ModelForm):
     )
 
 
-    check_in_window_range = forms.CharField(
-        label=_("Check-In Window Start - End"),
-        required=False,
-        widget=forms.TextInput(attrs={"type": "text"}),
-    )
-    check_out_window_range = forms.CharField(
-        label=_("Check-Out Window Start - End"),
-        required=False,
-        widget=forms.TextInput(attrs={"type": "text"}),
-    )
-
     cols = {"day": 12}
 
     day = forms.ModelMultipleChoiceField(
@@ -1824,16 +1813,6 @@ class EmployeeShiftScheduleForm(ModelForm):
         self.fields["end_time"].initial = None
 
         if self.instance.pk:
-            self.fields["check_in_window_range"].initial = (
-                f"{self.instance.check_in_window_start:%H:%M} - {self.instance.check_in_window_end:%H:%M}"
-                if self.instance.check_in_window_start and self.instance.check_in_window_end
-                else ""
-            )
-            self.fields["check_out_window_range"].initial = (
-                f"{self.instance.check_out_window_start:%H:%M} - {self.instance.check_out_window_end:%H:%M}"
-                if self.instance.check_out_window_start and self.instance.check_out_window_end
-                else ""
-            )
         if self.instance.pk:
             self.fields["day"] = forms.ModelChoiceField(
                 queryset=EmployeeShiftDay.objects.all(),
@@ -1898,14 +1877,6 @@ class EmployeeShiftScheduleForm(ModelForm):
                 cleaned_data["check_out_window_start"] = datetime.min.time().replace(
                     hour=total // 60, minute=total % 60
                 )
-
-        if in_start and in_end and out_start and out_end:
-            cleaned_data["check_in_window_range"] = (
-                f"{in_start.strftime('%H:%M')} - {in_end.strftime('%H:%M')}"
-            )
-            cleaned_data["check_out_window_range"] = (
-                f"{out_start.strftime('%H:%M')} - {out_end.strftime('%H:%M')}"
-            )
 
         if apps.is_installed("attendance"):
             auto_punch_out_enabled = self.cleaned_data["is_auto_punch_out_enabled"]
