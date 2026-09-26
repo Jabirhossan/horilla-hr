@@ -1,8 +1,52 @@
 {% load i18n basefilters widget_tweaks %}
 {{ form.non_field_errors }}
 <div class="row">
+    <div class="col-lg-4">
+        <div class="oh-input__group">
+            <label
+                class="oh-label {% if form.badge_id.field.required %}required-star{% endif %}"
+                for="id_badge_id"
+                title="{{ form.badge_id.help_text }}"
+            >
+                {% trans form.badge_id.label %}
+            </label>
+            {{ form.badge_id|add_class:'form-control' }}
+            {{ form.badge_id.errors }}
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="oh-input__group">
+            <label
+                class="oh-label {% if form.employee_id.field.required %}required-star{% endif %}"
+                for="id_employee_id"
+                title="{{ form.employee_id.help_text }}"
+            >
+                {% trans "Employee ID / User ID" %}
+            </label>
+            {{ form.employee_id|add_class:'form-control' }}
+            {{ form.employee_id.errors }}
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="oh-input__group">
+            <label
+                class="oh-label {% if form.employee_first_name.field.required %}required-star{% endif %}"
+                for="id_employee_first_name"
+                title="{{ form.employee_first_name.help_text }}"
+            >
+                {% trans form.employee_first_name.label %}
+            </label>
+            {{ form.employee_first_name|add_class:'form-control' }}
+            {{ form.employee_first_name.errors }}
+        </div>
+    </div>
+</div>
+
+<div class="row">
     {% for field in form %}
-        {% if field.label != "Profile Image" and field.label != 'Country' and field.label != 'State' and field.label != 'Address' and field.label != 'Badge id' %}
+        {% if field.label != "Profile Image" and field.label != 'Country' and field.label != 'State' and field.label != 'Address' and field.label != 'Badge id' and field.name != 'employee_id' and field.name != 'employee_first_name' %}
             <div class="col-lg-6">
                 <div class="oh-input__group">
                     <label
