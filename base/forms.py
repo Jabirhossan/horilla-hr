@@ -1601,6 +1601,10 @@ class EmployeeShiftScheduleUpdateForm(ModelForm):
         widgets = {
             "start_time": forms.TimeInput(attrs={"type": "time"}),
             "end_time": forms.TimeInput(attrs={"type": "time"}),
+            "check_in_window_start": forms.TimeInput(attrs={"type": "time"}),
+            "check_in_window_end": forms.TimeInput(attrs={"type": "time"}),
+            "check_out_window_start": forms.TimeInput(attrs={"type": "time"}),
+            "check_out_window_end": forms.TimeInput(attrs={"type": "time"}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -1633,97 +1637,8 @@ class EmployeeShiftScheduleUpdateForm(ModelForm):
             )
 
     def as_p(self):
-        """
-        Render the form fields as HTML table rows with Bootstrap styling.
-        The two read-only window fields are calculated live from shift start/end
-        and the configured window minutes.
-        """
-
-        field_names = list(self.fields.keys())
-        if "check_in_window_range" in field_names:
-            field_names.remove("check_in_window_range")
-            field_names.insert(
-                field_names.index("check_in_window_minutes") + 1,
-                "check_in_window_range",
-            )
-        if "check_out_window_range" in field_names:
-            field_names.remove("check_out_window_range")
-            field_names.insert(
-                field_names.index("check_out_window_minutes") + 1,
-                "check_out_window_range",
-            )
-        self.order_fields(field_names)
-
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
-        table_html += """
-<script>
-(function () {
-    function parseTime(value) {
-        if (!value) return null;
-        var parts = value.split(":");
-        if (parts.length < 2) return null;
-        var h = parseInt(parts[0], 10);
-        var m = parseInt(parts[1], 10);
-        if (isNaN(h) || isNaN(m)) return null;
-        return h * 60 + m;
-    }
-
-    function formatTime(totalMinutes) {
-        totalMinutes = ((totalMinutes % 1440) + 1440) % 1440;
-        var h = Math.floor(totalMinutes / 60);
-        var m = totalMinutes % 60;
-        var suffix = h >= 12 ? "PM" : "AM";
-        var displayHour = h % 12 || 12;
-        return String(displayHour).padStart(2, "0") + ":" +
-               String(m).padStart(2, "0") + " " + suffix;
-    }
-
-    function updateShiftWindows() {
-        var start = parseTime(document.getElementById("id_start_time")?.value);
-        var end = parseTime(document.getElementById("id_end_time")?.value);
-        var inMinutes = parseInt(
-            document.getElementById("id_check_in_window_minutes")?.value || "0",
-            10
-        );
-        var outMinutes = parseInt(
-            document.getElementById("id_check_out_window_minutes")?.value || "0",
-            10
-        );
-
-        var inField = document.getElementById("id_check_in_window_range");
-        var outField = document.getElementById("id_check_out_window_range");
-        if (!inField || !outField) return;
-
-        if (start === null) {
-            inField.value = "Set Shift Start Time";
-        } else {
-            inField.value = formatTime(start) + " - " +
-                formatTime(start + (isNaN(inMinutes) ? 0 : inMinutes));
-        }
-
-        if (end === null) {
-            outField.value = "Set Shift End Time";
-        } else {
-            outField.value = formatTime(end - (isNaN(outMinutes) ? 0 : outMinutes)) +
-                " - " + formatTime(end);
-        }
-    }
-
-    ["id_start_time", "id_end_time",
-     "id_check_in_window_minutes", "id_check_out_window_minutes"].forEach(function (id) {
-        var element = document.getElementById(id);
-        if (element) {
-            element.addEventListener("input", updateShiftWindows);
-            element.addEventListener("change", updateShiftWindows);
-        }
-    });
-
-    updateShiftWindows();
-})();
-</script>
-"""
-        return table_html
+        return render_to_string("horilla_form.html", context)
 
     def clean(self):
         cleaned_data = super().clean()
