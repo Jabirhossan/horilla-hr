@@ -65,6 +65,7 @@ from attendance.models import (
     AttendanceActivity,
     AttendanceGeneralSetting,
     AttendanceLateComeEarlyOut,
+    BiometricPunchLog,
     GraceTime,
 )
 from attendance.views.views import attendance_validate
@@ -229,6 +230,248 @@ def clock_in_attendance_and_activity(
         if early_out_instance.exists():
             early_out_instance[0].delete()
     return attendance
+
+
+
+
+def attendance_window_status(
+    now_sec,
+    start_time_sec,
+    end_time_sec,
+    check_in_window_minutes=0,
+    check_out_window_minutes=0,
+):
+    """Classify a punch against the configured shift windows."""
+    is_night_shift = start_time_sec > end_time_sec and start_time_sec != end_time_sec
+    if is_night_shift:
+        current_sec = now_sec + (24 * 60 * 60 if now_sec < 12 * 60 * 60 else 0)
+        start_sec = start_time_sec
+        end_sec = end_time_sec + 24 * 60 * 60
+    else:
+        current_sec = now_sec
+        start_sec = start_time_sec
+        end_sec = end_time_sec
+
+    check_in_cutoff = start_sec + max(check_in_window_minutes, 0) * 60
+    check_out_open = end_sec - max(check_out_window_minutes, 0) * 60
+    in_window = start_sec <= current_sec <= check_in_cutoff
+    out_window = check_out_open <= current_sec <= end_sec
+
+    if in_window:
+        return "CHECKIN_WINDOW"
+    if out_window:
+        return "CHECKOUT_WINDOW"
+    if current_sec < start_sec:
+        return "BEFORE_CHECKIN_WINDOW"
+    if current_sec > end_sec:
+        return "AFTER_CHECKOUT_WINDOW"
+    return "BETWEEN_WINDOWS"
+
+
+def process_biometric_punch(request, punch_code, device=None, source="ZKTeco"):
+    """
+    Persist every biometric punch, while using only window-valid punches
+    for attendance calculation.
+    """
+    employee, work_info = employee_exists(request)
+    if not employee or work_info is None:
+        return None
+
+    shift = work_info.shift_id
+    date_today = request.date if request.__dict__.get("date") else date.today()
+    punch_datetime = (
+        request.datetime
+        if request.__dict__.get("datetime")
+        else timezone.localtime()
+    )
+    day = EmployeeShiftDay.objects.get(day=date_today.strftime("%A").lower())
+    attendance_date = date_today
+    now_sec = strtime_seconds(punch_datetime.strftime("%H:%M"))
+    mid_day_sec = strtime_seconds("12:00")
+
+    minimum_hour, start_time_sec, end_time_sec = shift_schedule_today(
+        day=day, shift=shift
+    )
+    shift_schedule = (
+        shift.employeeshiftschedule_set.filter(day=day).first() if shift else None
+    )
+
+    if start_time_sec > end_time_sec and mid_day_sec > now_sec:
+        attendance_date = date_today - timedelta(days=1)
+        day = EmployeeShiftDay.objects.get(
+            day=attendance_date.strftime("%A").lower()
+        )
+        minimum_hour, start_time_sec, end_time_sec = shift_schedule_today(
+            day=day, shift=shift
+        )
+        shift_schedule = (
+            shift.employeeshiftschedule_set.filter(day=day).first()
+            if shift
+            else None
+        )
+
+    check_in_window = (
+        shift_schedule.check_in_window_minutes if shift_schedule else 0
+    )
+    check_out_window = (
+        shift_schedule.check_out_window_minutes if shift_schedule else 0
+    )
+
+    direction = "IN" if punch_code in {0, 3, 4} else "OUT"
+    window_status = attendance_window_status(
+        now_sec,
+        start_time_sec,
+        end_time_sec,
+        check_in_window,
+        check_out_window,
+    )
+    within_window = (
+        window_status == "CHECKIN_WINDOW"
+        if direction == "IN"
+        else window_status == "CHECKOUT_WINDOW"
+    )
+
+    raw_log = BiometricPunchLog.objects.create(
+        employee_id=employee,
+        device_id=device,
+        biometric_user_id=str(
+            getattr(request, "biometric_user_id", "")
+            or getattr(request, "user_id", "")
+            or getattr(request.user, "username", "")
+        ),
+        punch_code=punch_code,
+        direction=direction,
+        punch_datetime=punch_datetime,
+        attendance_date=attendance_date,
+        shift_id=shift,
+        window_status=window_status,
+        within_window=within_window,
+        source=source,
+        raw_payload={
+            "punch_code": punch_code,
+            "datetime": punch_datetime.isoformat(),
+            "device_id": str(device.pk) if device else None,
+        },
+    )
+
+    if not within_window:
+        return raw_log
+
+    attendance = Attendance.objects.filter(
+        employee_id=employee,
+        attendance_date=attendance_date,
+    ).first()
+
+    if direction == "IN":
+        # First valid IN wins. Later IN punches are raw logs only.
+        if attendance and attendance.attendance_clock_in:
+            return raw_log
+
+        if not attendance:
+            attendance = Attendance.objects.create(
+                employee_id=employee,
+                shift_id=shift,
+                work_type_id=work_info.work_type_id,
+                attendance_date=attendance_date,
+                attendance_day=day,
+                attendance_clock_in=punch_datetime.time(),
+                attendance_clock_in_date=date_today,
+                minimum_hour=minimum_hour,
+            )
+        else:
+            attendance.attendance_clock_in = punch_datetime.time()
+            attendance.attendance_clock_in_date = date_today
+            attendance.minimum_hour = minimum_hour
+            attendance.save(
+                update_fields=[
+                    "attendance_clock_in",
+                    "attendance_clock_in_date",
+                    "minimum_hour",
+                ]
+            )
+
+        AttendanceActivity.objects.create(
+            employee_id=employee,
+            attendance_date=attendance_date,
+            shift_day=day,
+            clock_in_date=date_today,
+            clock_in=punch_datetime.time(),
+            in_datetime=punch_datetime,
+        )
+        late_come(
+            attendance=attendance,
+            start_time=start_time_sec,
+            end_time=end_time_sec,
+            shift=shift,
+        )
+        raw_log.used_for_attendance = True
+        raw_log.selection_role = "FINAL_IN"
+        raw_log.attendance_id = attendance
+        raw_log.save(
+            update_fields=["used_for_attendance", "selection_role", "attendance_id"]
+        )
+        return raw_log
+
+    # OUT requires a valid IN for the same attendance date.
+    if not attendance or not attendance.attendance_clock_in:
+        return raw_log
+
+    # Latest valid OUT becomes final OUT; old raw rows remain untouched.
+    BiometricPunchLog.objects.filter(
+        attendance_id=attendance,
+        direction="OUT",
+        used_for_attendance=True,
+    ).update(used_for_attendance=False, selection_role=None)
+
+    activity = AttendanceActivity.objects.filter(
+        employee_id=employee,
+        attendance_date=attendance_date,
+    ).order_by("-id").first()
+    if not activity:
+        return raw_log
+
+    activity.clock_out = punch_datetime.time()
+    activity.clock_out_date = date_today
+    activity.out_datetime = punch_datetime
+    activity.save(update_fields=["clock_out", "clock_out_date", "out_datetime"])
+
+    total_seconds = 0
+    for item in AttendanceActivity.objects.filter(
+        employee_id=employee,
+        attendance_date=attendance_date,
+        clock_out__isnull=False,
+    ):
+        in_dt, out_dt = activity_datetime(item)
+        total_seconds += int((out_dt - in_dt).total_seconds())
+
+    attendance.attendance_clock_out = punch_datetime.time()
+    attendance.attendance_clock_out_date = date_today
+    attendance.attendance_worked_hour = format_time(total_seconds)
+    attendance.attendance_overtime = overtime_calculation(attendance)
+    attendance.attendance_validated = attendance_validate(attendance)
+    attendance.save(
+        update_fields=[
+            "attendance_clock_out",
+            "attendance_clock_out_date",
+            "attendance_worked_hour",
+            "attendance_overtime",
+            "attendance_validated",
+        ]
+    )
+    early_out(
+        attendance=attendance,
+        start_time=start_time_sec,
+        end_time=end_time_sec,
+        shift=shift,
+    )
+
+    raw_log.used_for_attendance = True
+    raw_log.selection_role = "FINAL_OUT"
+    raw_log.attendance_id = attendance
+    raw_log.save(
+        update_fields=["used_for_attendance", "selection_role", "attendance_id"]
+    )
+    return raw_log
 
 
 @login_required
