@@ -162,8 +162,10 @@
                 {% for punch in punches %}
                     <tr>
                         <td>{{ forloop.counter|add:punches.start_index|add:'-1' }}</td>
-                        <td><strong>{{ punch.employee_id.get_full_name }}</strong></td>
-                        <td>{{ punch.employee_id.employee_id|default:'-' }}</td>
+                        <td>
+                            <strong>{% if punch.employee_id %}{{ punch.employee_id.get_full_name }}{% else %}Unmapped{% endif %}</strong>
+                        </td>
+                        <td>{% if punch.employee_id %}{{ punch.employee_id.employee_id|default:'-' }}{% else %}-{% endif %}</td>
                         <td>{{ punch.device_id.name|default:'-' }}</td>
                         <td>{{ punch.biometric_user_id }}</td>
                         <td>
@@ -203,6 +205,7 @@
                         <td>
                             {% if punch.selection_role == 'FINAL_IN' %}First valid IN
                             {% elif punch.selection_role == 'FINAL_OUT' %}Last valid OUT
+                            {% elif not punch.employee_id %}Employee mapping not found
                             {% elif not punch.within_window %}Outside attendance window
                             {% else %}Extra punch{% endif %}
                         </td>
