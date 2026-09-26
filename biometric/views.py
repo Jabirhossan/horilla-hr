@@ -736,6 +736,89 @@ def render_connection_response(title, text, icon):
     return render_to_string("biometric/test_connection_script.html", context)
 
 
+def zk_employees_fetch(device):
+    """
+    Fetch users from a ZKTeco/eSSL device and enrich them with Horilla
+    employee mappings.
+
+    The device user_id is the biometric identifier used by attendance logs.
+    Local BiometricEmployees records are matched by device + user_id.
+    Unmapped device users are still returned so administrators can see them
+    and map/add them from Horilla.
+    """
+    zk_device = ZK(
+        device.machine_ip,
+        port=device.port,
+        timeout=60,
+        password=int(device.zk_password),
+        force_udp=False,
+        ommit_ping=True,
+    )
+    conn = None
+
+    try:
+        conn = zk_device.connect()
+        conn.enable_device()
+        device_users = conn.get_users() or []
+
+        mappings = {
+            str(mapping.user_id): mapping
+            for mapping in BiometricEmployees.objects.filter(
+                device_id=device
+            ).select_related(
+                "employee_id",
+                "employee_id__employee_work_info",
+            )
+        }
+
+        employees = []
+        for user in device_users:
+            user_id = str(getattr(user, "user_id", "") or "").strip()
+            mapping = mappings.get(user_id)
+            employee = mapping.employee_id if mapping else None
+
+            work_info = (
+                getattr(employee, "employee_work_info", None)
+                if employee
+                else None
+            )
+            job_position = getattr(
+                getattr(work_info, "job_position_id", None),
+                "job_position",
+                None,
+            )
+
+            employees.append(
+                {
+                    "uid": getattr(user, "uid", None),
+                    "user_id": user_id,
+                    "employee": (
+                        employee.get_full_name()
+                        if employee
+                        else _("Not mapped")
+                    ),
+                    "badge_id": getattr(employee, "badge_id", "") if employee else "",
+                    "finger": getattr(user, "finger", []) or [],
+                    "work_email": (
+                        employee.get_mail()
+                        if employee
+                        else ""
+                    ),
+                    "phone": getattr(employee, "phone", "") if employee else "",
+                    "job_position": str(job_position or ""),
+                }
+            )
+
+        return employees
+    finally:
+        if conn is not None:
+            try:
+                conn.disable_device()
+            except Exception:
+                pass
+            conn.disconnect()
+
+
 def test_zkteco_connection(device):
     """Test connection for ZKTeco device."""
     conn = None
@@ -752,8 +835,10 @@ def test_zkteco_connection(device):
     )
     try:
         conn = zk_device.connect()
-        conn.test_voice(index=0)
-        find_employees_in_zk(device.id)
+        # A successful ZKTeco socket connection is enough for the device test.
+        # Do not call device voice APIs or employee-fetch helpers here because
+        # either can fail independently of the actual attendance connection.
+        conn.get_users()
         return render_connection_response(
             _("Connection Successful"),
             _("ZKTeco test connection successful."),
@@ -1164,6 +1249,7 @@ def biometric_device_employees(request, device_id, **kwargs):
                 context = {
                     "employees": employees,
                     "device_id": device_id,
+                    "device": device,
                     "form": employee_add_form,
                     "pd": previous_data,
                 }
