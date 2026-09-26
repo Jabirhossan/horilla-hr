@@ -976,36 +976,49 @@ def biometric_device_fetch_logs(request, device_id=None):
         return HttpResponse("Device not found.", status=404)
     script = ""
     if device.machine_type == "zk":
-        (
-            fetched_count,
-            raw_saved_count,
-            attendance_used_count,
-            raw_only_count,
-            error_message,
-        ) = zk_biometric_attendance_logs(device)
+        try:
+            (
+                fetched_count,
+                raw_saved_count,
+                attendance_used_count,
+                raw_only_count,
+                error_message,
+            ) = zk_biometric_attendance_logs(device)
 
-        if error_message and "Authentication" in error_message:
-            script = render_connection_response(
-                _("Authentication Error"),
-                _("Double-check the provided IP, Port, and Password."),
-                "warning",
+            if error_message and "Authentication" in error_message:
+                script = render_connection_response(
+                    _("Authentication Error"),
+                    _("Double-check the provided IP, Port, and Password."),
+                    "warning",
+                )
+            else:
+                message = _(
+                    "Fetched: %(fetched)s | Raw saved: %(raw)s | "
+                    "Used for attendance: %(used)s | Raw only: %(raw_only)s"
+                ) % {
+                    "fetched": fetched_count,
+                    "raw": raw_saved_count,
+                    "used": attendance_used_count,
+                    "raw_only": raw_only_count,
+                }
+                if error_message:
+                    message = f"{message}<br><small>{error_message}</small>"
+                script = render_connection_response(
+                    _("Logs Fetched Successfully"),
+                    message,
+                    "success" if not error_message else "warning",
+                )
+        except Exception as error:
+            logger.exception(
+                "[Device: %s] Manual ZKTeco fetch failed",
+                getattr(device, "name", device_id),
             )
-        else:
-            message = _(
-                "Fetched: %(fetched)s | Raw saved: %(raw)s | "
-                "Used for attendance: %(used)s | Raw only: %(raw_only)s"
-            ) % {
-                "fetched": fetched_count,
-                "raw": raw_saved_count,
-                "used": attendance_used_count,
-                "raw_only": raw_only_count,
-            }
-            if error_message:
-                message = f"{message}<br><small>{error_message}</small>"
             script = render_connection_response(
-                _("Logs Fetched Successfully"),
-                message,
-                "success" if not error_message else "warning",
+                _("Fetch Failed"),
+                _(
+                    "ZKTeco fetch failed: %(error)s"
+                ) % {"error": str(error)},
+                "danger",
             )
     elif device.machine_type == "anviz":
         attendance_count = anviz_biometric_attendance_logs(device)
