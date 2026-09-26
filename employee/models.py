@@ -77,6 +77,13 @@ class Employee(models.Model):
         ("divorced", _("Divorced")),
     )
     badge_id = models.CharField(max_length=50, null=True, blank=True)
+    employee_id = models.CharField(
+        max_length=50,
+        unique=True,
+        null=True,
+        blank=True,
+        verbose_name=_("Employee ID / User ID"),
+    )
     employee_user_id = models.OneToOneField(
         HorillaUser,
         on_delete=models.CASCADE,
