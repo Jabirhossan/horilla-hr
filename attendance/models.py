@@ -207,6 +207,8 @@ class BiometricPunchLog(HorillaModel):
     employee_id = models.ForeignKey(
         Employee,
         on_delete=models.PROTECT,
+        null=True,
+        blank=True,
         related_name="biometric_punch_logs",
         verbose_name=_("Employee"),
     )
