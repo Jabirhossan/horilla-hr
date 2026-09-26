@@ -2284,6 +2284,7 @@ def zk_biometric_attendance_logs(device_or_devices):
                         source="ZKTeco",
                         employee=None,
                     )
+                raw_saved_count += 1
                 logger.warning(
                     "[Device: %s] Punch stored as raw-only; no employee mapping: user_id=%s",
                     device.name,
