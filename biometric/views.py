@@ -2357,13 +2357,12 @@ def zk_biometric_attendance_logs(device_or_devices):
                     if att.timestamp <= local_now + timedelta(days=1)
                 ]
             elif device.last_fetch_date and device.last_fetch_time:
-                # Only re-read a tiny overlap around the checkpoint. The old
-                # 24-hour overlap caused every manual/scheduled fetch to scan
-                # and re-process the same day's punches.
+                # Read a tiny overlap so same-second device punches are not
+                # missed, but exact database duplicates are removed below.
                 cursor = datetime.combine(
                     device.last_fetch_date,
                     device.last_fetch_time,
-                ) - timedelta(seconds=5)
+                ) - timedelta(seconds=1)
                 filtered = [
                     att for att in attendances if att.timestamp > cursor
                 ]
@@ -2371,7 +2370,45 @@ def zk_biometric_attendance_logs(device_or_devices):
                 filtered = attendances
 
             for attendance in filtered:
+                # ZKTeco often returns the last stored punch again on every
+                # get_attendance() call. Do not report that as a new fetch.
+                # The checkpoint is still advanced later so the duplicate
+                # cannot keep the scheduler/manual fetch stuck.
+                attendance_timestamp = attendance.timestamp
+                if django_timezone.is_naive(attendance_timestamp):
+                    attendance_timestamp = django_timezone.make_aware(
+                        attendance_timestamp,
+                        django_timezone.get_current_timezone(),
+                    )
+                else:
+                    attendance_timestamp = attendance_timestamp.astimezone(
+                        django_timezone.get_current_timezone()
+                    )
+
                 attendance.device = device
+                attendance_timestamp_naive = attendance_timestamp.replace(
+                    tzinfo=None
+                )
+                attendance_user_id = str(attendance.user_id)
+                attendance_punch = (
+                    patch_direction[device.device_direction]
+                    if device.device_direction in patch_direction
+                    else attendance.punch
+                )
+                if BiometricPunchLog.objects.filter(
+                    device_id=device,
+                    biometric_user_id=attendance_user_id,
+                    punch_datetime=attendance_timestamp,
+                    punch_code=attendance_punch,
+                ).exists():
+                    # Still move the device checkpoint forward to the exact
+                    # device record that was observed.
+                    device.last_fetch_date = attendance_timestamp_naive.date()
+                    device.last_fetch_time = attendance_timestamp_naive.time()
+                    device.save(
+                        update_fields=["last_fetch_date", "last_fetch_time"]
+                    )
+                    continue
                 attendance.punch = (
                     patch_direction[device.device_direction]
                     if device.device_direction in patch_direction
@@ -2390,10 +2427,10 @@ def zk_biometric_attendance_logs(device_or_devices):
 
     combined_attendances.sort(key=lambda a: a.timestamp)
 
+    # combined_attendances contains only genuinely new device punches.
     fetched_count = len(combined_attendances)
     raw_saved_count = 0
     attendance_used_count = 0
-    processed_devices = set()
 
     for attendance in combined_attendances:
         user_id = str(attendance.user_id)
