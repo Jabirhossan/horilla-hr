@@ -777,6 +777,15 @@ def zk_employees_fetch(device):
             mapping = mappings.get(user_id)
             employee = mapping.employee_id if mapping else None
 
+            # ZKTeco attendance/user IDs in this installation are intended to
+            # match the employee Badge ID. If an explicit BiometricEmployees
+            # mapping is missing, resolve the employee by Badge ID as a safe
+            # fallback so existing device users are shown with their names.
+            if employee is None and user_id:
+                employee = Employee.objects.filter(
+                    badge_id=user_id
+                ).first()
+
             work_info = (
                 getattr(employee, "employee_work_info", None)
                 if employee
