@@ -70,59 +70,54 @@ def strtime_seconds(time):
 
 def attendance_window_violation(attendance, schedule):
     """
-    Return True when an attendance punch violates the shift's configured
-    biometric check-in/check-out window.
-
-    Check-in is valid from shift start through the configured check-in
-    window (inclusive). Check-out is valid only inside the final configured
-    window before shift end. Overnight shifts are supported.
+    Return True when stored biometric attendance falls outside the
+    explicitly configured check-in/check-out windows.
     """
     if not attendance or not schedule:
         return False
 
-    requested_data = getattr(attendance, "requested_data", None) or {}
-    if requested_data.get("checkin_window_absent") or requested_data.get(
-        "checkout_window_absent"
-    ):
-        return True
+    check_in_start = getattr(schedule, "check_in_window_start", None)
+    check_in_end = getattr(schedule, "check_in_window_end", None)
+    check_out_start = getattr(schedule, "check_out_window_start", None)
+    check_out_end = getattr(schedule, "check_out_window_end", None)
 
-    start = getattr(schedule, "start_time", None)
-    end = getattr(schedule, "end_time", None)
-    if not start:
+    if not all((check_in_start, check_in_end, check_out_start, check_out_end)):
         return False
 
     def _seconds(value):
         return value.hour * 3600 + value.minute * 60 + value.second
 
-    start_sec = _seconds(start)
-    end_sec = _seconds(end) if end else start_sec
-    night = bool(getattr(schedule, "is_night_shift", False)) or start_sec > end_sec
-
-    check_in_window = max(
-        int(getattr(schedule, "check_in_window_minutes", 0) or 0), 0
-    ) * 60
-    check_out_window = max(
-        int(getattr(schedule, "check_out_window_minutes", 0) or 0), 0
-    ) * 60
+    night = bool(getattr(schedule, "is_night_shift", False))
+    in_start = _seconds(check_in_start)
+    in_end = _seconds(check_in_end)
+    out_start = _seconds(check_out_start)
+    out_end = _seconds(check_out_end)
 
     check_in = getattr(attendance, "attendance_clock_in", None)
     if check_in:
         check_in_sec = _seconds(check_in)
-        if night and check_in_sec < start_sec:
+        if night and check_in_sec < in_start:
             check_in_sec += 24 * 60 * 60
-        if check_in_sec < start_sec or check_in_sec > start_sec + check_in_window:
+        if night and in_end < in_start:
+            in_end += 24 * 60 * 60
+        if check_in_sec < in_start or check_in_sec > in_end:
             return True
 
     check_out = getattr(attendance, "attendance_clock_out", None)
     if check_out:
         check_out_sec = _seconds(check_out)
-        if night and check_out_sec < end_sec:
+        if night and check_out_sec < in_start:
             check_out_sec += 24 * 60 * 60
-        effective_end = end_sec + (24 * 60 * 60 if night else 0)
-        if check_out_sec < effective_end - check_out_window:
+        if night:
+            if out_start < in_start:
+                out_start += 24 * 60 * 60
+            if out_end < in_start:
+                out_end += 24 * 60 * 60
+        if check_out_sec < out_start or check_out_sec > out_end:
             return True
 
     return False
+
 
 def get_diff_obj(first_instance, other_instance, exclude_fields=None):
     """
