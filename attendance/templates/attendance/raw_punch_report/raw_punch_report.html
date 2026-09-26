@@ -4,16 +4,16 @@
 
 {% block content %}
 <div class="oh-wrapper" style="padding-top:18px;">
-    <div class="oh-main__titlebar mb-3">
+    <div class="oh-main__titlebar mb-3" style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
         <div>
             <h1 class="oh-main__titlebar-title fw-bold">Raw Biometric Punch Report</h1>
         </div>
-        <div class="oh-main__titlebar-button-container">
-            <a class="oh-btn oh-btn--secondary ml-2" href="{% url 'raw-punch-report-export' %}?{{ query.urlencode }}">
+        <div class="oh-main__titlebar-button-container" style="display:flex;align-items:center;gap:8px;flex-wrap:nowrap;">
+            <a class="oh-btn oh-btn--secondary" style="height:40px;min-width:132px;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;margin-left:0;" href="{% url 'raw-punch-report-export' %}?{{ query.urlencode }}">
                 <ion-icon name="download-outline" class="mr-1"></ion-icon>
                 {% trans "Export Excel" %}
             </a>
-            <button type="button" class="oh-btn oh-btn--secondary ml-2" onclick="window.location.reload()">
+            <button type="button" class="oh-btn oh-btn--secondary" style="height:40px;min-width:105px;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;margin-left:0;" onclick="window.location.reload()">
                 <ion-icon name="refresh-outline" class="mr-1"></ion-icon>
                 {% trans "Refresh" %}
             </button>
@@ -97,9 +97,9 @@
                     <label class="oh-label">Search</label>
                     <input class="oh-input w-100" type="text" name="search" value="{{ query.search|default:'' }}" placeholder="Employee name, Employee ID or Device User ID">
                 </div>
-                <div class="col-md-4 d-flex align-items-end justify-content-end gap-2">
-                    <a href="{% url 'raw-punch-report' %}" class="oh-btn oh-btn--secondary">Clear</a>
-                    <button type="submit" class="oh-btn oh-btn--primary">
+                <div class="col-md-4 d-flex align-items-end justify-content-end gap-2" style="padding-top:28px;">
+                    <a href="{% url 'raw-punch-report' %}" class="oh-btn oh-btn--secondary" style="height:42px;min-width:95px;display:inline-flex;align-items:center;justify-content:center;">Clear</a>
+                    <button type="submit" class="oh-btn oh-btn--primary" style="height:42px;min-width:125px;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;">
                         <ion-icon name="search-outline" class="mr-1"></ion-icon> Apply Filter
                     </button>
                 </div>
