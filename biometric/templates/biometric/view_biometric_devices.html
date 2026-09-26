@@ -73,6 +73,27 @@
     </div>
 </div>
 <script>
+
+    // Show the final Fetch Logs result only after the server has finished
+    // connecting to the biometric device and processing the punches.
+    $(document)
+        .off("biometricFetchComplete.biometricFetchResult")
+        .on("biometricFetchComplete.biometricFetchResult", function (event) {
+            var detail = event.originalEvent && event.originalEvent.detail
+                ? event.originalEvent.detail
+                : {};
+
+            $("#BiometricDeviceTestModal").removeClass("oh-modal--show");
+            $("#BiometricDeviceTestModal").attr("aria-hidden", "true");
+
+            Swal.fire({
+                title: detail.title || "Fetch Complete",
+                text: detail.message || "",
+                icon: detail.icon || "info",
+                confirmButtonText: "OK",
+            });
+        });
+
     // Keep Fetch Logs modal opening reliable for cards loaded/reloaded through HTMX.
     $(document)
         .off("click.biometricFetchLogs", '#biometricDeviceList a[data-target="#BiometricDeviceTestModal"]')
