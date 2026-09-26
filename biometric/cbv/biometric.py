@@ -102,9 +102,7 @@ class BiometricCardView(HorillaCardView):
                     data-toggle="oh-modal-toggle"
                     data-target="#BiometricDeviceTestModal"
                     hx-on::after-request="
-                        if (event.detail.successful) {
-                            $('#BiometricDeviceTestModal').addClass('oh-modal--show');
-                        }
+                        $('#BiometricDeviceTestModal').addClass('oh-modal--show');
                     "
                     """,
             },
