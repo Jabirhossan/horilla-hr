@@ -2323,10 +2323,9 @@ def zk_biometric_attendance_logs(device_or_devices):
             else:
                 filtered = attendances
 
-            # Update last fetch markers
-            device.last_fetch_date = last_attendance_datetime.date()
-            device.last_fetch_time = last_attendance_datetime.time()
-            device.save()
+            # Do not advance the device cursor before processing.
+            # If attendance calculation fails, the same device record must be
+            # retried on the next polling cycle instead of being lost.
             for attendance in filtered:
                 attendance.device = device  # Attach device info
                 attendance.punch = (
@@ -2372,6 +2371,21 @@ def zk_biometric_attendance_logs(device_or_devices):
                         device=attendance.device,
                         source="ZKTeco",
                     )
+                else:
+                    logger.warning(
+                        "[Device: %s] Unsupported punch code %s for user %s",
+                        attendance.device.name,
+                        punch_code,
+                        user_id,
+                    )
+                    continue
+
+                # Advance the cursor only after this record has been handled.
+                attendance.device.last_fetch_date = date
+                attendance.device.last_fetch_time = time
+                attendance.device.save(
+                    update_fields=["last_fetch_date", "last_fetch_time"]
+                )
             except Exception:
                 logger.error(
                     f"[Device: {attendance.device.name}] Punch processing error",
