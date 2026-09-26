@@ -797,6 +797,11 @@ def zk_employees_fetch(device):
                         if employee
                         else _("Not mapped")
                     ),
+                    "employee_name": (
+                        employee.get_full_name()
+                        if employee
+                        else _("Not mapped")
+                    ),
                     "badge_id": getattr(employee, "badge_id", "") if employee else "",
                     "finger": getattr(user, "finger", []) or [],
                     "work_email": (
