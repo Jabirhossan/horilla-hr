@@ -836,9 +836,8 @@ def test_zkteco_connection(device):
     try:
         conn = zk_device.connect()
         # A successful ZKTeco socket connection is enough for the device test.
-        # Do not call device voice APIs or employee-fetch helpers here because
-        # either can fail independently of the actual attendance connection.
-        conn.get_users()
+        # Do not call voice APIs or employee-fetch helpers here because either
+        # can fail independently of the actual attendance connection.
         return render_connection_response(
             _("Connection Successful"),
             _("ZKTeco test connection successful."),
