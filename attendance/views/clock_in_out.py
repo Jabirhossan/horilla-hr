@@ -240,6 +240,10 @@ def attendance_window_status(
     end_time_sec,
     check_in_window_minutes=0,
     check_out_window_minutes=0,
+    check_in_window_start_sec=None,
+    check_in_window_end_sec=None,
+    check_out_window_start_sec=None,
+    check_out_window_end_sec=None,
 ):
     """Classify a punch against the configured shift windows."""
     is_night_shift = start_time_sec > end_time_sec and start_time_sec != end_time_sec
@@ -252,18 +256,34 @@ def attendance_window_status(
         start_sec = start_time_sec
         end_sec = end_time_sec
 
-    check_in_cutoff = start_sec + max(check_in_window_minutes, 0) * 60
-    check_out_open = end_sec - max(check_out_window_minutes, 0) * 60
-    in_window = start_sec <= current_sec <= check_in_cutoff
-    out_window = check_out_open <= current_sec <= end_sec
+    if check_in_window_start_sec is not None and check_in_window_end_sec is not None:
+        in_start = check_in_window_start_sec
+        in_end = check_in_window_end_sec
+        if is_night_shift and in_end < in_start:
+            in_end += 24 * 60 * 60
+    else:
+        in_start = start_sec
+        in_end = start_sec + max(check_in_window_minutes, 0) * 60
+
+    if check_out_window_start_sec is not None and check_out_window_end_sec is not None:
+        out_start = check_out_window_start_sec
+        out_end = check_out_window_end_sec
+        if is_night_shift and out_end < out_start:
+            out_end += 24 * 60 * 60
+    else:
+        out_start = end_sec - max(check_out_window_minutes, 0) * 60
+        out_end = end_sec
+
+    in_window = in_start <= current_sec <= in_end
+    out_window = out_start <= current_sec <= out_end
 
     if in_window:
         return "CHECKIN_WINDOW"
     if out_window:
         return "CHECKOUT_WINDOW"
-    if current_sec < start_sec:
+    if current_sec < in_start:
         return "BEFORE_CHECKIN_WINDOW"
-    if current_sec > end_sec:
+    if current_sec > out_end:
         return "AFTER_CHECKOUT_WINDOW"
     return "BETWEEN_WINDOWS"
 
@@ -317,6 +337,30 @@ def process_biometric_punch(request, punch_code, device=None, source="ZKTeco"):
         shift_schedule.check_out_window_minutes if shift_schedule else 0
     )
 
+    def time_to_seconds(value):
+        return value.hour * 3600 + value.minute * 60 + value.second
+
+    check_in_start_sec = (
+        time_to_seconds(shift_schedule.check_in_window_start)
+        if shift_schedule and shift_schedule.check_in_window_start
+        else None
+    )
+    check_in_end_sec = (
+        time_to_seconds(shift_schedule.check_in_window_end)
+        if shift_schedule and shift_schedule.check_in_window_end
+        else None
+    )
+    check_out_start_sec = (
+        time_to_seconds(shift_schedule.check_out_window_start)
+        if shift_schedule and shift_schedule.check_out_window_start
+        else None
+    )
+    check_out_end_sec = (
+        time_to_seconds(shift_schedule.check_out_window_end)
+        if shift_schedule and shift_schedule.check_out_window_end
+        else None
+    )
+
     direction = "IN" if punch_code in {0, 3, 4} else "OUT"
     window_status = attendance_window_status(
         now_sec,
@@ -324,6 +368,10 @@ def process_biometric_punch(request, punch_code, device=None, source="ZKTeco"):
         end_time_sec,
         check_in_window,
         check_out_window,
+        check_in_start_sec,
+        check_in_end_sec,
+        check_out_start_sec,
+        check_out_end_sec,
     )
     within_window = (
         window_status == "CHECKIN_WINDOW"
