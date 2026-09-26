@@ -782,10 +782,10 @@ def zk_employees_fetch(device):
                 if employee
                 else None
             )
-            job_position = getattr(
-                getattr(work_info, "job_position_id", None),
-                "job_position",
-                None,
+            job_position = (
+                employee.get_job_position()
+                if employee
+                else None
             )
 
             employees.append(
