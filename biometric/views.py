@@ -926,26 +926,36 @@ def biometric_device_bulk_fetch_logs(request):
         )
         return HttpResponse(script)
 
-    attendance_count, error_message = zk_biometric_attendance_logs(zk_devices)
-    if isinstance(attendance_count, int):
-        script = render_connection_response(
-            _("Logs Fetched Successfully"),
-            _(
-                f"Biometric attendance logs fetched successfully. Total records: {attendance_count}"
-            ),
-            "success",
-        )
-    elif "Authentication" in error_message:
+    (
+        fetched_count,
+        raw_saved_count,
+        attendance_used_count,
+        raw_only_count,
+        error_message,
+    ) = zk_biometric_attendance_logs(zk_devices)
+
+    if error_message and "Authentication" in error_message:
         script = render_connection_response(
             _("Authentication Error"),
             _("Double-check the provided IP, Port, and Password."),
             "warning",
         )
     else:
+        message = _(
+            "Fetched: %(fetched)s | Raw saved: %(raw)s | "
+            "Used for attendance: %(used)s | Raw only: %(raw_only)s"
+        ) % {
+            "fetched": fetched_count,
+            "raw": raw_saved_count,
+            "used": attendance_used_count,
+            "raw_only": raw_only_count,
+        }
+        if error_message:
+            message = f"{message}<br><small>{error_message}</small>"
         script = render_connection_response(
-            _("Connection Unsuccessful"),
-            _(f"Please check the IP, Port, and Password. Error: {error_message}"),
-            "warning",
+            _("Logs Fetched Successfully"),
+            message,
+            "success" if not error_message else "warning",
         )
     return HttpResponse(script)
 
@@ -966,26 +976,36 @@ def biometric_device_fetch_logs(request, device_id=None):
         return HttpResponse("Device not found.", status=404)
     script = ""
     if device.machine_type == "zk":
-        attendance_count, error_message = zk_biometric_attendance_logs(device)
-        if isinstance(attendance_count, int):
-            script = render_connection_response(
-                _("Logs Fetched Successfully"),
-                _(
-                    f"Biometric attendance logs fetched successfully. Total records: {attendance_count}"
-                ),
-                "success",
-            )
-        elif "Authentication" in error_message:
+        (
+            fetched_count,
+            raw_saved_count,
+            attendance_used_count,
+            raw_only_count,
+            error_message,
+        ) = zk_biometric_attendance_logs(device)
+
+        if error_message and "Authentication" in error_message:
             script = render_connection_response(
                 _("Authentication Error"),
                 _("Double-check the provided IP, Port, and Password."),
                 "warning",
             )
         else:
+            message = _(
+                "Fetched: %(fetched)s | Raw saved: %(raw)s | "
+                "Used for attendance: %(used)s | Raw only: %(raw_only)s"
+            ) % {
+                "fetched": fetched_count,
+                "raw": raw_saved_count,
+                "used": attendance_used_count,
+                "raw_only": raw_only_count,
+            }
+            if error_message:
+                message = f"{message}<br><small>{error_message}</small>"
             script = render_connection_response(
-                _("Connection Unsuccessful"),
-                _(f"Please check the IP, Port, and Password. Error: {error_message}"),
-                "warning",
+                _("Logs Fetched Successfully"),
+                message,
+                "success" if not error_message else "warning",
             )
     elif device.machine_type == "anviz":
         attendance_count = anviz_biometric_attendance_logs(device)
