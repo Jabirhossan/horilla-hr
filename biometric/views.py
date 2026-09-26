@@ -122,103 +122,151 @@ def biometric_set_time(conn):
 
 
 class ZKBioAttendance(Thread):
-    """
-    Represents a thread for capturing live attendance data from a ZKTeco biometric device.
+    """Continuously capture live attendance events from a ZKTeco device."""
 
-    Attributes:
-    - machine_ip: The IP address of the ZKTeco biometric device.
-    - port_no: The port number for communication with the ZKTeco biometric device.
-    - conn: The connection object to the ZKTeco biometric device.
-    - _stop_event: Event flag to signal thread termination.
-
-    Methods:
-    - run(): Overrides the run method of the Thread class to capture live attendance data.
-    - stop(): Sets the _stop_event to signal the thread to stop gracefully.
-    """
-
-    def __init__(self, machine_ip, port_no, password):
-        super().__init__()
+    def __init__(self, machine_ip, port_no, password, device_id=None):
+        super().__init__(daemon=True)
         self.machine_ip = machine_ip
         self.port_no = port_no
         self.password = int(password)
-        self._stop_event = Event()  # Initialize stop event
+        self.device_id = device_id
+        self._stop_event = Event()
         self.conn = None
 
-    def run(self):
-        try:
-            zk_device = ZK(
-                self.machine_ip,
-                port=self.port_no,
-                timeout=60,
-                password=self.password,
-                force_udp=False,
-                ommit_ping=True,
+    def _process_attendance(self, device, attendance):
+        if not attendance:
+            return
+
+        user_id = str(attendance.user_id)
+        punch_code = attendance.punch
+        date_time = attendance.timestamp
+
+        if date_time.tzinfo is None:
+            date_time = django_timezone.make_aware(
+                date_time, django_timezone.get_current_timezone()
             )
-            conn = zk_device.connect()
-            self.conn = conn
-            if conn:
+        else:
+            date_time = date_time.astimezone(django_timezone.get_current_timezone())
+
+        bio_id = BiometricEmployees.objects.filter(
+            user_id=user_id, device_id=device
+        ).select_related("employee_id__employee_user_id").first()
+
+        if not bio_id:
+            logger.warning(
+                "Live biometric punch ignored: device=%s user_id=%s is not mapped",
+                device.name if device else self.machine_ip,
+                user_id,
+            )
+            return
+
+        request_data = Request(
+            user=bio_id.employee_id.employee_user_id,
+            date=date_time.date(),
+            time=date_time.time(),
+            datetime=date_time,
+        )
+
+        try:
+            if punch_code in {0, 3, 4}:
+                clock_in(request_data)
+            elif punch_code in {1, 2, 5}:
+                clock_out(request_data)
+            else:
+                logger.warning(
+                    "Live biometric punch has unsupported punch code: user_id=%s punch=%s",
+                    user_id,
+                    punch_code,
+                )
+                return
+
+            device.last_fetch_date = date_time.date()
+            device.last_fetch_time = date_time.time()
+            device.save(update_fields=["last_fetch_date", "last_fetch_time"])
+            logger.info(
+                "Live biometric attendance processed: device=%s user_id=%s at=%s",
+                device.name if device else self.machine_ip,
+                user_id,
+                date_time,
+            )
+        except Exception:
+            logger.exception(
+                "Live biometric attendance processing failed: device=%s user_id=%s",
+                device.name if device else self.machine_ip,
+                user_id,
+            )
+
+    def run(self):
+        while not self._stop_event.is_set():
+            conn = None
+            try:
                 device = BiometricDevices.objects.filter(
+                    id=self.device_id
+                ).first() if self.device_id else BiometricDevices.objects.filter(
                     machine_ip=self.machine_ip, port=self.port_no
                 ).first()
-                if device and device.is_live:
-                    while not self._stop_event.is_set():
-                        attendances = conn.live_capture()
-                        for attendance in attendances:
-                            if attendance:
-                                user_id = attendance.user_id
-                                punch_code = attendance.punch
-                                date_time = django_timezone.make_aware(
-                                    attendance.timestamp
-                                )
-                                # date_time = attendance.timestamp
-                                date = date_time.date()
-                                time = date_time.time()
-                                device.last_fetch_date = date
-                                device.last_fetch_time = time
-                                device.save()
-                                bio_id = BiometricEmployees.objects.filter(
-                                    user_id=user_id, device_id=device
-                                ).first()
-                                if bio_id:
-                                    if punch_code in {0, 3, 4}:
-                                        try:
-                                            clock_in(
-                                                Request(
-                                                    user=bio_id.employee_id.employee_user_id,
-                                                    date=date,
-                                                    time=time,
-                                                    datetime=date_time,
-                                                )
-                                            )
-                                        except Exception as error:
-                                            logger.error(
-                                                "Got an error in clock_in %s", error
-                                            )
 
-                                            continue
-                                    else:
-                                        try:
-                                            clock_out(
-                                                Request(
-                                                    user=bio_id.employee_id.employee_user_id,
-                                                    date=date,
-                                                    time=time,
-                                                    datetime=date_time,
-                                                )
-                                            )
-                                        except Exception as error:
-                                            logger.error(
-                                                "Got an error in clock_out", error
-                                            )
-                                            continue
-                            else:
-                                continue
-        except ConnectionResetError as error:
-            ZKBioAttendance(self.machine_ip, self.port_no, self.password).start()
+                if not device or not device.is_live:
+                    break
+
+                zk_device = ZK(
+                    self.machine_ip,
+                    port=self.port_no,
+                    timeout=60,
+                    password=self.password,
+                    force_udp=False,
+                    ommit_ping=True,
+                )
+                conn = zk_device.connect()
+                self.conn = conn
+
+                if not conn:
+                    raise ConnectionError("ZKTeco connection returned no connection")
+
+                logger.info(
+                    "ZKTeco live capture connected: device=%s ip=%s port=%s",
+                    device.name,
+                    self.machine_ip,
+                    self.port_no,
+                )
+
+                conn.enable_device()
+
+                for attendance in conn.live_capture():
+                    if self._stop_event.is_set():
+                        break
+                    self._process_attendance(device, attendance)
+
+            except Exception:
+                if self._stop_event.is_set():
+                    break
+                logger.exception(
+                    "ZKTeco live capture connection/error: device=%s ip=%s port=%s",
+                    getattr(device, "name", self.machine_ip),
+                    self.machine_ip,
+                    self.port_no,
+                )
+                self._stop_event.wait(3)
+            finally:
+                self.conn = None
+                if conn:
+                    try:
+                        conn.end_live_capture = True
+                    except Exception:
+                        pass
+                    try:
+                        conn.disconnect()
+                    except Exception:
+                        pass
 
     def stop(self):
-        """To stop the ZK live capture mode"""
-        self.conn.end_live_capture = True
+        """Stop the live capture thread and close its active ZKTeco connection."""
+        self._stop_event.set()
+        if self.conn:
+            try:
+                self.conn.end_live_capture = True
+            except Exception:
+                pass
 
 
 class COSECBioAttendanceThread(Thread):
@@ -2140,13 +2188,14 @@ def biometric_device_live(request):
                     ommit_ping=True,
                 )
                 conn = zk_device.connect()
-                instance = ZKBioAttendance(machine_ip, port_no, password)
+                instance = ZKBioAttendance(machine_ip, port_no, password, device.id)
                 conn.test_voice(index=14)
                 if conn:
                     device.is_live = True
                     device.is_scheduler = False
                     device.save()
                     instance.start()
+                    settings.BIO_DEVICE_THREADS[device.id] = instance
             elif device.machine_type == "cosec":
                 cosec = COSECBiometric(
                     device.machine_ip,
@@ -2206,7 +2255,7 @@ def biometric_device_live(request):
     else:
         device.is_live = False
         device.save()
-        if device.machine_type == "cosec":
+        if device.machine_type in {"zk", "cosec"}:
             existing_thread = settings.BIO_DEVICE_THREADS.get(device.id)
             if existing_thread:
                 existing_thread.stop()
