@@ -797,21 +797,31 @@ def zk_employees_fetch(device):
                 else None
             )
 
+            device_user_name = str(
+                getattr(user, "name", "") or ""
+            ).strip()
+            mapped_employee_name = (
+                employee.get_full_name().strip()
+                if employee
+                else ""
+            )
+            # The ZKTeco user record itself contains the enrolled name.
+            # Prefer the Horilla employee name when available; otherwise use
+            # the device's own name so existing users are visible even before
+            # an explicit BiometricEmployees mapping exists.
+            display_name = mapped_employee_name or device_user_name or _("Not mapped")
+
             employees.append(
                 {
                     "uid": getattr(user, "uid", None),
                     "user_id": user_id,
-                    "employee": (
-                        employee.get_full_name()
-                        if employee
-                        else _("Not mapped")
+                    "employee": display_name,
+                    "employee_name": display_name,
+                    "badge_id": (
+                        getattr(employee, "badge_id", "")
+                        if employee and employee.badge_id
+                        else user_id
                     ),
-                    "employee_name": (
-                        employee.get_full_name()
-                        if employee
-                        else _("Not mapped")
-                    ),
-                    "badge_id": getattr(employee, "badge_id", "") if employee else "",
                     "finger": getattr(user, "finger", []) or [],
                     "work_email": (
                         employee.get_mail()
