@@ -1,0 +1,236 @@
+{% extends 'index.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block content %}
+<div class="oh-wrapper" style="padding-top:18px;">
+    <div class="oh-main__titlebar mb-3">
+        <div>
+            <h1 class="oh-main__titlebar-title fw-bold">Raw Biometric Punch Report</h1>
+            <p class="text-muted mb-0">
+                All biometric punches received from K60/ZKTeco devices. Raw punches are retained even when they are outside the attendance window.
+            </p>
+        </div>
+        <div class="d-flex gap-2">
+            <a class="oh-btn oh-btn--secondary" href="{% url 'raw-punch-report-export' %}?{{ query.urlencode }}">
+                <ion-icon name="download-outline" class="mr-1"></ion-icon> Export Excel
+            </a>
+            <button class="oh-btn oh-btn--secondary" onclick="window.location.reload()">
+                <ion-icon name="refresh-outline" class="mr-1"></ion-icon> Refresh
+            </button>
+        </div>
+    </div>
+
+    <form method="get" id="rawPunchFilter" class="mb-3">
+        <div class="oh-card" style="padding:20px;">
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="oh-label">Date From</label>
+                    <input class="oh-input w-100" type="date" name="start_date" value="{{ query.start_date|default:'' }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="oh-label">Date To</label>
+                    <input class="oh-input w-100" type="date" name="end_date" value="{{ query.end_date|default:'' }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="oh-label">Employee</label>
+                    <select class="oh-select w-100" name="employee_id">
+                        <option value="">All Employees</option>
+                        {% for employee in employees %}
+                            <option value="{{ employee.id }}" {% if query.employee_id == employee.id|stringformat:'s' %}selected{% endif %}>
+                                {{ employee.get_full_name }}{% if employee.employee_id %} ({{ employee.employee_id }}){% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="oh-label">Department</label>
+                    <select class="oh-select w-100" name="department_id">
+                        <option value="">All Departments</option>
+                        {% for department in departments %}
+                            <option value="{{ department.id }}" {% if query.department_id == department.id|stringformat:'s' %}selected{% endif %}>
+                                {{ department }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-3">
+                    <label class="oh-label">Device</label>
+                    <select class="oh-select w-100" name="device_id">
+                        <option value="">All Devices</option>
+                        {% for device in devices %}
+                            <option value="{{ device.id }}" {% if query.device_id == device.id|stringformat:'s' %}selected{% endif %}>
+                                {{ device.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="oh-label">Punch Type</label>
+                    <select class="oh-select w-100" name="direction">
+                        <option value="">All</option>
+                        <option value="IN" {% if query.direction == 'IN' %}selected{% endif %}>IN</option>
+                        <option value="OUT" {% if query.direction == 'OUT' %}selected{% endif %}>OUT</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="oh-label">Window Status</label>
+                    <select class="oh-select w-100" name="window_status">
+                        <option value="">All</option>
+                        {% for value,label in window_choices %}
+                            <option value="{{ value }}" {% if query.window_status == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="oh-label">Attendance Usage</label>
+                    <select class="oh-select w-100" name="used_for_attendance">
+                        <option value="">All</option>
+                        <option value="yes" {% if query.used_for_attendance == 'yes' %}selected{% endif %}>Used for Attendance</option>
+                        <option value="no" {% if query.used_for_attendance == 'no' %}selected{% endif %}>Raw Only</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-8">
+                    <label class="oh-label">Search</label>
+                    <input class="oh-input w-100" type="text" name="search" value="{{ query.search|default:'' }}" placeholder="Employee name, Employee ID or Device User ID">
+                </div>
+                <div class="col-md-4 d-flex align-items-end justify-content-end gap-2">
+                    <a href="{% url 'raw-punch-report' %}" class="oh-btn oh-btn--secondary">Clear</a>
+                    <button type="submit" class="oh-btn oh-btn--primary">
+                        <ion-icon name="search-outline" class="mr-1"></ion-icon> Apply Filter
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <div class="oh-card" style="padding:18px;border-left:4px solid #3b82f6;">
+                <div class="text-muted">Total Punches</div><div style="font-size:28px;font-weight:700;">{{ total }}</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="oh-card" style="padding:18px;border-left:4px solid #22c55e;">
+                <div class="text-muted">Within Window</div><div style="font-size:28px;font-weight:700;">{{ within }}</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="oh-card" style="padding:18px;border-left:4px solid #f59e0b;">
+                <div class="text-muted">Outside Window</div><div style="font-size:28px;font-weight:700;">{{ outside }}</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="oh-card" style="padding:18px;border-left:4px solid #8b5cf6;">
+                <div class="text-muted">Final IN / Final OUT</div>
+                <div style="font-size:24px;font-weight:700;">{{ final_in }} / {{ final_out }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="oh-card">
+        <div class="d-flex justify-content-between align-items-center" style="padding:18px;border-bottom:1px solid #eee;">
+            <div>
+                <h4 class="mb-0">Punch Logs</h4>
+                <small class="text-muted">{{ paginator.count }} records</small>
+            </div>
+            <span class="text-muted">Every fingerprint is retained</span>
+        </div>
+
+        <div style="overflow-x:auto;">
+            <table class="table table-hover mb-0" style="min-width:1450px;">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Employee</th>
+                        <th>Employee ID</th>
+                        <th>Device</th>
+                        <th>User ID</th>
+                        <th>Punch Time</th>
+                        <th>Code</th>
+                        <th>IN / OUT</th>
+                        <th>Window Status</th>
+                        <th>Used</th>
+                        <th>Final Status</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for punch in punches %}
+                    <tr>
+                        <td>{{ forloop.counter|add:punches.start_index|add:'-1' }}</td>
+                        <td><strong>{{ punch.employee_id.get_full_name }}</strong></td>
+                        <td>{{ punch.employee_id.employee_id|default:'-' }}</td>
+                        <td>{{ punch.device_id.name|default:'-' }}</td>
+                        <td>{{ punch.biometric_user_id }}</td>
+                        <td>
+                            <strong>{{ punch.punch_datetime|date:"d M Y" }}</strong><br>
+                            <small>{{ punch.punch_datetime|date:"h:i:s A" }}</small>
+                        </td>
+                        <td>{{ punch.punch_code|default:'-' }}</td>
+                        <td>
+                            {% if punch.direction == 'IN' %}
+                                <span class="oh-badge oh-badge--success">IN</span>
+                            {% else %}
+                                <span class="oh-badge oh-badge--danger">OUT</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if punch.within_window %}
+                                <span class="oh-badge oh-badge--success">Within</span>
+                            {% else %}
+                                <span class="oh-badge oh-badge--danger">Outside</span>
+                            {% endif %}
+                            <br><small>{{ punch.get_window_status_display }}</small>
+                        </td>
+                        <td>
+                            {% if punch.used_for_attendance %}
+                                <span class="oh-badge oh-badge--success">Yes</span>
+                            {% else %}
+                                <span class="oh-badge oh-badge--secondary">No</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if punch.selection_role == 'FINAL_IN' %}
+                                <span class="oh-badge oh-badge--success">Final IN</span>
+                            {% elif punch.selection_role == 'FINAL_OUT' %}
+                                <span class="oh-badge oh-badge--info">Final OUT</span>
+                            {% else %}-{% endif %}
+                        </td>
+                        <td>
+                            {% if punch.selection_role == 'FINAL_IN' %}First valid IN
+                            {% elif punch.selection_role == 'FINAL_OUT' %}Last valid OUT
+                            {% elif not punch.within_window %}Outside attendance window
+                            {% else %}Extra punch{% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="12" class="text-center py-5">No biometric punches found.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center p-3">
+            <span>Showing {{ punches.start_index }}–{{ punches.end_index }} of {{ paginator.count }}</span>
+            <div class="d-flex gap-1">
+                {% if punches.has_previous %}
+                    <a class="oh-btn oh-btn--secondary" href="?{{ query.urlencode }}&page={{ punches.previous_page_number }}">‹</a>
+                {% endif %}
+                {% for num in paginator.page_range %}
+                    {% if num >= punches.number|add:'-2' and num <= punches.number|add:'2' %}
+                        <a class="oh-btn {% if num == punches.number %}oh-btn--primary{% else %}oh-btn--secondary{% endif %}" href="?{{ query.urlencode }}&page={{ num }}">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+                {% if punches.has_next %}
+                    <a class="oh-btn oh-btn--secondary" href="?{{ query.urlencode }}&page={{ punches.next_page_number }}">›</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
