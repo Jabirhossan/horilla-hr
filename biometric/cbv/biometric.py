@@ -97,13 +97,9 @@ class BiometricCardView(HorillaCardView):
                 "attrs": """
                     hx-get="{get_fetch_url}"
                     class="oh-dropdown__link"
-                    hx-target="#BiometricDeviceTestFormTarget"
-                    hx-swap="innerHTML"
                     data-toggle="oh-modal-toggle"
                     data-target="#BiometricDeviceTestModal"
-                    hx-on::after-request="
-                        $('#BiometricDeviceTestModal').addClass('oh-modal--show');
-                    "
+                    hx-target="#BiometricDeviceTestFormTarget"
                     """,
             },
             {
