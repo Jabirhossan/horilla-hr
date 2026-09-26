@@ -186,6 +186,95 @@ class AttendanceActivity(HorillaModel):
         return f"{self.employee_id} - {self.attendance_date} - {self.clock_in} - {self.clock_out}"
 
 
+class BiometricPunchLog(HorillaModel):
+    """
+    Source record for every biometric punch received from a device.
+    Window validation controls attendance calculation only; raw punches are retained.
+    """
+
+    DIRECTION_CHOICES = [
+        ("IN", _("Check In")),
+        ("OUT", _("Check Out")),
+    ]
+    WINDOW_STATUS_CHOICES = [
+        ("BEFORE_CHECKIN_WINDOW", _("Before Check-In Window")),
+        ("CHECKIN_WINDOW", _("Check-In Window")),
+        ("BETWEEN_WINDOWS", _("Between Check-In and Check-Out Windows")),
+        ("CHECKOUT_WINDOW", _("Check-Out Window")),
+        ("AFTER_CHECKOUT_WINDOW", _("After Check-Out Window")),
+    ]
+
+    employee_id = models.ForeignKey(
+        Employee,
+        on_delete=models.PROTECT,
+        related_name="biometric_punch_logs",
+        verbose_name=_("Employee"),
+    )
+    device_id = models.ForeignKey(
+        "biometric.BiometricDevices",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="attendance_punch_logs",
+        verbose_name=_("Biometric Device"),
+    )
+    biometric_user_id = models.CharField(max_length=100, verbose_name=_("Device User ID"))
+    punch_code = models.IntegerField(null=True, blank=True, verbose_name=_("Punch Code"))
+    direction = models.CharField(max_length=3, choices=DIRECTION_CHOICES)
+    punch_datetime = models.DateTimeField(verbose_name=_("Punch Date/Time"))
+    attendance_date = models.DateField(null=True, blank=True)
+    shift_id = models.ForeignKey(
+        EmployeeShift,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name=_("Shift"),
+    )
+    window_status = models.CharField(
+        max_length=40,
+        choices=WINDOW_STATUS_CHOICES,
+        null=True,
+        blank=True,
+    )
+    within_window = models.BooleanField(default=False)
+    used_for_attendance = models.BooleanField(default=False)
+    selection_role = models.CharField(max_length=20, null=True, blank=True)
+    attendance_id = models.ForeignKey(
+        "attendance.Attendance",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="biometric_punch_logs",
+        verbose_name=_("Attendance"),
+    )
+    source = models.CharField(max_length=30, default="ZKTeco", editable=False)
+    raw_payload = models.JSONField(null=True, blank=True, editable=False)
+
+    objects = HorillaCompanyManager(
+        related_company_field="employee_id__employee_work_info__company_id"
+    )
+
+    class Meta:
+        ordering = ["-punch_datetime", "-id"]
+        indexes = [
+            models.Index(
+                fields=["employee_id", "punch_datetime"],
+                name="bio_punch_emp_dt_idx",
+            ),
+            models.Index(
+                fields=["attendance_date", "employee_id"],
+                name="bio_punch_att_date_emp_idx",
+            ),
+            models.Index(
+                fields=["device_id", "punch_datetime"],
+                name="bio_punch_device_dt_idx",
+            ),
+        ]
+        verbose_name = _("Biometric Punch Log")
+        verbose_name_plural = _("Biometric Punch Logs")
+
+
+
 class BatchAttendance(HorillaModel):
     """
     Batch attendance model
