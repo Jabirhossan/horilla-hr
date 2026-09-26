@@ -152,7 +152,7 @@ class ZKBioAttendance(Thread):
                 timeout=60,
                 password=self.password,
                 force_udp=False,
-                ommit_ping=False,
+                ommit_ping=True,
             )
             conn = zk_device.connect()
             self.conn = conn
@@ -419,7 +419,7 @@ def biometric_device_schedule(request, device_id):
                         timeout=60,
                         password=int(password),
                         force_udp=False,
-                        ommit_ping=False,
+                        ommit_ping=True,
                     )
                     conn = zk_device.connect()
                     conn.test_voice(index=0)
@@ -679,7 +679,7 @@ def test_zkteco_connection(device):
         timeout=60,
         password=int(password),
         force_udp=False,
-        ommit_ping=False,
+        ommit_ping=True,
     )
     try:
         conn = zk_device.connect()
@@ -1047,7 +1047,7 @@ def zk_employees_fetch(device):
         timeout=1,
         password=int(device.zk_password),
         force_udp=False,
-        ommit_ping=False,
+        ommit_ping=True,
     )
     conn = zk_device.connect()
     conn.enable_device()
@@ -1403,7 +1403,7 @@ def delete_biometric_user(request, uid, device_id):
         timeout=60,
         password=int(device.zk_password),
         force_udp=False,
-        ommit_ping=False,
+        ommit_ping=True,
     )
     conn = zk_device.connect()
     conn.delete_user(uid=uid)
@@ -1626,7 +1626,7 @@ def bio_users_bulk_delete(request):
             timeout=60,
             password=int(device.zk_password),
             force_udp=False,
-            ommit_ping=False,
+            ommit_ping=True,
         )
         conn = zk_device.connect()
         for user_id in ids:
@@ -1723,7 +1723,7 @@ def add_biometric_user(request, device_id):
                     timeout=60,
                     password=int(device.zk_password),
                     force_udp=False,
-                    ommit_ping=False,
+                    ommit_ping=True,
                 )
                 conn = zk_device.connect()
                 conn.enable_device()
@@ -2074,7 +2074,7 @@ def biometric_device_live(request):
                     timeout=60,
                     password=int(password),
                     force_udp=False,
-                    ommit_ping=False,
+                    ommit_ping=True,
                 )
                 conn = zk_device.connect()
                 instance = ZKBioAttendance(machine_ip, port_no, password)
@@ -2201,7 +2201,7 @@ def zk_biometric_attendance_logs(device_or_devices):
             timeout=60,
             password=int(device.zk_password),
             force_udp=False,
-            ommit_ping=False,
+            ommit_ping=True,
         )
 
         try:
