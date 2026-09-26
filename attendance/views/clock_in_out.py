@@ -307,19 +307,36 @@ def process_biometric_punch(request, punch_code, device=None, source="ZKTeco"):
     )
 
     direction = "IN" if punch_code in {0, 3, 4} else "OUT"
-    window_status = attendance_window_status(
-        now_sec,
-        check_in_start_sec,
-        check_in_end_sec,
-        check_out_start_sec,
-        check_out_end_sec,
-        is_night_shift=start_time_sec > end_time_sec,
+
+    # Raw biometric punches must never be lost because a shift window is
+    # missing or incomplete. Window eligibility is calculated only when all
+    # four explicit window endpoints are configured.
+    windows_configured = all(
+        value is not None
+        for value in (
+            check_in_start_sec,
+            check_in_end_sec,
+            check_out_start_sec,
+            check_out_end_sec,
+        )
     )
-    within_window = (
-        window_status == "CHECKIN_WINDOW"
-        if direction == "IN"
-        else window_status == "CHECKOUT_WINDOW"
-    )
+
+    window_status = None
+    within_window = False
+    if windows_configured:
+        window_status = attendance_window_status(
+            now_sec,
+            check_in_start_sec,
+            check_in_end_sec,
+            check_out_start_sec,
+            check_out_end_sec,
+            is_night_shift=start_time_sec > end_time_sec,
+        )
+        within_window = (
+            window_status == "CHECKIN_WINDOW"
+            if direction == "IN"
+            else window_status == "CHECKOUT_WINDOW"
+        )
 
     raw_log = BiometricPunchLog.objects.create(
         employee_id=employee,
