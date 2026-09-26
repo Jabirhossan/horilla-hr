@@ -64,6 +64,11 @@ SUBMENUS = [
         "match_prefixes": ["/attendance/attendance-activity-single-view/"],
     },
     {
+        "menu": _("Raw Punch Report"),
+        "redirect": reverse_lazy("raw-punch-report"),
+        "accessibility": "attendance.sidebar.raw_punch_report_accessibility",
+    },
+    {
         "menu": _("Late Arrival & Early Departure"),
         "redirect": reverse_lazy("late-come-early-out-view"),
         "accessibility": "attendance.sidebar.tracking_accessibility",
@@ -119,6 +124,12 @@ def dashboard_accessibility(request, submenu, user_perms, *args, **kwargs):
         request.user.is_superuser
         or request.user.has_perm("attendance.view_attendance")
         or is_reportingmanager(request.user)
+    )
+
+
+def raw_punch_report_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("attendance.view_attendance") or is_reportingmanager(
+        request.user
     )
 
 
