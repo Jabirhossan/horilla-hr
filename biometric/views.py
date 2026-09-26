@@ -687,6 +687,27 @@ def biometric_device_delete(request, device_id):
     return redirect(f"/biometric/view-biometric-devices/?{previous_data}")
 
 
+def render_biometric_fetch_response(title, message, icon):
+    """
+    Return an HTMX event for the Fetch Logs result.
+
+    The loading modal is opened before the device request starts. Once the
+    request finishes, the HX-Trigger event lets the page close the loading
+    modal and show the final result in a separate SweetAlert popup.
+    """
+    response = HttpResponse("")
+    response["HX-Trigger"] = json.dumps(
+        {
+            "biometricFetchComplete": {
+                "title": str(title),
+                "message": str(message),
+                "icon": icon,
+            }
+        }
+    )
+    return response
+
+
 def render_connection_response(title, text, icon):
     """
     Helper function to render the connection
@@ -966,15 +987,16 @@ def biometric_device_bulk_fetch_logs(request):
 @permission_required("biometric.view_biometricdevices")
 def biometric_device_fetch_logs(request, device_id=None):
     """
-    Fetches biometric attendance logs from a specified device.
+    Fetch biometric attendance logs and return the final result through HTMX.
 
-    This view function connects to a biometric device based on the device type (zk, anviz, cosec, dahua, or etimeoffice)
-    and retrieves the attendance logs.
+    The request itself may take time while the ZKTeco device is contacted.
+    The page shows the "Trying to connect..." modal while this request is in
+    progress. On completion, an HX-Trigger event opens the final result popup.
     """
     device = BiometricDevices.find(device_id)
     if not device:
         return HttpResponse("Device not found.", status=404)
-    script = ""
+
     if device.machine_type == "zk":
         try:
             (
@@ -986,297 +1008,115 @@ def biometric_device_fetch_logs(request, device_id=None):
             ) = zk_biometric_attendance_logs(device)
 
             if error_message and "Authentication" in error_message:
-                script = render_connection_response(
+                return render_biometric_fetch_response(
                     _("Authentication Error"),
                     _("Double-check the provided IP, Port, and Password."),
                     "warning",
                 )
-            else:
-                message = _(
-                    "Fetched: %(fetched)s | Raw saved: %(raw)s | "
-                    "Used for attendance: %(used)s | Raw only: %(raw_only)s"
-                ) % {
-                    "fetched": fetched_count,
-                    "raw": raw_saved_count,
-                    "used": attendance_used_count,
-                    "raw_only": raw_only_count,
-                }
-                if error_message:
-                    message = f"{message}<br><small>{error_message}</small>"
-                script = render_connection_response(
-                    _("Logs Fetched Successfully"),
-                    message,
-                    "success" if not error_message else "warning",
-                )
+
+            message = _(
+                "Fetched: %(fetched)s | Raw saved: %(raw)s | "
+                "Used for attendance: %(used)s | Raw only: %(raw_only)s"
+            ) % {
+                "fetched": fetched_count,
+                "raw": raw_saved_count,
+                "used": attendance_used_count,
+                "raw_only": raw_only_count,
+            }
+
+            if error_message:
+                message = f"{message} | {error_message}"
+
+            return render_biometric_fetch_response(
+                _("Logs Fetched Successfully"),
+                message,
+                "success" if not error_message else "warning",
+            )
+
         except Exception as error:
             logger.exception(
                 "[Device: %s] Manual ZKTeco fetch failed",
                 getattr(device, "name", device_id),
             )
-            script = render_connection_response(
+            return render_biometric_fetch_response(
                 _("Fetch Failed"),
-                _(
-                    "ZKTeco fetch failed: %(error)s"
-                ) % {"error": str(error)},
-                "danger",
+                _("ZKTeco fetch failed: %(error)s") % {"error": str(error)},
+                "error",
             )
+
     elif device.machine_type == "anviz":
         attendance_count = anviz_biometric_attendance_logs(device)
         if isinstance(attendance_count, int):
-            script = render_connection_response(
+            return render_biometric_fetch_response(
                 _("Logs Fetched Successfully"),
                 _(
-                    f"Biometric attendance logs fetched successfully. Total records: {attendance_count}"
-                ),
+                    "Biometric attendance logs fetched successfully. "
+                    "Total records: %(count)s"
+                ) % {"count": attendance_count},
                 "success",
             )
-        else:
-            script = render_connection_response(
-                _("Connection unsuccessful"),
-                _("API credentials might be incorrect."),
-                "warning",
-            )
+        return render_biometric_fetch_response(
+            _("Connection unsuccessful"),
+            _("API credentials might be incorrect."),
+            "warning",
+        )
 
     elif device.machine_type == "cosec":
         attendance_count = cosec_biometric_attendance_logs(device)
         if isinstance(attendance_count, int):
-            script = render_connection_response(
+            return render_biometric_fetch_response(
                 _("Logs Fetched Successfully"),
                 _(
-                    f"Biometric attendance logs fetched successfully. Total records: {attendance_count}"
-                ),
+                    "Biometric attendance logs fetched successfully. "
+                    "Total records: %(count)s"
+                ) % {"count": attendance_count},
                 "success",
             )
-        else:
-            script = render_connection_response(
-                _("Connection unsuccessful"),
-                _("Double-check the provided Machine IP, Username, and Password."),
-                "warning",
-            )
-    elif device.machine_type == "dahua":
-        attendance_count = dahua_biometric_attendance_logs(device)
-        if isinstance(attendance_count, int):
-            script = render_connection_response(
-                _("Logs Fetched Successfully"),
-                _(
-                    f"Biometric attendance logs fetched successfully. Total records: {attendance_count}"
-                ),
-                "success",
-            )
-        else:
-            script = render_connection_response(
-                _("Connection unsuccessful"),
-                _("Double-check the provided Machine IP, Username, and Password."),
-                "warning",
-            )
-    elif device.machine_type == "etimeoffice":
-        attendance_count = etimeoffice_biometric_attendance_logs(device)
-        if isinstance(attendance_count, int):
-            script = render_connection_response(
-                _("Logs Fetched Successfully"),
-                _(
-                    f"Biometric attendance logs fetched successfully. Total records: {attendance_count}"
-                ),
-                "success",
-            )
-        else:
-            script = render_connection_response(
-                _("Connection unsuccessful"),
-                _("Double-check the provided API Url, Username, and Password"),
-                "warning",
-            )
-    else:
-        script = render_connection_response(
-            "Connection unsuccessful",
-            "Please select a valid biometric device.",
+        return render_biometric_fetch_response(
+            _("Connection unsuccessful"),
+            _("Double-check the provided Machine IP, Username, and Password."),
             "warning",
         )
 
-    return HttpResponse(script)
-
-
-def zk_employees_fetch(device):
-    """
-    Fetch employee data from the specified ZK biometric device.
-
-    Parameters:
-    - device: Biometric device object containing machine IP, port, etc.
-
-    Returns:
-    - list: A list of dictionaries, where each dictionary represents an employee
-            with associated data including user ID, employee ID, work email,
-            phone number, job position, badge ID, and fingerprint data.
-    """
-    zk_device = ZK(
-        device.machine_ip,
-        port=device.port,
-        timeout=1,
-        password=int(device.zk_password),
-        force_udp=False,
-        ommit_ping=True,
-    )
-    conn = zk_device.connect()
-    conn.enable_device()
-    users = conn.get_users()
-    try:  # 1002
-        fingers = conn.get_templates()
-    except:
-        fingers = []
-
-    bio_employees = BiometricEmployees.objects.filter(device_id=device)
-    bio_lookup = {bio.user_id: bio for bio in bio_employees}
-
-    employees = []
-    for user in users:
-        user_id = user.user_id
-        uid = user.uid
-        bio_id = bio_lookup.get(user_id)
-
-        if bio_id:
-            employee = bio_id.employee_id
-            employee_work_info = EmployeeWorkInformation.objects.filter(
-                employee_id=employee
-            ).first()
-            if employee_work_info:
-                work_email = (
-                    employee_work_info.email if employee_work_info.email else None
-                )
-                phone = employee_work_info.mobile if employee_work_info.mobile else None
-                job_position = (
-                    employee_work_info.job_position_id
-                    if employee_work_info.job_position_id
-                    else None
-                )
-                user.__dict__["work_email"] = work_email
-                user.__dict__["phone"] = phone
-                user.__dict__["job_position"] = job_position
-            else:
-                user.__dict__["work_email"] = None
-                user.__dict__["phone"] = None
-                user.__dict__["job_position"] = None
-            user.__dict__["employee"] = employee
-            user.__dict__["badge_id"] = employee.badge_id
-            finger_print = []
-            for finger in fingers:
-                if finger.uid == uid:
-                    finger_print.append(finger.fid)
-            if not finger_print:
-                finger_print = []
-            user.__dict__["finger"] = finger_print
-            employees.append(user)
-    return employees
-
-
-def cosec_employee_fetch(device_id):
-    """
-    Fetch employee data from the COSEC biometric device associated with the specified device ID.
-
-    Parameters:
-    - device_id: ID of the biometric device.
-
-    Returns:
-    - list: A list of dictionaries, where each dictionary represents an employee with associated
-            data including user ID, employee ID, finger count, and card count.
-    """
-    users = []
-    device = BiometricDevices.objects.get(id=device_id)
-    employees = BiometricEmployees.objects.filter(device_id=device)
-    cosec = COSECBiometric(
-        device.machine_ip, device.port, device.bio_username, device.bio_password
-    )
-    for employee in employees:
-        user = cosec.get_cosec_user(user_id=employee.user_id)
-        if user.get("user-id"):
-            user["employee_id"] = employee.employee_id
-            user_credential = cosec.get_user_credential_count(user_id=employee.user_id)
-            user["finger-count"] = user_credential.get("finger-count")
-            user["face-count"] = user_credential.get("face-count")
-            user["card-count"] = user_credential.get("card-count")
-            new_dict = {}
-            for key, value in user.items():
-                new_key = key.replace("-", "_")
-                new_dict[new_key] = value
-            users.append(new_dict)
-        else:
-            BiometricEmployees.objects.get(id=employee.id).delete()
-    return users
-
-
-def find_employees_in_cosec(device_id):
-    """
-    Synchronize active employees with a COSEC biometric device.
-
-    This function retrieves a list of active employees from the database,
-    checks their presence on a specified COSEC biometric device, and updates
-    the database with employees who are registered on the COSEC device.
-
-    Args:
-        device_id (uuid): The ID of the biometric device to synchronize with.
-    """
-    device = BiometricDevices.objects.get(id=device_id)
-    employees = Employee.objects.filter(is_active=True).values_list("id", "badge_id")
-    cosec = COSECBiometric(
-        device.machine_ip, device.port, device.bio_username, device.bio_password
-    )
-    existing_user_ids = BiometricEmployees.objects.filter(device_id=device).values_list(
-        "user_id", flat=True
-    )
-    biometric_employees_to_create = []
-    for employee_id, badge_id in employees:
-        if badge_id and badge_id.isalnum() and len(badge_id) <= 15:
-            user = cosec.get_cosec_user(user_id=badge_id)
-            if user.get("user-id") and user.get("user-id") not in existing_user_ids:
-                biometric_employees_to_create.append(
-                    BiometricEmployees(
-                        ref_user_id=user.get("ref-user-id"),
-                        user_id=user.get("user-id"),
-                        employee_id_id=employee_id,
-                        device_id_id=device_id,
-                    )
-                )
-    BiometricEmployees.objects.bulk_create(biometric_employees_to_create)
-
-
-def find_employees_in_zk(device_id):
-    """
-    Synchronize active employees with a COSEC biometric device.
-
-    This function retrieves a list of active employees from the database,
-    checks their presence on a specified COSEC biometric device, and updates
-    the database with employees who are registered on the COSEC device.
-
-    Args:
-        device_id (uuid): The ID of the biometric device to synchronize with.
-    """
-    device = BiometricDevices.objects.get(id=device_id)
-    employees = Employee.objects.filter(is_active=True).values_list("id", "badge_id")
-    existing_user_ids = set(
-        BiometricEmployees.objects.filter(device_id=device_id).values_list(
-            "user_id", flat=True
+    elif device.machine_type == "dahua":
+        attendance_count = dahua_biometric_attendance_logs(device)
+        if isinstance(attendance_count, int):
+            return render_biometric_fetch_response(
+                _("Logs Fetched Successfully"),
+                _(
+                    "Biometric attendance logs fetched successfully. "
+                    "Total records: %(count)s"
+                ) % {"count": attendance_count},
+                "success",
+            )
+        return render_biometric_fetch_response(
+            _("Connection unsuccessful"),
+            _("Double-check the provided Machine IP, Username, and Password."),
+            "warning",
         )
-    )
-    zk_device = ZK(
-        device.machine_ip,
-        port=device.port,
-        password=int(device.zk_password),
-        timeout=60,
-        force_udp=False,
-        ommit_ping=True,
-    )
-    conn = zk_device.connect()
-    zk_users = {user.user_id: user.uid for user in conn.get_users()}
-    biometric_employees_to_create = [
-        BiometricEmployees(
-            uid=zk_users[badge_id],
-            user_id=badge_id,
-            employee_id_id=employee_id,
-            device_id_id=device_id,
+
+    elif device.machine_type == "etimeoffice":
+        attendance_count = etimeoffice_biometric_attendance_logs(device)
+        if isinstance(attendance_count, int):
+            return render_biometric_fetch_response(
+                _("Logs Fetched Successfully"),
+                _(
+                    "Biometric attendance logs fetched successfully. "
+                    "Total records: %(count)s"
+                ) % {"count": attendance_count},
+                "success",
+            )
+        return render_biometric_fetch_response(
+            _("Connection unsuccessful"),
+            _("Double-check the provided API Url, Username, and Password"),
+            "warning",
         )
-        for employee_id, badge_id in employees
-        if badge_id and badge_id in zk_users and badge_id not in existing_user_ids
-    ]
-    BiometricEmployees.objects.bulk_create(biometric_employees_to_create)
-    conn.disconnect()
+
+    return render_biometric_fetch_response(
+        _("Connection unsuccessful"),
+        _("Please select a valid biometric device."),
+        "warning",
+    )
 
 
 @login_required
