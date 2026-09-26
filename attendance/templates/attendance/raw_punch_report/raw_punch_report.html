@@ -7,16 +7,15 @@
     <div class="oh-main__titlebar mb-3">
         <div>
             <h1 class="oh-main__titlebar-title fw-bold">Raw Biometric Punch Report</h1>
-            <p class="text-muted mb-0">
-                All biometric punches received from K60/ZKTeco devices. Raw punches are retained even when they are outside the attendance window.
-            </p>
         </div>
-        <div class="d-flex gap-2">
-            <a class="oh-btn oh-btn--secondary" href="{% url 'raw-punch-report-export' %}?{{ query.urlencode }}">
-                <ion-icon name="download-outline" class="mr-1"></ion-icon> Export Excel
+        <div class="oh-main__titlebar-button-container">
+            <a class="oh-btn oh-btn--secondary ml-2" href="{% url 'raw-punch-report-export' %}?{{ query.urlencode }}">
+                <ion-icon name="download-outline" class="mr-1"></ion-icon>
+                {% trans "Export Excel" %}
             </a>
-            <button class="oh-btn oh-btn--secondary" onclick="window.location.reload()">
-                <ion-icon name="refresh-outline" class="mr-1"></ion-icon> Refresh
+            <button type="button" class="oh-btn oh-btn--secondary ml-2" onclick="window.location.reload()">
+                <ion-icon name="refresh-outline" class="mr-1"></ion-icon>
+                {% trans "Refresh" %}
             </button>
         </div>
     </div>
