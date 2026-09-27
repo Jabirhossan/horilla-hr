@@ -165,6 +165,7 @@
                         <td>
                             <strong>{% if punch.employee_id %}{{ punch.employee_id.get_full_name }}{% else %}Unmapped{% endif %}</strong>
                         </td>
+                        <td>{% if punch.employee_id and punch.employee_id.employee_work_info.company_id %}{{ punch.employee_id.employee_work_info.company_id }}{% else %}-{% endif %}</td>
                         <td>{% if punch.employee_id %}{{ punch.employee_id.employee_id|default:'-' }}{% else %}-{% endif %}</td>
                         <td>{{ punch.device_id.name|default:'-' }}</td>
                         <td>{{ punch.biometric_user_id }}</td>
