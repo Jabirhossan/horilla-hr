@@ -108,12 +108,6 @@ class EmployeeProfileView(HorillaProfileView):
                     "accessibility": "employee.cbv.accessibility.edit_accessibility",
                     "attrs": """onclick="window.location.href='{cbv_employee_profile_edi_url}'" """,
                 },
-                {
-                    "title": _("Send password reset link"),
-                    "src": f"/{settings.STATIC_URL}images/ui/key.png",
-                    "accessibility": "employee.cbv.accessibility.password_reset_accessibility",
-                    "attrs": """onclick="$('#reset-button').click();" """,
-                },
             ]
 
         return super().dispatch(request, *args, **kwargs)
