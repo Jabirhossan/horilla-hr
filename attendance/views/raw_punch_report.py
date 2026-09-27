@@ -13,7 +13,7 @@ from django.utils import timezone
 from attendance.models import BiometricPunchLog
 from base.methods import get_session_company
 from biometric.models import BiometricDevices
-from base.models import Department
+from base.models import Company, Department
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import login_required, permission_required
 
@@ -33,6 +33,7 @@ def _report_queryset(request):
     end = request.GET.get("end_date")
     employee_id = request.GET.get("employee_id")
     department_id = request.GET.get("department_id")
+    company_id = request.GET.get("company_id")
     device_id = request.GET.get("device_id")
     direction = request.GET.get("direction")
     window_status = request.GET.get("window_status")
@@ -51,6 +52,11 @@ def _report_queryset(request):
         qs = qs.filter(employee_id_id=employee_id)
     if department_id:
         qs = qs.filter(employee_id__employee_work_info__department_id=department_id)
+    if company_id:
+        qs = qs.filter(
+            Q(employee_id__employee_work_info__company_id=company_id)
+            | Q(device_id__company_id=company_id)
+        )
     if device_id:
         qs = qs.filter(device_id_id=device_id)
     if direction:
@@ -80,6 +86,18 @@ def raw_punch_report(request):
     page = paginator.get_page(request.GET.get("page", 1))
 
     company = get_session_company(request)
+
+    companies = Company.objects.all().order_by("company")
+    if company is not None:
+        companies = companies.filter(id=company.id)
+
+    selected_company_id = request.GET.get("company_id")
+    report_company = None
+    if selected_company_id:
+        report_company = companies.filter(id=selected_company_id).first()
+    elif company is not None:
+        report_company = company
+
     employees = Employee.objects.filter(is_active=True)
     if company is not None:
         employees = employees.filter(employee_work_info__company_id=company)
@@ -117,6 +135,8 @@ def raw_punch_report(request):
         "punches": page,
         "paginator": paginator,
         "employees": employees,
+        "companies": companies,
+        "report_company": report_company,
         "departments": departments,
         "devices": devices,
         "total": total,
