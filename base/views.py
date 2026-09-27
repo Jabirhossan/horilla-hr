@@ -25,6 +25,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
 from django.core.exceptions import ValidationError
@@ -40,8 +41,9 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils._os import safe_join
 from django.utils.decorators import method_decorator
+from django.utils.encoding import force_bytes
 from django.utils.html import format_html, strip_tags
-from django.utils.http import url_has_allowed_host_and_scheme
+from django.utils.http import url_has_allowed_host_and_scheme, urlsafe_base64_encode
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_noop
 from django.views import View
@@ -876,6 +878,44 @@ def include_employee_instance(request, form):
 
 def reset_send_success(request):
     return render(request, "reset_send.html")
+
+
+@login_required
+@require_http_methods(["POST"])
+@permission_required("employee.change_employee")
+def generate_employee_password_reset_link(request, employee_id):
+    """
+    Generate a Django password-reset link for an employee without sending email.
+
+    The Django token becomes invalid after the password is changed and the
+    link also respects PASSWORD_RESET_TIMEOUT.
+    """
+    employee = get_object_or_404(
+        Employee.objects.select_related("employee_user_id"), pk=employee_id
+    )
+    user = employee.employee_user_id
+
+    if not user or not user.is_active:
+        return JsonResponse(
+            {"error": _("This employee does not have an active user account.")},
+            status=400,
+        )
+
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    token = default_token_generator.make_token(user)
+    reset_path = reverse(
+        "password_reset_confirm",
+        kwargs={"uidb64": uid, "token": token},
+    )
+    reset_url = request.build_absolute_uri(reset_path)
+
+    timeout = int(getattr(settings, "PASSWORD_RESET_TIMEOUT", 259200))
+    return JsonResponse(
+        {
+            "url": reset_url,
+            "expires_in_hours": max(1, timeout // 3600),
+        }
+    )
 
 
 class HorillaPasswordResetView(PasswordResetView):
