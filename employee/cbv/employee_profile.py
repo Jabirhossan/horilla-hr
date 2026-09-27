@@ -78,7 +78,7 @@ class EmployeeProfileView(HorillaProfileView):
                     "title": _("Generate password reset link"),
                     "src": f"/{settings.STATIC_URL}images/ui/key.png",
                     "accessibility": "employee.cbv.accessibility.password_reset_accessibility",
-                    "attrs": """onclick="generatePasswordResetLink();" """,
+                    "attrs": """href="/employee/generate-password-reset-link/{id}/" """,
                 },
                 {
                     "divider": True,
