@@ -3,7 +3,96 @@
 {% load static %}
 
 {% block content %}
-<div class="oh-wrapper" style="padding-top:18px;">
+
+<style>
+/* Modern Raw Punch Report UI */
+.raw-punch-modern { --rp-blue:#2563eb; --rp-border:#e5e7eb; --rp-muted:#64748b; --rp-text:#172033; }
+.raw-punch-modern .oh-main__titlebar {
+    background:#fff; border:1px solid var(--rp-border); border-radius:14px;
+    padding:16px 18px; box-shadow:0 2px 12px rgba(15,23,42,.04);
+}
+.raw-punch-modern .oh-main__titlebar-title {
+    color:var(--rp-text)!important; font-size:25px!important; letter-spacing:-.3px;
+}
+.raw-punch-modern .oh-main__titlebar-title:before {
+    content:""; display:inline-flex; width:42px; height:42px; vertical-align:middle;
+    margin-right:12px; border-radius:12px; background:#eff6ff;
+    box-shadow:inset 0 0 0 1px #dbeafe;
+}
+.raw-punch-modern .oh-main__titlebar-button-container { gap:8px!important; }
+.raw-punch-modern .oh-main__titlebar-button-container .oh-btn {
+    border-radius:9px!important; height:40px!important; font-weight:650;
+}
+.raw-punch-modern form .oh-card {
+    border:1px solid var(--rp-border); border-radius:14px; padding:18px!important;
+    box-shadow:0 2px 12px rgba(15,23,42,.04);
+}
+.raw-punch-modern .oh-label {
+    color:#334155; font-size:12px; font-weight:650; margin-bottom:6px;
+}
+.raw-punch-modern .oh-input, .raw-punch-modern .oh-select {
+    height:40px!important; border:1px solid #dbe1ea!important; border-radius:9px!important;
+    box-shadow:none!important; background:#fff;
+}
+.raw-punch-modern .oh-input:focus, .raw-punch-modern .oh-select:focus {
+    border-color:#93c5fd!important; box-shadow:0 0 0 3px #eff6ff!important;
+}
+.raw-punch-modern form .row { row-gap:2px; }
+.raw-punch-modern form .oh-btn {
+    border-radius:9px!important; font-weight:650;
+}
+.raw-punch-modern > .row.mb-3 { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; margin:0 0 18px!important; }
+.raw-punch-modern > .row.mb-3 > [class*="col-"] { width:auto; max-width:none; padding:0; }
+.raw-punch-modern > .row.mb-3 .oh-card {
+    min-height:108px; border:1px solid var(--rp-border)!important; border-radius:14px;
+    padding:17px 18px!important; box-shadow:0 2px 12px rgba(15,23,42,.04);
+    position:relative; overflow:hidden;
+}
+.raw-punch-modern > .row.mb-3 .oh-card:after {
+    content:""; position:absolute; right:-24px; top:-24px; width:88px; height:88px;
+    border-radius:50%; background:#f8fafc;
+}
+.raw-punch-modern > .row.mb-3 > div:nth-child(1) .oh-card { border-left:4px solid #2563eb!important; }
+.raw-punch-modern > .row.mb-3 > div:nth-child(2) .oh-card { border-left:4px solid #16a34a!important; }
+.raw-punch-modern > .row.mb-3 > div:nth-child(3) .oh-card { border-left:4px solid #d97706!important; }
+.raw-punch-modern > .row.mb-3 > div:nth-child(4) .oh-card { border-left:4px solid #7c3aed!important; }
+.raw-punch-modern > .row.mb-3 .text-muted { font-size:12px; font-weight:650; color:#64748b!important; }
+.raw-punch-modern > .row.mb-3 .oh-card > div:last-child {
+    color:var(--rp-text); font-size:27px!important; font-weight:750!important; margin-top:7px;
+}
+.raw-punch-modern > .oh-card:last-child {
+    border:1px solid var(--rp-border); border-radius:14px; overflow:hidden;
+    box-shadow:0 2px 12px rgba(15,23,42,.04);
+}
+.raw-punch-modern > .oh-card:last-child > .d-flex {
+    padding:17px 18px!important; border-bottom:1px solid var(--rp-border)!important;
+}
+.raw-punch-modern > .oh-card:last-child h4 { color:var(--rp-text); font-size:16px; font-weight:720; }
+.raw-punch-modern > .oh-card:last-child table { min-width:1550px!important; }
+.raw-punch-modern > .oh-card:last-child thead th {
+    background:#f8fafc; color:#334155; border-bottom:1px solid #e2e8f0!important;
+    padding:12px!important; font-size:11px; font-weight:750; text-transform:uppercase;
+    letter-spacing:.2px; white-space:nowrap;
+}
+.raw-punch-modern > .oh-card:last-child tbody td {
+    padding:12px!important; border-color:#eef2f7!important; font-size:12px; vertical-align:middle;
+}
+.raw-punch-modern > .oh-card:last-child tbody tr:hover { background:#f8fbff; }
+.raw-punch-modern .oh-badge {
+    display:inline-flex; align-items:center; min-height:22px; padding:3px 9px;
+    border-radius:999px; font-size:10px; font-weight:750;
+}
+.raw-punch-modern > .oh-card:last-child .p-3 {
+    border-top:1px solid #eef2f7;
+}
+@media(max-width:1100px) {
+    .raw-punch-modern > .row.mb-3 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media(max-width:700px) {
+    .raw-punch-modern > .row.mb-3 { grid-template-columns:1fr; }
+}
+</style>
+<div class="oh-wrapper raw-punch-modern" style="padding-top:18px;">
     <div class="oh-main__titlebar mb-3" style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
         <div>
             <h1 class="oh-main__titlebar-title fw-bold">Raw Biometric Punch Report</h1>
