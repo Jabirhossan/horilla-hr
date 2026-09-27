@@ -910,6 +910,15 @@ def generate_employee_password_reset_link(request, employee_id):
     reset_url = request.build_absolute_uri(reset_path)
 
     timeout = int(getattr(settings, "PASSWORD_RESET_TIMEOUT", 259200))
+    context = {
+        "employee": employee,
+        "reset_url": reset_url,
+        "expires_in_hours": max(1, timeout // 3600),
+    }
+
+    if request.method == "GET":
+        return render(request, "employee/password_reset_link.html", context)
+
     return JsonResponse(
         {
             "url": reset_url,
