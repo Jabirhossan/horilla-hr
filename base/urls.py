@@ -388,6 +388,11 @@ urlpatterns = [
         name="forgot-password",
     ),
     path(
+        "employee/generate-password-reset-link/<int:employee_id>/",
+        views.generate_employee_password_reset_link,
+        name="generate-employee-password-reset-link",
+    ),
+    path(
         "employee-reset-password/",
         views.EmployeePasswordResetView.as_view(),
         name="employee-reset-password",
