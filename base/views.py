@@ -881,7 +881,7 @@ def reset_send_success(request):
 
 
 @login_required
-@require_http_methods(["POST"])
+@require_http_methods(["GET", "POST"])
 @permission_required("employee.change_employee")
 def generate_employee_password_reset_link(request, employee_id):
     """
