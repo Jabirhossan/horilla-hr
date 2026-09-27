@@ -141,11 +141,12 @@
         </div>
 
         <div style="overflow-x:auto;">
-            <table class="table table-hover mb-0" style="min-width:1450px;">
+            <table class="table table-hover mb-0" style="min-width:1550px;">
                 <thead>
                     <tr>
                         <th>#</th>
                         <th>Employee</th>
+                        <th>Company / Branch</th>
                         <th>Employee ID</th>
                         <th>Device</th>
                         <th>User ID</th>
@@ -203,7 +204,7 @@
                         </td>
                     </tr>
                 {% empty %}
-                    <tr><td colspan="11" class="text-center py-5">No biometric punches found.</td></tr>
+                    <tr><td colspan="12" class="text-center py-5">No biometric punches found.</td></tr>
                 {% endfor %}
                 </tbody>
             </table>
