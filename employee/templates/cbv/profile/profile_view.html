@@ -12,7 +12,8 @@
         return "";
     }
 
-    function generatePasswordResetLink(employeeId) {
+    function generatePasswordResetLink() {
+        const employeeId = "{{ instance.id }}";
         const url = "{% url 'generate-employee-password-reset-link' 0 %}".replace("/0/", "/" + employeeId + "/");
 
         fetch(url, {
