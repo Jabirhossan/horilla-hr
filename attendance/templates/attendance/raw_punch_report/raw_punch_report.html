@@ -151,7 +151,6 @@
                         <th>User ID</th>
                         <th>Punch Time</th>
                         <th>Code</th>
-                        <th>IN / OUT</th>
                         <th>Window Status</th>
                         <th>Used</th>
                         <th>Final Status</th>
@@ -173,13 +172,6 @@
                             <small>{{ punch.punch_datetime|date:"h:i:s A" }}</small>
                         </td>
                         <td>{{ punch.punch_code|default:'-' }}</td>
-                        <td>
-                            {% if punch.direction == 'IN' %}
-                                <span class="oh-badge oh-badge--success">IN</span>
-                            {% else %}
-                                <span class="oh-badge oh-badge--danger">OUT</span>
-                            {% endif %}
-                        </td>
                         <td>
                             {% if punch.within_window %}
                                 <span class="oh-badge oh-badge--success">Within</span>
@@ -211,7 +203,7 @@
                         </td>
                     </tr>
                 {% empty %}
-                    <tr><td colspan="12" class="text-center py-5">No biometric punches found.</td></tr>
+                    <tr><td colspan="11" class="text-center py-5">No biometric punches found.</td></tr>
                 {% endfor %}
                 </tbody>
             </table>
