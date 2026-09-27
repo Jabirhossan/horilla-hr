@@ -9,6 +9,9 @@
    No biometric/attendance processing is changed here.
    ========================================================= */
 .rpr {
+    color-scheme:light;
+    background:#f6f8fc;
+    color:#172033;
     --rpr-bg:#f6f8fc;
     --rpr-card:#ffffff;
     --rpr-text:#172033;
@@ -39,8 +42,8 @@
     background:var(--rpr-blue-soft); color:var(--rpr-blue);
     font-size:25px; border:1px solid #dbeafe;
 }
-.rpr .rpr-title { margin:0; color:var(--rpr-text); font-size:25px; line-height:1.15; font-weight:750; }
-.rpr .rpr-subtitle { margin:4px 0 0; color:var(--rpr-muted); font-size:13px; }
+.rpr .rpr-title { margin:0 !important; color:#172033 !important; font-size:25px; line-height:1.15; font-weight:750; }
+.rpr .rpr-subtitle { margin:4px 0 0; color:#64748b !important; font-size:13px; }
 .rpr .rpr-actions { display:flex; gap:8px; }
 .rpr .rpr-action {
     height:40px !important; border-radius:9px !important; padding:0 14px !important;
@@ -51,10 +54,11 @@
 .rpr .rpr-refresh { background:var(--rpr-blue) !important; border-color:var(--rpr-blue) !important; color:#fff !important; }
 
 .rpr .rpr-filter {
-    background:var(--rpr-card); border:1px solid var(--rpr-border); border-radius:14px;
+    background:#fff !important; border:1px solid var(--rpr-border); border-radius:14px;
     padding:18px; margin-bottom:18px; box-shadow:0 4px 16px rgba(15,23,42,.045);
 }
 .rpr .rpr-filter-grid {
+    color:#334155;
     display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px;
 }
 .rpr .rpr-field label {
@@ -92,6 +96,7 @@
     margin-bottom:18px;
 }
 .rpr .rpr-stat {
+    background:#fff !important;
     position:relative; overflow:hidden; min-height:116px; padding:17px 18px;
     background:var(--rpr-card); border:1px solid var(--rpr-border); border-radius:14px;
     box-shadow:0 4px 16px rgba(15,23,42,.045);
@@ -111,14 +116,14 @@
 .rpr .rpr-stat-help { margin-top:2px; color:#94a3b8; font-size:11px; }
 
 .rpr .rpr-table-card {
-    background:var(--rpr-card); border:1px solid var(--rpr-border); border-radius:14px;
+    background:#fff !important; border:1px solid var(--rpr-border); border-radius:14px;
     overflow:hidden; box-shadow:0 4px 18px rgba(15,23,42,.05);
 }
 .rpr .rpr-table-head {
     padding:16px 18px; display:flex; align-items:center; justify-content:space-between;
     gap:15px; border-bottom:1px solid var(--rpr-border);
 }
-.rpr .rpr-table-title { margin:0; color:var(--rpr-text); font-size:16px; font-weight:750; }
+.rpr .rpr-table-title { margin:0; color:#172033 !important; font-size:16px; font-weight:750; }
 .rpr .rpr-table-count { color:var(--rpr-muted); font-size:12px; margin-top:3px; }
 .rpr .rpr-retained {
     color:var(--rpr-muted); font-size:12px; display:flex; align-items:center; gap:5px;
@@ -134,11 +139,13 @@
     text-transform:uppercase; letter-spacing:.35px; white-space:nowrap;
 }
 .rpr .rpr-table tbody td {
+    background:#fff !important;
     padding:12px !important; border-bottom:1px solid #eef2f7 !important;
     color:#334155; font-size:12px; vertical-align:middle;
 }
 .rpr .rpr-table tbody tr { transition:background .15s ease; }
 .rpr .rpr-table tbody tr:hover { background:#f8fbff !important; }
+.rpr .rpr-table tbody tr:nth-child(even) td { background:#fcfdff !important; }
 
 .rpr .rpr-employee { display:flex; align-items:center; gap:9px; min-width:180px; }
 .rpr .rpr-avatar {
@@ -146,7 +153,7 @@
     display:flex; align-items:center; justify-content:center;
     background:#e8f0ff; color:#2563eb; font-size:11px; font-weight:800;
 }
-.rpr .rpr-name { color:#172033; font-weight:750; line-height:1.25; }
+.rpr .rpr-name { color:#172033 !important; font-weight:750; line-height:1.25; }
 .rpr .rpr-empid { color:#94a3b8; font-size:10px; margin-top:2px; }
 .rpr .rpr-company { color:#1e293b; font-weight:700; max-width:190px; line-height:1.25; }
 .rpr .rpr-company-label { display:block; color:#94a3b8; font-size:9px; margin-top:3px; }
@@ -181,13 +188,43 @@
     align-items:center; justify-content:center;
 }
 
-@media (prefers-color-scheme:dark) {
-    .rpr { --rpr-bg:#0f172a; --rpr-card:#111827; --rpr-text:#f1f5f9; --rpr-muted:#94a3b8; --rpr-border:#263244; }
-    .rpr .rpr-filter, .rpr .rpr-stat, .rpr .rpr-table-card, .rpr .rpr-main-titlebar { background:#111827; }
-    .rpr .rpr-title, .rpr .rpr-table-title, .rpr .rpr-name { color:#f1f5f9; }
-    .rpr .rpr-field label, .rpr .rpr-stat-label, .rpr .rpr-company { color:#cbd5e1; }
-    .rpr .rpr-table thead th { background:#172033 !important; color:#cbd5e1; }
-    .rpr .rpr-table tbody tr:hover { background:#172033 !important; }
+
+/* Force this report to stay light even when the OS/app is in dark mode. */
+.rpr {
+    background:#f6f8fc !important;
+    color:#172033 !important;
+}
+.rpr .rpr-filter,
+.rpr .rpr-stat,
+.rpr .rpr-table-card,
+.rpr .rpr-table-head,
+.rpr .rpr-footer {
+    background:#fff !important;
+    color:#334155 !important;
+}
+.rpr .rpr-table thead th {
+    background:#f8fafc !important;
+    color:#334155 !important;
+}
+.rpr .rpr-table tbody td {
+    color:#334155 !important;
+}
+.rpr .rpr-table tbody tr:nth-child(even) td {
+    background:#fcfdff !important;
+}
+.rpr .rpr-table tbody tr:hover td {
+    background:#f8fbff !important;
+}
+.rpr .rpr-title,
+.rpr .rpr-table-title,
+.rpr .rpr-name {
+    color:#172033 !important;
+}
+.rpr .rpr-subtitle,
+.rpr .rpr-table-count,
+.rpr .rpr-retained,
+.rpr .rpr-remarks {
+    color:#64748b !important;
 }
 
 @media(max-width:1100px) {
