@@ -75,10 +75,10 @@ class EmployeeProfileView(HorillaProfileView):
                     "divider": True,
                 },
                 {
-                    "title": _("Send password reset link"),
+                    "title": _("Generate password reset link"),
                     "src": f"/{settings.STATIC_URL}images/ui/key.png",
                     "accessibility": "employee.cbv.accessibility.password_reset_accessibility",
-                    "attrs": """onclick="$('#reset-button').click();" """,
+                    "attrs": """onclick="generatePasswordResetLink({pk});" """,
                 },
                 {
                     "divider": True,
