@@ -106,6 +106,10 @@ def raw_punch_report(request):
     total = stats_qs.count()
     within = stats_qs.filter(within_window=True).count()
     outside = total - within
+    used = stats_qs.filter(used_for_attendance=True).count()
+    today = stats_qs.filter(
+        punch_datetime__date=timezone.localdate()
+    ).count()
     final_in = stats_qs.filter(selection_role="FINAL_IN").count()
     final_out = stats_qs.filter(selection_role="FINAL_OUT").count()
 
@@ -116,6 +120,8 @@ def raw_punch_report(request):
         "departments": departments,
         "devices": devices,
         "total": total,
+        "today": today,
+        "used": used,
         "within": within,
         "outside": outside,
         "final_in": final_in,
