@@ -3,13 +3,75 @@
     {% include "generic/horilla_profile_view.html" %}
 </div>
 
-<form  hidden action="{% url 'employee-reset-password' %}" method="post" role="button"
-style="display: flex;">
-{% csrf_token %}
-<input name="email" hidden value="{{instance.employee_user_id.username}}" />
-<button  id="reset-button" type="submit" style="border: none; background: transparent;"></button>
-</form>
 
+<script>
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(";").shift();
+        return "";
+    }
+
+    function generatePasswordResetLink(employeeId) {
+        const url = "{% url 'generate-employee-password-reset-link' 0 %}".replace("/0/", "/" + employeeId + "/");
+
+        fetch(url, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+        .then(response => response.json().then(data => ({ok: response.ok, data})))
+        .then(result => {
+            if (!result.ok) {
+                Swal.fire({
+                    icon: "error",
+                    text: result.data.error || "{% trans 'Unable to generate password reset link.' %}"
+                });
+                return;
+            }
+
+            const resetUrl = result.data.url;
+            const hours = result.data.expires_in_hours;
+
+            Swal.fire({
+                title: "{% trans 'Password reset link' %}",
+                html:
+                    '<p style="text-align:left;margin-bottom:8px;">{% trans "Copy this link and send it to the employee. No mail server is required." %}</p>' +
+                    '<input id="generated-reset-link" class="swal2-input" readonly style="width:90%;font-size:13px;" value="' + $('<div>').text(resetUrl).html() + '">' +
+                    '<p style="font-size:12px;color:#777;margin-top:8px;">{% trans "Expires in" %} ' + hours + ' {% trans "hours" %}.</p>',
+                showCancelButton: true,
+                confirmButtonText: "{% trans 'Copy Link' %}",
+                cancelButtonText: "{% trans 'Close' %}",
+                preConfirm: () => {
+                    const input = document.getElementById("generated-reset-link");
+                    if (navigator.clipboard && window.isSecureContext) {
+                        return navigator.clipboard.writeText(input.value);
+                    }
+                    input.select();
+                    document.execCommand("copy");
+                    return Promise.resolve();
+                }
+            }).then(result => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "{% trans 'Copied' %}",
+                        text: "{% trans 'The reset link has been copied to your clipboard.' %}",
+                        timer: 1600,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        })
+        .catch(() => {
+            Swal.fire({
+                icon: "error",
+                text: "{% trans 'Unable to generate password reset link.' %}"
+            });
+        });
+    }
 
 <form hidden action="{% url 'employee-account-block-unblock' instance.id %}" id="block-form">
 {% csrf_token %}
