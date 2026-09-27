@@ -52,6 +52,7 @@
 }
 .rpr .rpr-export { background:#fff !important; border:1px solid var(--rpr-border) !important; color:#334155 !important; }
 .rpr .rpr-refresh { background:var(--rpr-blue) !important; border-color:var(--rpr-blue) !important; color:#fff !important; }
+.rpr .rpr-print { background:#fff !important; border:1px solid #bfdbfe !important; color:#1d4ed8 !important; }
 
 .rpr .rpr-filter {
     background:#fff !important; border:1px solid var(--rpr-border); border-radius:14px;
@@ -237,6 +238,184 @@
     color:#64748b !important;
 }
 
+
+@media print {
+    @page {
+        size: landscape;
+        margin: 10mm;
+    }
+
+    html, body {
+        background:#fff !important;
+        color:#111827 !important;
+    }
+
+    body * {
+        visibility:hidden !important;
+    }
+
+    .rpr, .rpr * {
+        visibility:visible !important;
+    }
+
+    .rpr {
+        position:absolute !important;
+        left:0 !important;
+        top:0 !important;
+        width:100% !important;
+        padding:0 !important;
+        background:#fff !important;
+    }
+
+    .rpr .rpr-header {
+        margin-bottom:12px !important;
+    }
+
+    .rpr .rpr-actions,
+    .rpr .rpr-filter,
+    .rpr .rpr-footer,
+    .rpr .rpr-retained {
+        display:none !important;
+    }
+
+    .rpr .rpr-title {
+        font-size:20px !important;
+    }
+
+    .rpr .rpr-subtitle {
+        font-size:10px !important;
+    }
+
+    .rpr .rpr-logo {
+        width:38px !important;
+        height:38px !important;
+        flex-basis:38px !important;
+        font-size:19px !important;
+    }
+
+    .rpr .rpr-stats {
+        grid-template-columns:repeat(4,1fr) !important;
+        gap:8px !important;
+        margin-bottom:10px !important;
+    }
+
+    .rpr .rpr-stat {
+        min-height:70px !important;
+        padding:9px 11px !important;
+        box-shadow:none !important;
+        border:1px solid #d1d5db !important;
+        break-inside:avoid;
+    }
+
+    .rpr .rpr-stat-value {
+        font-size:18px !important;
+    }
+
+    .rpr .rpr-stat-label {
+        font-size:9px !important;
+        margin-top:3px !important;
+    }
+
+    .rpr .rpr-stat-help,
+    .rpr .rpr-stat-icon,
+    .rpr .rpr-stat:after {
+        display:none !important;
+    }
+
+    .rpr .rpr-table-card {
+        border:0 !important;
+        box-shadow:none !important;
+        overflow:visible !important;
+    }
+
+    .rpr .rpr-table-head {
+        padding:7px 0 !important;
+        border-bottom:1px solid #9ca3af !important;
+    }
+
+    .rpr .rpr-table-title {
+        font-size:13px !important;
+    }
+
+    .rpr .rpr-table-count {
+        font-size:9px !important;
+    }
+
+    .rpr .rpr-table-scroll {
+        max-height:none !important;
+        min-height:0 !important;
+        overflow:visible !important;
+    }
+
+    .rpr .rpr-table {
+        width:100% !important;
+        min-width:0 !important;
+        table-layout:auto !important;
+        font-size:8px !important;
+    }
+
+    .rpr .rpr-table thead {
+        display:table-header-group;
+    }
+
+    .rpr .rpr-table thead th {
+        position:static !important;
+        padding:6px 5px !important;
+        font-size:7px !important;
+        background:#f3f4f6 !important;
+        color:#111827 !important;
+    }
+
+    .rpr .rpr-table tbody td {
+        padding:5px !important;
+        font-size:8px !important;
+        background:#fff !important;
+        color:#1f2937 !important;
+    }
+
+    .rpr .rpr-table tbody tr {
+        break-inside:avoid;
+    }
+
+    .rpr .rpr-avatar {
+        width:22px !important;
+        height:22px !important;
+        flex-basis:22px !important;
+        font-size:7px !important;
+    }
+
+    .rpr .rpr-employee {
+        min-width:0 !important;
+        gap:5px !important;
+    }
+
+    .rpr .rpr-name,
+    .rpr .rpr-company,
+    .rpr .rpr-date {
+        font-size:8px !important;
+    }
+
+    .rpr .rpr-empid,
+    .rpr .rpr-company-label,
+    .rpr .rpr-time,
+    .rpr .rpr-window-detail {
+        font-size:7px !important;
+    }
+
+    .rpr .rpr-badge {
+        min-height:16px !important;
+        padding:2px 5px !important;
+        font-size:7px !important;
+    }
+
+    .rpr .rpr-userid {
+        min-width:20px !important;
+        height:18px !important;
+        font-size:7px !important;
+        padding:0 4px !important;
+    }
+}
+
 @media(max-width:1100px) {
     .rpr .rpr-filter-grid, .rpr .rpr-stats { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
@@ -259,6 +438,9 @@
             </div>
         </div>
         <div class="rpr-actions">
+            <button type="button" class="oh-btn rpr-action rpr-print" onclick="window.print()">
+                <ion-icon name="print-outline"></ion-icon>{% trans "Print / PDF" %}
+            </button>
             <a class="oh-btn rpr-action rpr-export" href="{% url 'raw-punch-report-export' %}?{{ query.urlencode }}">
                 <ion-icon name="download-outline"></ion-icon>{% trans "Export Excel" %}
             </a>
