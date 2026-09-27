@@ -128,9 +128,19 @@
 .rpr .rpr-retained {
     color:var(--rpr-muted); font-size:12px; display:flex; align-items:center; gap:5px;
 }
-.rpr .rpr-table-scroll { max-height:calc(100vh - 430px); min-height:280px; overflow:auto; }
+.rpr .rpr-table-scroll {
+    width:100%;
+    max-height:calc(100vh - 430px);
+    min-height:280px;
+    overflow:auto;
+}
 .rpr .rpr-table {
-    min-width:1550px; margin:0 !important; border-collapse:separate; border-spacing:0;
+    width:100% !important;
+    min-width:1100px;
+    margin:0 !important;
+    border-collapse:separate;
+    border-spacing:0;
+    table-layout:auto;
 }
 .rpr .rpr-table thead th {
     position:sticky; top:0; z-index:5; background:#f8fafc !important;
