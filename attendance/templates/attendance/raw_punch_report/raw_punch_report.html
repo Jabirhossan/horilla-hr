@@ -45,6 +45,11 @@
 .rpr .rpr-title { margin:0 !important; color:#172033 !important; font-size:25px; line-height:1.15; font-weight:750; }
 .rpr .rpr-subtitle { margin:4px 0 0; color:#64748b !important; font-size:13px; }
 .rpr .rpr-actions { display:flex; gap:8px; }
+.rpr .rpr-company-header {
+    display:inline-block; margin-left:7px; padding-left:7px;
+    border-left:1px solid #cbd5e1; color:#1d4ed8 !important; font-weight:700;
+}
+
 .rpr .rpr-action {
     height:40px !important; border-radius:9px !important; padding:0 14px !important;
     display:inline-flex !important; align-items:center; justify-content:center;
@@ -285,6 +290,16 @@
     .rpr .rpr-subtitle {
         font-size:10px !important;
     }
+    .rpr .rpr-company-header {
+        display:block !important;
+        margin:2px 0 0 !important;
+        padding:0 !important;
+        border:0 !important;
+        color:#111827 !important;
+        font-size:10px !important;
+        font-weight:700 !important;
+    }
+
 
     .rpr .rpr-logo {
         width:38px !important;
@@ -434,7 +449,10 @@
             <div class="rpr-logo"><ion-icon name="finger-print-outline"></ion-icon></div>
             <div>
                 <h1 class="rpr-title">Raw Biometric Punch Report</h1>
-                <p class="rpr-subtitle">Biometric attendance activity &amp; verification</p>
+                <p class="rpr-subtitle">
+                    Biometric attendance activity &amp; verification
+                    <span class="rpr-company-header">• Company: {% if report_company %}{{ report_company }}{% else %}All Companies / Branches{% endif %}</span>
+                </p>
             </div>
         </div>
         <div class="rpr-actions">
@@ -459,6 +477,17 @@
             <div class="rpr-field">
                 <label>Date To</label>
                 <input class="oh-input" type="date" name="end_date" value="{{ query.end_date|default:'' }}">
+            </div>
+            <div class="rpr-field">
+                <label>Company / Branch</label>
+                <select class="oh-select" name="company_id">
+                    <option value="">All Companies / Branches</option>
+                    {% for company in companies %}
+                    <option value="{{ company.id }}" {% if query.company_id == company.id|stringformat:'s' %}selected{% endif %}>
+                        {{ company }}
+                    </option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="rpr-field">
                 <label>Employee</label>
